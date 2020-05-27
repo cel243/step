@@ -1,9 +1,18 @@
 #content {
+  text-align: center; 
+  line-height: 1.75; 
+  word-spacing: 0.4 em; 
   margin-left: auto;
   margin-right: auto;
   width: 650px;
 }
 
-#greeting-container {
-  margin-top: 20px;
+#blurb {
+  text-align: justify; 
+}
+
+
+#penny-image img {
+  max-height: 500px;
+  max-width: 500px;
 }
