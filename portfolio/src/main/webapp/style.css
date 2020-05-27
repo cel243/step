@@ -1,18 +1,30 @@
+body {
+    background-image: url("images/paper-background.jpg");
+    background-repeat: no-repeat;
+    background-size: cover; 
+}
+
+
 #content {
-  text-align: center; 
-  line-height: 1.75; 
-  word-spacing: 0.4 em; 
-  margin-left: auto;
-  margin-right: auto;
-  width: 650px;
+    text-align: center; 
+    line-height: 1.75; 
+    word-spacing: 0.4 em; 
+    margin-left: auto;
+    margin-right: auto;
+    width: 650px;
+}
+
+#white-box {
+    background: rgba(255,255,255,0.6); 
+    padding: 1em; 
 }
 
 #blurb {
-  text-align: justify; 
+    text-align: justify; 
 }
 
 
 #penny-image img {
-  max-height: 500px;
-  max-width: 500px;
+    max-height: 500px;
+    max-width: 500px;
 }
