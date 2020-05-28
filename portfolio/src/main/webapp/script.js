@@ -51,7 +51,7 @@ function fillGallery() {
 
     let htmlToAdd = '';
     for (let i = 1; i <= NUM_AVAILABLE_IMAGES; i++) {
-        htmlToAdd += `<a href="images/Penny-${1}.JPG">\
+        htmlToAdd += `<a href="images/Penny-${i}.JPG">\
         <img src="images/Penny-${i}.JPG"/></a> `
     }
 
