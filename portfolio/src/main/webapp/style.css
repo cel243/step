@@ -16,7 +16,8 @@ body {
 
 #white-box {
     background: rgba(255,255,255,0.6); 
-    padding: 1em; 
+    padding-right: 1em;
+    padding-left: 1em;
 }
 
 #blurb {
@@ -41,4 +42,30 @@ body {
 
 #penny-gallery-images img:hover {
     border: thick solid black;
+}
+
+.navigation {
+    background-color: white;
+    overflow: hidden;
+    border: 2px groove rgb(112, 112, 112);
+}
+
+.navigation a {
+    float: left; 
+    font-size: 20px;
+    color: black; 
+    text-align: center;
+    padding: 14px 16px;  
+    text-decoration: none;
+}
+
+.navigation a:hover {
+    background-color: rgb(216, 216, 216);
+}
+
+.header {
+    padding: 25px;
+    text-align: center;
+    background-color: rgb(255, 255, 255);
+    font-size: 25px;
 }

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const NUM_AVAILABLE_IMAGES = 7;
+const NUM_AVAILABLE_IMAGES = 13;
 
 /** 
   * Generate a random image url from the available pictures of Penny
