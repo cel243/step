@@ -24,7 +24,6 @@ body {
 }
 
 
-#penny-image img {
-    max-height: 500px;
-    max-width: 500px;
+#penny-button {
+    height : 300px; 
 }

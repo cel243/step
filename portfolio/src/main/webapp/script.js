@@ -12,17 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
+/** Generate a random image url from the available pictures of Penny
+  * @param int number of available images 
+  */
+function generateImageUrl(numberAvailable) {
+    const imageIndex = Math.floor(Math.random() * numberAvailable) + 1;
+    return 'images/Penny-' + imageIndex + '.JPG';
+}
+
 /**
- * Adds a random greeting to the page.
+ * Replaces the previous image button with a new image button that has the same 
+ * functionality but with a new, random image. 
  */
-function addRandomGreeting() {
-  const greetings =
-      ['Hello world!', '¡Hola Mundo!', '你好，世界！', 'Bonjour le monde!'];
+function newImageButton() {
 
-  // Pick a random greeting.
-  const greeting = greetings[Math.floor(Math.random() * greetings.length)];
+    const pennyButton = document.getElementById('penny-button');
+    const currentImgUrl = pennyButton.getAttribute("src");
+    let newImgUrl = currentImgUrl;
 
-  // Add it to the page.
-  const greetingContainer = document.getElementById('greeting-container');
-  greetingContainer.innerText = greeting;
+    //ensure new image is not the same as old one 
+    while (newImgUrl === currentImgUrl) {
+        newImgUrl = generateImageUrl(7);
+    }
+
+    const pennyContainer = document.getElementById('penny-container');
+    let newHTML = `<input id="penny-button" type="image" src="${newImgUrl}" onClick="newImageButton()"/>`;
+    pennyContainer.innerHTML = newHTML;
+
+
 }
