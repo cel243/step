@@ -23,7 +23,22 @@ body {
     text-align: justify; 
 }
 
-
 #penny-button {
     height : 300px; 
+}
+
+#penny-gallery-images {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+#penny-gallery-images img {
+    margin: 5px;
+    max-height: 200px;
+    max-width: 200px;
+}
+
+#penny-gallery-images img:hover {
+    border: thick solid black;
 }

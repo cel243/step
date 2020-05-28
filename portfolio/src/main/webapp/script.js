@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+const NUM_AVAILABLE_IMAGES = 7;
 
-/** Generate a random image url from the available pictures of Penny
-  * @param int number of available images 
+/** 
+  * Generate a random image url from the available pictures of Penny
   */
-function generateImageUrl(numberAvailable) {
-    const imageIndex = Math.floor(Math.random() * numberAvailable) + 1;
+function generateImageUrl() {
+    const imageIndex = Math.floor(Math.random() * NUM_AVAILABLE_IMAGES) + 1;
     return 'images/Penny-' + imageIndex + '.JPG';
 }
 
@@ -33,12 +34,26 @@ function newImageButton() {
 
     //ensure new image is not the same as old one 
     while (newImgUrl === currentImgUrl) {
-        newImgUrl = generateImageUrl(7);
+        newImgUrl = generateImageUrl();
     }
 
     const pennyContainer = document.getElementById('penny-container');
-    let newHTML = `<input id="penny-button" type="image" src="${newImgUrl}" onClick="newImageButton()"/>`;
+    let newHTML = `<input id="penny-button" type="image" src="${newImgUrl}"\
+     onClick="newImageButton()"/>`;
     pennyContainer.innerHTML = newHTML;
+}
 
+/**
+  * Automatically fill gallery page with all available images
+  */
+function fillGallery() {
+    const imgsContainer = document.getElementById('penny-gallery-images');
 
+    let htmlToAdd = '';
+    for (let i = 1; i <= NUM_AVAILABLE_IMAGES; i++) {
+        htmlToAdd += `<a href="images/Penny-${1}.JPG">\
+        <img src="images/Penny-${i}.JPG"/></a> `
+    }
+
+    imgsContainer.innerHTML = htmlToAdd;
 }
