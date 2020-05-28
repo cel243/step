@@ -4,7 +4,6 @@ body {
     background-size: cover; 
 }
 
-
 #content {
     text-align: center; 
     line-height: 1.75; 
@@ -22,7 +21,6 @@ body {
 #blurb {
     text-align: justify; 
 }
-
 
 #penny-image img {
     max-height: 500px;
