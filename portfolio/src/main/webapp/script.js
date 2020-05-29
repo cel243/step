@@ -16,7 +16,7 @@ const NUM_AVAILABLE_IMAGES = 13;
 
 /** 
   * Generates a random image url from the available pictures of Penny.
-  * @return {String} This returns new random valid image url.
+  * @returns {String} This returns new random valid image url.
   */
 function generateImageUrl() {
     const imageIndex = Math.floor(Math.random() * NUM_AVAILABLE_IMAGES) + 1;
@@ -24,13 +24,38 @@ function generateImageUrl() {
 }
 
 /**
-  * Generates the HTML for corresponding to `imageIndex + 1`.
+  * Generates the HTML for the image corresponding to `imageIndex + 1`,
+  * where the HTML element is an input with this image that calls 
+  * `enlargeThisImage(imageIndex + 1)` when clicked. 
   * @param {int} imageIndex The index of the desired image - 1.
-  * @returns {String} Returns HTML image with index `imageIndex + 1`
+  * @returns {String} Returns HTML for image with index `imageIndex + 1`
   */
 function getImageHTML(imageIndex) {
     return `<input type="image" src="images/Penny-${imageIndex + 1}.JPG"` + 
-            ` onClick="enlargeThisImage(${imageIndex + 1})"/> `
+            ` onClick="enlargeThisImage(${imageIndex + 1})"/> `;
+}
+
+/**
+  * Generates the HTML for image corresponding to `imageIndex`, where the 
+  * HTML element is a link to this image. 
+  * @param {int} imageIndex The index of the desired image.
+  * @returns {String} Returns HTML for image with index `imageIndex`
+  */
+function enlargedImageHTML(imageIndex) {
+    return `<a href="images/Penny-${imageIndex}.JPG">` +
+            `<img src="images/Penny-${imageIndex}.JPG"/></a> `;
+}
+
+/**
+  * Generates the HTML for image corresponding to `imageUrl`, where the 
+  * HTML element is an input with this image that calls `newImageButton()` when
+  * clicked. 
+  * @param {String} imageUrl The url of the desired image.
+  * @returns {String} Returns HTML for image at url `imageUrl`
+  */
+function createImageButtonHTML(imageUrl) {
+    return `<input id="penny-button" type="image" src="${imageUrl}"` +
+            ` onClick="newImageButton()"/>`;
 }
 
 /**
@@ -48,8 +73,7 @@ function newImageButton() {
     }
 
     const pennyContainer = document.getElementById('penny-container');
-    let newHTML = `<input id="penny-button" type="image" src="${newImageUrl}"` +
-        ` onClick="newImageButton()"/>`;
+    let newHTML = createImageButtonHTML(newImageUrl);
     pennyContainer.innerHTML = newHTML;
 }
 
@@ -77,13 +101,12 @@ function enlargeThisImage(thisImage) {
     imagesContainer.innerHTML = ''; 
 
     const enlargedContainer = document.getElementById('enlarged-image');
-    enlargedContainer.innerHTML = `<a href="images/Penny-${thisImage}.JPG">` +
-            `<img src="images/Penny-${thisImage}.JPG"/></a> `
+    enlargedContainer.innerHTML = enlargedImageHTML(thisImage);
 
     const smallContainer = document.getElementById('small-images');
     let htmlToAdd = '';
     let allImageHTML = [...Array(NUM_AVAILABLE_IMAGES).keys()]
-        .filter(imageIndex => imageIndex !== thisImage)
+        .filter(imageIndex => imageIndex + 1 !== thisImage)
         .map(getImageHTML);
     allImageHTML.forEach(imageHTML => htmlToAdd += imageHTML);
     smallContainer.innerHTML = htmlToAdd;
