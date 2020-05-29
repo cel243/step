@@ -15,7 +15,8 @@
 const NUM_AVAILABLE_IMAGES = 13;
 
 /** 
-  * Generate a random image url from the available pictures of Penny
+  * Generates a random image url from the available pictures of Penny
+  * @return {String} This returns new random valid image url
   */
 function generateImageUrl() {
     const imageIndex = Math.floor(Math.random() * NUM_AVAILABLE_IMAGES) + 1;
@@ -27,64 +28,55 @@ function generateImageUrl() {
  * functionality but with a new, random image. 
  */
 function newImageButton() {
-
     const pennyButton = document.getElementById('penny-button');
-    const currentImgUrl = pennyButton.getAttribute("src");
+    const currentImgUrl = pennyButton.getAttribute('src');
     let newImgUrl = currentImgUrl;
 
-    //ensure new image is not the same as old one 
+    /* ensure new image is not the same as old one */ 
     while (newImgUrl === currentImgUrl) {
         newImgUrl = generateImageUrl();
     }
 
     const pennyContainer = document.getElementById('penny-container');
-    let newHTML = `<input id="penny-button" type="image" src="${newImgUrl}"\
-     onClick="newImageButton()"/>`;
+    let newHTML = `<input id="penny-button" type="image" src="${newImgUrl}"` +
+        ` onClick="newImageButton()"/>`;
     pennyContainer.innerHTML = newHTML;
 }
 
 /**
-  * Automatically fill gallery page with all available images
+  * Automatically fills gallery page with all available images
   */
 function fillGallery() {
     const imgsContainer = document.getElementById('penny-gallery-images');
-
     let htmlToAdd = '';
     for (let i = 1; i <= NUM_AVAILABLE_IMAGES; i++) {
-
-        htmlToAdd += `<input type="image" src="images/Penny-${i}.JPG"\ 
-            onClick="enlargeThisImage(${i})"/> `
+        htmlToAdd += `<input type="image" src="images/Penny-${i}.JPG"` + 
+            ` onClick="enlargeThisImage(${i})"/> `
     }
-
     imgsContainer.innerHTML = htmlToAdd;
 }
 
 /**
-  * Display `thisImage` enlarged above a grid of the other available images. 
+  * Displays `thisImage` enlarged above a grid of the other available images. 
   * `thisImage` becomes a link to the image, while all of the other images
   * are buttons that call this function. 
-  * @param int the image to be enlarged
+  * @param {int} thisImage The image to be enlarged
   */
 function enlargeThisImage(thisImage) {
     const imgsContainer = document.getElementById('penny-gallery-images');
-    const enlargedContainer = document.getElementById('enlarged-image');
-    const smallContainer = document.getElementById('small-images');
-
     imgsContainer.innerHTML = ''; 
 
-    enlargedContainer.innerHTML = `<a href="images/Penny-${thisImage}.JPG">\
-            <img src="images/Penny-${thisImage}.JPG"/></a> `
+    const enlargedContainer = document.getElementById('enlarged-image');
+    enlargedContainer.innerHTML = `<a href="images/Penny-${thisImage}.JPG">` +
+            `<img src="images/Penny-${thisImage}.JPG"/></a> `
 
-
+    const smallContainer = document.getElementById('small-images');
     let htmlToAdd = '';
     for (let i = 1; i <= NUM_AVAILABLE_IMAGES; i++) {
-
         if (i !== thisImage) {
-            htmlToAdd += `<input type="image" src="images/Penny-${i}.JPG"\ 
-                onClick="enlargeThisImage(${i})"/> `
+            htmlToAdd += `<input type="image" src="images/Penny-${i}.JPG"` + 
+                ` onClick="enlargeThisImage(${i})"/> `
         }
-
     }
-
     smallContainer.innerHTML = htmlToAdd;
 }
