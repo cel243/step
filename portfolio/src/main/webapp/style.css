@@ -74,6 +74,10 @@ body {
     box-sizing: border-box;
 }
 
+#small-images input:hover {
+    border: 3px solid black;
+}
+
 .navigation {
     background-color: white;
     overflow: hidden;
