@@ -26,13 +26,13 @@ function generateImageUrl() {
 /**
   * Generates the HTML for the image corresponding to `imageIndex + 1`,
   * where the HTML element is an input with this image that calls 
-  * `enlargeThisImage(imageIndex + 1)` when clicked. 
+  * `onEnlargeThisImage(imageIndex + 1)` when clicked. 
   * @param {int} imageIndex The index of the desired image - 1.
   * @returns {String} Returns HTML for image with index `imageIndex + 1`
   */
 function getImageHTML(imageIndex) {
     return `<input type="image" src="images/Penny-${imageIndex + 1}.JPG"` + 
-            ` onClick="enlargeThisImage(${imageIndex + 1})"/> `;
+            ` onClick="onEnlargeThisImage(${imageIndex + 1})"/> `;
 }
 
 /**
@@ -48,21 +48,21 @@ function enlargedImageHTML(imageIndex) {
 
 /**
   * Generates the HTML for image corresponding to `imageUrl`, where the 
-  * HTML element is an input with this image that calls `newImageButton()` when
-  * clicked. 
+  * HTML element is an input with this image that calls `onClickPennyButton()`
+  * when clicked. 
   * @param {String} imageUrl The url of the desired image.
   * @returns {String} Returns HTML for image at url `imageUrl`
   */
 function createImageButtonHTML(imageUrl) {
     return `<input id="penny-button" type="image" src="${imageUrl}"` +
-            ` onClick="newImageButton()"/>`;
+            ` onClick="onClickPennyButton()"/>`;
 }
 
 /**
  * Replaces the previous image button with a new image button that has the same 
  * functionality but with a new, random image. 
  */
-function newImageButton() {
+function onClickPennyButton() {
     const pennyButton = document.getElementById('penny-button');
     const currentImageUrl = pennyButton.getAttribute('src');
     let newImageUrl = currentImageUrl;
@@ -96,7 +96,7 @@ function fillGallery() {
   * are buttons that call this function. 
   * @param {int} thisImage The image to be enlarged.
   */
-function enlargeThisImage(thisImage) {
+function onEnlargeThisImage(thisImage) {
     const imagesContainer = document.getElementById('penny-gallery-images');
     imagesContainer.innerHTML = ''; 
 
