@@ -51,9 +51,40 @@ function fillGallery() {
 
     let htmlToAdd = '';
     for (let i = 1; i <= NUM_AVAILABLE_IMAGES; i++) {
-        htmlToAdd += `<a href="images/Penny-${i}.JPG">\
-        <img src="images/Penny-${i}.JPG"/></a> `
+
+        htmlToAdd += `<input type="image" src="images/Penny-${i}.JPG"\ 
+            onClick="enlargeThisImage(${i})"/> `
     }
 
     imgsContainer.innerHTML = htmlToAdd;
+}
+
+/**
+  * Display `thisImage` enlarged above a grid of the other available images. 
+  * `thisImage` becomes a link to the image, while all of the other images
+  * are buttons that call this function. 
+  * @param int the image to be enlarged
+  */
+function enlargeThisImage(thisImage) {
+    const imgsContainer = document.getElementById('penny-gallery-images');
+    const enlargedContainer = document.getElementById('enlarged-image');
+    const smallContainer = document.getElementById('small-images');
+
+    imgsContainer.innerHTML = ''; 
+
+    enlargedContainer.innerHTML = `<a href="images/Penny-${thisImage}.JPG">\
+            <img src="images/Penny-${thisImage}.JPG"/></a> `
+
+
+    let htmlToAdd = '';
+    for (let i = 1; i <= NUM_AVAILABLE_IMAGES; i++) {
+
+        if (i !== thisImage) {
+            htmlToAdd += `<input type="image" src="images/Penny-${i}.JPG"\ 
+                onClick="enlargeThisImage(${i})"/> `
+        }
+
+    }
+
+    smallContainer.innerHTML = htmlToAdd;
 }

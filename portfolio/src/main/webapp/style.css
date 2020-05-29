@@ -36,14 +36,40 @@ body {
     column-gap: 0px; 
 }
 
-#penny-gallery-images img {
+#penny-gallery-images input {
     width: 100%;
     height: auto;
     border: thick solid white;
 }
 
-#penny-gallery-images img:hover {
+#penny-gallery-images input:hover {
     border: thick solid black;
+}
+
+#enlarged-image {
+    align-content: center;
+}
+
+#enlarged-image img {
+    margin: 10px;
+    max-height: 500px;
+    max-width: 500px;
+    border: 5px solid rgb(0, 0, 0);
+}
+
+#small-images {
+    line-height: 0;
+    -webkit-column-count: 4;
+    -webkit-column-gap: 0px;
+    -moz-column-gap: 0px;
+    column-count: 4;
+    column-gap: 0px; 
+}
+
+#small-images input {
+    width: 100%;
+    height: auto;
+    border: thick solid white;
 }
 
 .navigation {
