@@ -39,7 +39,8 @@ body {
 #penny-gallery-images input {
     width: 100%;
     height: auto;
-    border: thick solid white;
+    border: 2px solid white;
+    box-sizing: border-box;
 }
 
 #penny-gallery-images input:hover {
@@ -69,7 +70,8 @@ body {
 #small-images input {
     width: 100%;
     height: auto;
-    border: thick solid white;
+    border: 1.5px solid white;
+    box-sizing: border-box;
 }
 
 .navigation {
