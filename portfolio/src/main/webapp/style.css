@@ -28,15 +28,18 @@ body {
 }
 
 #penny-gallery-images {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    line-height: 0;
+    -webkit-column-count: 3;
+    -webkit-column-gap: 0px;
+    -moz-column-gap: 0px;
+    column-count: 3;
+    column-gap: 0px; 
 }
 
 #penny-gallery-images img {
-    margin: 5px;
-    max-height: 200px;
-    max-width: 200px;
+    width: 100%;
+    height: auto;
+    border: thick solid white;
 }
 
 #penny-gallery-images img:hover {
