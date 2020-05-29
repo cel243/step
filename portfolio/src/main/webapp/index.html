@@ -3,15 +3,23 @@
 
 <head>
 	<meta charset="UTF-8">
-	<title>My Portfolio</title>
+	<title>Home | Caroline Lui's Portfolio</title>
 	<link rel="stylesheet" href="style.css">
 	<script src="script.js"></script>
 </head>
 
 <body>
+	<div class="header">
+		<h1>Portfolio Webpage</h1> 
+	</div>
+	<div class="navigation">
+		<a class = "selected" href="index.html">Home</a>
+		<a href="gallery.html">Gallery</a>
+        <a href="projects.html">Projects</a>
+	</div>
 	<div id="content">
 		<div id="white-box">
-			<h1 id="name-heading">Caroline's Portfolio</h1>
+			<h1 id="name-heading">About Me</h1>
 			<div id="blurb">
 				<p>I'm Caroline and this is my portfolio! A bit about me: I'm
 					currently a rising Junior at Cornell's College of
@@ -39,13 +47,15 @@
 		</div>
 		<p> Come check me out on
 			<a href="https://www.linkedin.com/in/caroline-lui-877638174/"
-                	   target="_blank">LinkedIn</a> and
+			   target="_blank">LinkedIn</a> and
 			<a href="https://github.com/cel243" target="_blank">GitHub</a>!
 		</p>
-		<p>Below is my dog, Penny!</p>
-		<div id="penny-image">
-			<a href="images/Penny-1.JPG"><img src="images/Penny-1.JPG"/></a>
+		<p>Below is my dog, Penny. Click on her to see another picture!</p>
+		<div id="penny-container">
+			<input id="penny-button" type="image" src="images/Penny-10.JPG"
+                        onClick="onClickPennyButton()"/>
 		</div>
+	</div>
 </body>
 
 </html>
