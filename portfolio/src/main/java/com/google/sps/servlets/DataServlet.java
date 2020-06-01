@@ -35,33 +35,30 @@ public class DataServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String userComment = request.getParameter("text-input");
-    if (userComment == null) {
-      userComment = "";
+    if (userComment != null) {
+      storeComment(userComment);
     }
+    response.sendRedirect("/index.html");
+  }
 
+  /**
+    * Stores user comment as entity in datastore.
+    */
+  private void storeComment(String userComment) {
     Entity commentEntity = new Entity("Comment");
     commentEntity.setProperty("text", userComment);
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(commentEntity);
-
-    response.sendRedirect("/index.html");
   }
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Query query = new Query("Comment");
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    PreparedQuery results = datastore.prepare(query);
-
+    PreparedQuery results = getAllComments();
+    
     ArrayList<String> comments = new ArrayList<String>();
-    String parameterString = (String) request.getParameter("numberToDisplay");
-    int numberToDisplay;
-    try {
-      numberToDisplay = Integer.parseInt(parameterString);
-    } catch (Exception e) {
-      numberToDisplay = Integer.MAX_VALUE;
-    }
+    int numberToDisplay = getNumberToDisplay(request); 
     int numberDisplayed = 0;
+
     for(Entity comment : results.asIterable()) {
       String commentText = (String) comment.getProperty("text");
       comments.add(commentText);
@@ -74,6 +71,30 @@ public class DataServlet extends HttpServlet {
     String json = convertToJson(comments); 
     response.setContentType("application/json;");
     response.getWriter().println(json);
+  }
+
+  /** 
+    * Returns number of comments to display, based on user's 
+    * selection. 
+    */
+  private int getNumberToDisplay(HttpServletRequest request) {
+    String parameterString = (String) request.getParameter("numberToDisplay");
+    int numberToDisplay;
+    try {
+      numberToDisplay = Integer.parseInt(parameterString);
+    } catch (Exception e) {
+      numberToDisplay = Integer.MAX_VALUE;
+    }
+    return numberToDisplay;
+  }
+
+  /** 
+    * Returns all user comments stored in datastore. 
+    */
+  private PreparedQuery getAllComments() {
+    Query query = new Query("Comment");
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    return datastore.prepare(query);
   }
 
   /** 
