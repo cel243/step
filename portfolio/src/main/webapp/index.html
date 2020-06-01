@@ -55,10 +55,18 @@
             <input id="penny-button" type="image" src="images/Penny-10.JPG"
                         onClick="onClickPennyButton()"/>
         </div>
+        <label for="number-to-display"> View Comments: </label>
+        <select name="number-to-display" id="number-to-display" 
+                onchange="displayCommentSection()">
+            <option value="5">Up to 5</option>
+            <option value="10">Up to 10</option>
+            <option value="15">Up to 15</option>
+            <option value="20">Up to 20</option>
+        </select>
         <div id="comment-section"></div>
         <form action="/data" method="POST">
-          <textarea name="text-input" ></textarea>
-          <input type="submit" />
+            <textarea name="text-input" ></textarea>
+            <input type="submit" />
         </form>
     </div>
 </body>
