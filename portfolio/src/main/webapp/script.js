@@ -113,9 +113,9 @@ function onEnlargeThisImage(thisImage) {
 }
 
 /** 
-  * Fetches text from the server and adds it to the page.
+  * Fetches comment data from the server and displays it on the page.
   */
-function requestServerContent() {
+function displayCommentSection() {
   fetch('/data')
     .then(response => response.json())
     .then(displayJSON);
@@ -126,7 +126,7 @@ function requestServerContent() {
   * @param {JSON} json The JSON to be formatted. 
   */
 function displayJSON(json) {
-  const dataContainer = document.getElementById('server-content');
+  const dataContainer = document.getElementById('comment-section');
   let htmlToAdd = `<ul>`;
   for (let i = 0; i < json.length; i++) {
     htmlToAdd += `<li>${json[i]}</li>`;

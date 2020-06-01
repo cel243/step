@@ -8,7 +8,7 @@
     <script src="script.js"></script>
 </head>
 
-<body>
+<body onload="displayCommentSection()">
     <div class="header">
         <h1>Portfolio Webpage</h1> 
     </div>
@@ -55,8 +55,11 @@
             <input id="penny-button" type="image" src="images/Penny-10.JPG"
                         onClick="onClickPennyButton()"/>
         </div>
-        <button onclick="requestServerContent()">See Content</button>
-        <div id="server-content"></div>
+        <div id="comment-section"></div>
+        <form action="/data" method="POST">
+          <textarea name="text-input" ></textarea>
+          <input type="submit" />
+        </form>
     </div>
 </body>
 
