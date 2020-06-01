@@ -39,10 +39,9 @@ public class DataServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String userComment = request.getParameter("text-input");
-    if (userComment == null) {
-      userComment = "";
+    if (userComment != null) {
+      comments.add(userComment);
     }
-    comments.add(userComment);
     response.sendRedirect("/index.html");
   }
 
