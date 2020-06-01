@@ -111,3 +111,12 @@ function onEnlargeThisImage(thisImage) {
     allImageHTML.forEach(imageHTML => htmlToAdd += imageHTML);
     smallContainer.innerHTML = htmlToAdd;
 }
+
+/** 
+  * Fetches text from the server and adds it to the page.
+  */
+function requestServerContent() {
+    fetch('/data').then(response => response.text()).then((textToAdd) => {
+        document.getElementById('server-content').innerHTML = textToAdd;
+    });
+}
