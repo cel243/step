@@ -116,7 +116,7 @@ function onEnlargeThisImage(thisImage) {
   * Fetches comment data from the server and displays it on the page.
   */
 function displayCommentSection() {
-  fetch('/data')
+  fetch('/data?numberToDisplay=2')
     .then(response => response.json())
     .then(displayJSON);
 }

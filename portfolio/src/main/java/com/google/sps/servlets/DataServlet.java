@@ -54,9 +54,21 @@ public class DataServlet extends HttpServlet {
     PreparedQuery results = datastore.prepare(query);
 
     ArrayList<String> comments = new ArrayList<String>();
+    String parameterString = (String) request.getParameter("numberToDisplay");
+    int numberToDisplay;
+    try {
+      numberToDisplay = Integer.parseInt(parameterString);
+    } catch (Exception e) {
+      numberToDisplay = Integer.MAX_VALUE;
+    }
+    int numberDisplayed = 0;
     for(Entity comment : results.asIterable()) {
       String commentText = (String) comment.getProperty("text");
       comments.add(commentText);
+      numberDisplayed += 1;
+      if (numberDisplayed == numberToDisplay) {
+        break;
+      }
     }
 
     String json = convertToJson(comments); 
