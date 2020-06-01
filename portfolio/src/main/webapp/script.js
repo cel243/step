@@ -119,7 +119,6 @@ function displayCommentSection() {
   const selectNumberInput = document.getElementById('number-to-display');
   const numberToDisplay = selectNumberInput
     .options[selectNumberInput.selectedIndex].value;
-  console.log(numberToDisplay);
 
   fetch(`/data?numberToDisplay=${numberToDisplay}`)
     .then(response => response.json())
@@ -140,3 +139,12 @@ function displayJSON(json) {
   dataContainer.innerHTML = htmlToAdd; 
 }
 
+/**
+  * Deletes all comments from the datastore.
+  */
+function deleteAllComments() {
+  fetch(new Request('/delete-data', {method: 'POST'}))
+    .then(response => {
+      displayCommentSection();
+    })
+}

@@ -24,64 +24,24 @@ import com.google.gson.Gson;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 
-/** Servlet that handles comment data. */
-@WebServlet("/data")
-public class DataServlet extends HttpServlet {
+/** Servlet that deletes comment data. */
+@WebServlet("/delete-data")
+public class DeleteServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String userComment = request.getParameter("text-input");
-    if (userComment == null) {
-      userComment = "";
-    }
-
-    Entity commentEntity = new Entity("Comment");
-    commentEntity.setProperty("text", userComment);
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    datastore.put(commentEntity);
-
-    response.sendRedirect("/index.html");
-  }
-
-  @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Query query = new Query("Comment");
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
-
-    ArrayList<String> comments = new ArrayList<String>();
-    String parameterString = (String) request.getParameter("numberToDisplay");
-    int numberToDisplay;
-    try {
-      numberToDisplay = Integer.parseInt(parameterString);
-    } catch (Exception e) {
-      numberToDisplay = Integer.MAX_VALUE;
-    }
-    int numberDisplayed = 0;
     for(Entity comment : results.asIterable()) {
-      String commentText = (String) comment.getProperty("text");
-      comments.add(commentText);
-      numberDisplayed += 1;
-      if (numberDisplayed == numberToDisplay) {
-        break;
-      }
+      Key key = comment.getKey();
+      datastore.delete(key);
     }
-
-    String json = convertToJson(comments); 
-    response.setContentType("application/json;");
-    response.getWriter().println(json);
   }
 
-  /** 
-    * Returns JSON string representation of `data`.
-    */
-  private String convertToJson(ArrayList<String> data) {
-    Gson gson = new Gson(); 
-    String json = gson.toJson(data);
-    return json;
-  }
 }
