@@ -44,7 +44,7 @@ public class DataServlet extends HttpServlet {
   }
 
   /** 
-    * Returns JSON strings representation of `data`.
+    * Returns JSON string representation of `data`.
     */
   private String convertToJson(ArrayList<String> data) {
     Gson gson = new Gson(); 
