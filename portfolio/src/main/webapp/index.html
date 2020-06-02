@@ -58,6 +58,7 @@
             </div>
         </div>
         <div id="right-panel">
+            <h3>Comments: </h3>
             <label for="number-to-display"> View Comments: </label>
             <select name="number-to-display" id="number-to-display" 
                     onchange="displayCommentSection()">
@@ -67,8 +68,12 @@
                 <option value="20">Up to 20</option>
             </select>
             <div id="comment-section"></div>
-            <form action="/data" method="POST">
-                <textarea name="text-input" ></textarea>
+            <form action="/data" method="POST" id="comment-form">
+                <label for="author" class="required">Name</label>
+                <input type="text" name="author" id="author" value="" 
+                    tabindex="1" required="required">
+                <textarea name="text-input" id="text-input" rows="10" 
+                    tabindex="4" required="required"></textarea>
                 <input type="submit" />
             </form>
             <button onclick="deleteAllComments()">Delete All Comments</button>
