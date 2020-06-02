@@ -33,6 +33,9 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 @WebServlet("/delete-data")
 public class DeleteServlet extends HttpServlet {
 
+  /** 
+    * Deletes all comments from datastore. 
+    */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
