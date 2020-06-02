@@ -120,7 +120,8 @@ public class DataServlet extends HttpServlet {
     * Returns all user comments stored in datastore. 
     */
   private PreparedQuery getAllComments() {
-    Query query = new Query("Comment");
+    Query query = new Query("Comment")
+      .addSort("time", SortDirection.DESCENDING);
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     return datastore.prepare(query);
   }
@@ -129,13 +130,8 @@ public class DataServlet extends HttpServlet {
     * Returns JSON string representation of `data`.
     */
   private String convertToJson(ArrayList<Comment> data) {
-    String json = "[";
     Gson gson = new Gson(); 
-    for (int i = 0; i < data.size() - 1; i++) {
-      json += gson.toJson(data.get(i)) + ", ";
-    }
-    json += gson.toJson(data.get(data.size() - 1));
-    json += "]";
+    String json = gson.toJson(data);
     return json;
   }
 }
