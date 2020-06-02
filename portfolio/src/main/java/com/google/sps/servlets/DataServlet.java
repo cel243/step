@@ -51,13 +51,12 @@ public class DataServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String userComment = request.getParameter("text-input");
     String userName = request.getParameter("author");
-
-    /* DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
-    LocalDateTime time = LocalDateTime.now();
-    String timestamp = timeFormat.format(time); */
+    if (userName == null || userName.trim() == "") {
+      userName = "Anonymous";
+    }
     String timestamp = Long.toString(System.currentTimeMillis());
 
-    if (userComment != null) {
+    if (userComment != null || userComment.trim() == "") {
       storeComment(userComment, userName, timestamp);
     }
     response.sendRedirect("/index.html");
