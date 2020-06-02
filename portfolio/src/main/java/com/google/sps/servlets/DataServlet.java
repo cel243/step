@@ -30,7 +30,9 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime; 
 
-/** Servlet that handles comment data. */
+/** 
+  * Servlet that uploads and retrieves persistent comment data using datastore.
+  */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
@@ -47,6 +49,7 @@ public class DataServlet extends HttpServlet {
       }
   }
 
+  /** Extracts user comment from form and stores it via datastore. */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String userComment = request.getParameter("text-input");
@@ -62,9 +65,7 @@ public class DataServlet extends HttpServlet {
     response.sendRedirect("/index.html");
   }
 
-  /**
-    * Stores user comment as entity in datastore.
-    */
+  /** Stores user comment as entity in datastore. */
   private void storeComment(String userComment, String userName, 
     String timestamp) {
     Entity commentEntity = new Entity("Comment");
@@ -75,6 +76,10 @@ public class DataServlet extends HttpServlet {
     datastore.put(commentEntity);
   }
 
+  /** 
+    * Loads all user comments from datastore and returns JSON list of n 
+    * comments, where n is the number of comments the user has requested. 
+    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     PreparedQuery results = getAllComments();
@@ -83,16 +88,13 @@ public class DataServlet extends HttpServlet {
     int numberToDisplay = getNumberToDisplay(request); 
     int numberDisplayed = 0;
 
-    for(Entity comment : results.asIterable()) {
-      String commentText = (String) comment.getProperty("text");
-      String authorName = (String) comment.getProperty("name");
-      String commentTime = (String) comment.getProperty("time");
-      comments.add(new Comment(commentText, authorName, commentTime));
-      numberDisplayed += 1;
-      if (numberDisplayed == numberToDisplay) {
-        break;
-      }
-    }
+    results.asIterable().forEach(comment -> {
+      comments.add(new Comment(
+          (String) comment.getProperty("text"),
+          (String) comment.getProperty("name"),
+          (String) comment.getProperty("time")))
+    });
+    comments = comments.subList(0, numberToDisplay - 1);
 
     String json = convertToJson(comments); 
     response.setContentType("text/html;");
@@ -102,23 +104,23 @@ public class DataServlet extends HttpServlet {
   /** 
     * Returns number of comments to display, based on user's 
     * selection. 
+    * @throws IllegalArgumentException if value returned by 
+        `request.getParameter("numberToDisplay")` cannot be converted to 
+        an integer. 
     */
-  private int getNumberToDisplay(HttpServletRequest request) {
+  private int getNumberToDisplay(HttpServletRequest request)
+    throws IllegalArgumentException {
     String parameterString = (String) request.getParameter("numberToDisplay");
     int numberToDisplay;
     try {
       numberToDisplay = Integer.parseInt(parameterString);
-    } catch (Exception e) {
-      System.err.println("Could not convert to int: " + parameterString +
-          "\nSetting value to default: 5");
-      numberToDisplay = 5;
+    } catch (NumberFormatException e) {
+      throw new IllegalArgumentException("Cannot convert to integer"); 
     }
     return numberToDisplay;
   }
 
-  /** 
-    * Returns all user comments stored in datastore. 
-    */
+  /** Returns all user comments stored in datastore. */
   private PreparedQuery getAllComments() {
     Query query = new Query("Comment")
       .addSort("time", SortDirection.DESCENDING);
@@ -126,9 +128,7 @@ public class DataServlet extends HttpServlet {
     return datastore.prepare(query);
   }
 
-  /** 
-    * Returns JSON string representation of `data`.
-    */
+  /** Returns JSON string representation of `data`. */
   private String convertToJson(ArrayList<Comment> data) {
     Gson gson = new Gson(); 
     String json = gson.toJson(data);

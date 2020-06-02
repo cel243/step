@@ -29,23 +29,19 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 
-/** Servlet that deletes comment data. */
+/** Servlet that deletes all persistent comment data from datastore. */
 @WebServlet("/delete-data")
 public class DeleteServlet extends HttpServlet {
 
+  /** Deletes all comments from datastore. */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = getAllComments(datastore);
-    for(Entity comment : results.asIterable()) {
-      Key key = comment.getKey();
-      datastore.delete(key);
-    }
+    results.asIterable().forEach(comment -> datastore.delete(comment.getKey()));
   }
 
-  /** 
-    * Returns all user comments stored via datastore. 
-    */
+  /** Returns all user comments stored via datastore. */
   private PreparedQuery getAllComments(DatastoreService datastore) {
     Query query = new Query("Comment");
     return datastore.prepare(query);

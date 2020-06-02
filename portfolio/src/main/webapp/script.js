@@ -133,7 +133,7 @@ function displayJSON(json) {
   const dataContainer = document.getElementById('comment-section');
   htmlToAdd = '';
   for (let i = 0; i < json.length; i++) {
-    htmlToAdd += `<p><b><h3>${json[i].name}: </h3></b>` + 
+    htmlToAdd += `<p><b>${json[i].name}: </b>` + 
       `(<i>${prettyPrintTime(json[i].time)}</i>) ${json[i].text}</p>`;
   }
   dataContainer.innerHTML = htmlToAdd; 
