@@ -89,7 +89,7 @@ public class DataServlet extends HttpServlet {
     int numberToDisplay;
     try {
       numberToDisplay = Integer.parseInt(parameterString);
-    } catch (Exception e) {
+    } catch (NumberFormatException e) {
       System.err.println("Could not convert to int: " + parameterString +
           "\nSetting value to default: 5");
       numberToDisplay = DEFAULT_NUMBER_COMMENTS_TO_DISPLAY;
