@@ -19,8 +19,8 @@ const NUM_AVAILABLE_IMAGES = 13;
   * @returns {String} This returns new random valid image url.
   */
 function generateImageUrl() {
-    const imageIndex = Math.floor(Math.random() * NUM_AVAILABLE_IMAGES) + 1;
-    return 'images/Penny-' + imageIndex + '.JPG';
+  const imageIndex = Math.floor(Math.random() * NUM_AVAILABLE_IMAGES) + 1;
+  return 'images/Penny-' + imageIndex + '.JPG';
 }
 
 /**
@@ -31,8 +31,8 @@ function generateImageUrl() {
   * @returns {String} Returns HTML for image with index `imageIndex + 1`
   */
 function getImageHTML(imageIndex) {
-    return `<input type="image" src="images/Penny-${imageIndex + 1}.JPG"` + 
-            ` onClick="onEnlargeThisImage(${imageIndex + 1})"/> `;
+  return `<input type="image" src="images/Penny-${imageIndex + 1}.JPG"` + 
+      ` onClick="onEnlargeThisImage(${imageIndex + 1})"/> `;
 }
 
 /**
@@ -42,8 +42,8 @@ function getImageHTML(imageIndex) {
   * @returns {String} Returns HTML for image with index `imageIndex`
   */
 function enlargedImageHTML(imageIndex) {
-    return `<a href="images/Penny-${imageIndex}.JPG">` +
-            `<img src="images/Penny-${imageIndex}.JPG"/></a> `;
+  return `<a href="images/Penny-${imageIndex}.JPG">` +
+      `<img src="images/Penny-${imageIndex}.JPG"/></a> `;
 }
 
 /**
@@ -54,8 +54,8 @@ function enlargedImageHTML(imageIndex) {
   * @returns {String} Returns HTML for image at url `imageUrl`
   */
 function createImageButtonHTML(imageUrl) {
-    return `<input id="penny-button" type="image" src="${imageUrl}"` +
-            ` onClick="onClickPennyButton()"/>`;
+  return `<input id="penny-button" type="image" src="${imageUrl}"` +
+      ` onClick="onClickPennyButton()"/>`;
 }
 
 /**
@@ -63,31 +63,31 @@ function createImageButtonHTML(imageUrl) {
  * functionality but with a new, random image. 
  */
 function onClickPennyButton() {
-    const pennyButton = document.getElementById('penny-button');
-    const currentImageUrl = pennyButton.getAttribute('src');
-    let newImageUrl = currentImageUrl;
+  const pennyButton = document.getElementById('penny-button');
+  const currentImageUrl = pennyButton.getAttribute('src');
+  let newImageUrl = currentImageUrl;
 
-    /* ensure new image is not the same as old one */ 
-    while (newImageUrl === currentImageUrl) {
-        newImageUrl = generateImageUrl();
-    }
+  /* ensure new image is not the same as old one */ 
+  while (newImageUrl === currentImageUrl) {
+    newImageUrl = generateImageUrl();
+  }
 
-    const pennyContainer = document.getElementById('penny-container');
-    let newHTML = createImageButtonHTML(newImageUrl);
-    pennyContainer.innerHTML = newHTML;
+  const pennyContainer = document.getElementById('penny-container');
+  let newHTML = createImageButtonHTML(newImageUrl);
+  pennyContainer.innerHTML = newHTML;
 }
 
 /**
   * Fills gallery page with all available images.
   */
 function fillGallery() {
-    const imagesContainer = document.getElementById('penny-gallery-images');
+  const imagesContainer = document.getElementById('penny-gallery-images');
 
-    let htmlToAdd = '';
-    let allImageHTML = [...Array(NUM_AVAILABLE_IMAGES).keys()].map(getImageHTML);
-    allImageHTML.forEach(imageHTML => htmlToAdd += imageHTML);
+  let htmlToAdd = '';
+  let allImageHTML = [...Array(NUM_AVAILABLE_IMAGES).keys()].map(getImageHTML);
+  allImageHTML.forEach(imageHTML => htmlToAdd += imageHTML);
 
-    imagesContainer.innerHTML = htmlToAdd;
+  imagesContainer.innerHTML = htmlToAdd;
 }
 
 /**
@@ -97,17 +97,41 @@ function fillGallery() {
   * @param {int} thisImage The image to be enlarged.
   */
 function onEnlargeThisImage(thisImage) {
-    const imagesContainer = document.getElementById('penny-gallery-images');
-    imagesContainer.innerHTML = ''; 
+  const imagesContainer = document.getElementById('penny-gallery-images');
+  imagesContainer.innerHTML = ''; 
 
-    const enlargedContainer = document.getElementById('enlarged-image');
-    enlargedContainer.innerHTML = enlargedImageHTML(thisImage);
+  const enlargedContainer = document.getElementById('enlarged-image');
+  enlargedContainer.innerHTML = enlargedImageHTML(thisImage);
 
-    const smallContainer = document.getElementById('small-images');
-    let htmlToAdd = '';
-    let allImageHTML = [...Array(NUM_AVAILABLE_IMAGES).keys()]
-        .filter(imageIndex => imageIndex + 1 !== thisImage)
-        .map(getImageHTML);
-    allImageHTML.forEach(imageHTML => htmlToAdd += imageHTML);
-    smallContainer.innerHTML = htmlToAdd;
+  const smallContainer = document.getElementById('small-images');
+  let htmlToAdd = '';
+  let allImageHTML = [...Array(NUM_AVAILABLE_IMAGES).keys()]
+    .filter(imageIndex => imageIndex + 1 !== thisImage)
+    .map(getImageHTML);
+  allImageHTML.forEach(imageHTML => htmlToAdd += imageHTML);
+  smallContainer.innerHTML = htmlToAdd;
 }
+
+/** 
+  * Fetches comment data from the server and displays it on the page.
+  */
+function displayCommentSection() {
+  fetch('/data')
+    .then(response => response.json())
+    .then(displayJSON);
+}
+
+/** 
+  * Outputs JSON object as list on page. 
+  * @param {JSON} json The JSON to be formatted. 
+  */
+function displayJSON(json) {
+  const dataContainer = document.getElementById('comment-section');
+  let htmlToAdd = `<ul>`;
+  for (let i = 0; i < json.length; i++) {
+    htmlToAdd += `<li>${json[i]}</li>`;
+  }
+  htmlToAdd += `</ul>`;
+  dataContainer.innerHTML = htmlToAdd; 
+}
+
