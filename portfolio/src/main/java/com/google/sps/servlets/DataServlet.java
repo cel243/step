@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.List;
 import com.google.gson.Gson;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -29,6 +30,7 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime; 
+import java.lang.Math;
 
 /** 
   * Servlet that uploads and retrieves persistent comment data using datastore.
@@ -54,6 +56,7 @@ public class DataServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String userComment = request.getParameter("text-input");
     String userName = request.getParameter("author");
+    System.out.println(userName);
     if (userName == null || userName.trim() == "") {
       userName = "Anonymous";
     }
@@ -92,11 +95,12 @@ public class DataServlet extends HttpServlet {
       comments.add(new Comment(
           (String) comment.getProperty("text"),
           (String) comment.getProperty("name"),
-          (String) comment.getProperty("time")))
+          (String) comment.getProperty("time")));
     });
-    comments = comments.subList(0, numberToDisplay - 1);
+    List<Comment> commentsToDisplay = 
+      comments.subList(0, Math.min(numberToDisplay - 1, comments.size()));
 
-    String json = convertToJson(comments); 
+    String json = convertToJson(commentsToDisplay); 
     response.setContentType("text/html;");
     response.getWriter().println(json);
   }
@@ -129,7 +133,7 @@ public class DataServlet extends HttpServlet {
   }
 
   /** Returns JSON string representation of `data`. */
-  private String convertToJson(ArrayList<Comment> data) {
+  private String convertToJson(List<Comment> data) {
     Gson gson = new Gson(); 
     String json = gson.toJson(data);
     return json;
