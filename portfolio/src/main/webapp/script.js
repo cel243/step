@@ -133,11 +133,27 @@ function displayJSON(json) {
   const dataContainer = document.getElementById('comment-section');
   htmlToAdd = '';
   for (let i = 0; i < json.length; i++) {
-    let timestamp = new Date(0);
-    timestamp.setUTCMilliseconds(json[i].time);
-    htmlToAdd += `<p>"${json[i].text}", ${json[i].name}, ${timestamp.toString()}</p>`
+    htmlToAdd += `<p><b><h3>${json[i].name}: </h3></b>` + 
+      `(<i>${prettyPrintTime(json[i].time)}</i>) ${json[i].text}</p>`;
   }
   dataContainer.innerHTML = htmlToAdd; 
+}
+
+/**
+  * Returns a time of the form: Saturday, June 16, 5:30.
+  * @param {Date} timeInmilliseconds The time in milliseconds since the epoch. 
+  * @return {String} The nicely-formatted string representing that time. 
+  */
+function prettyPrintTime(timeInMilliseconds) {
+  let time = new Date(0);
+  time.setUTCMilliseconds(timeInMilliseconds);
+
+  const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", 
+    "Friday", "Saturday"];
+  const months = ["January", "February", "March", "April", "May", "June", 
+    "July", "August", "September", "October", "November", "December"];
+
+  return `${days[time.getDay()]}, ${months[time.getMonth()]} ${time.getDate()}, ${time.getHours()}:${time.getMinutes()}`
 }
 
 /**
