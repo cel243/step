@@ -34,8 +34,6 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
   
-  private static final DEFAULT_NUMBER_COMMENTS_TO_DISPLAY = 5;
-
   /** Extracts user comment from form and stores it via datastore. */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -83,16 +81,18 @@ public class DataServlet extends HttpServlet {
   /** 
     * Returns number of comments to display, based on user's 
     * selection. 
+    * @throws IllegalArgumentException if value returned by 
+        `request.getParameter("numberToDisplay")` cannot be converted to 
+        an integer. 
     */
-  private int getNumberToDisplay(HttpServletRequest request) {
+  private int getNumberToDisplay(HttpServletRequest request)
+    throws IllegalArgumentException {
     String parameterString = (String) request.getParameter("numberToDisplay");
     int numberToDisplay;
     try {
       numberToDisplay = Integer.parseInt(parameterString);
     } catch (NumberFormatException e) {
-      System.err.println("Could not convert to int: " + parameterString +
-          "\nSetting value to default: 5");
-      numberToDisplay = DEFAULT_NUMBER_COMMENTS_TO_DISPLAY;
+      throw new IllegalArgumentException("Cannot convert to Integer");
     }
     return numberToDisplay;
   }
