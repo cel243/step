@@ -52,9 +52,10 @@ public class DataServlet extends HttpServlet {
     String userComment = request.getParameter("text-input");
     String userName = request.getParameter("author");
 
-    DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+    /* DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
     LocalDateTime time = LocalDateTime.now();
-    String timestamp = timeFormat.format(time);
+    String timestamp = timeFormat.format(time); */
+    String timestamp = Long.toString(System.currentTimeMillis());
 
     if (userComment != null) {
       storeComment(userComment, userName, timestamp);
@@ -129,12 +130,13 @@ public class DataServlet extends HttpServlet {
     * Returns JSON string representation of `data`.
     */
   private String convertToJson(ArrayList<Comment> data) {
-    String[] jsonComments = new String[data.size()];
+    String json = "[";
     Gson gson = new Gson(); 
-    for (int i = 0; i < jsonComments.length; i++) {
-      jsonComments[i] = gson.toJson(data.get(i));
+    for (int i = 0; i < data.size() - 1; i++) {
+      json += gson.toJson(data.get(i)) + ", ";
     }
-    String json = gson.toJson(jsonComments);
+    json += gson.toJson(data.get(data.size() - 1));
+    json += "]";
     return json;
   }
 }

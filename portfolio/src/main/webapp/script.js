@@ -131,7 +131,13 @@ function displayCommentSection() {
   */
 function displayJSON(json) {
   const dataContainer = document.getElementById('comment-section');
-  dataContainer.innerHTML = json; 
+  htmlToAdd = '';
+  for (let i = 0; i < json.length; i++) {
+    let timestamp = new Date(0);
+    timestamp.setUTCMilliseconds(json[i].time);
+    htmlToAdd += `<p>"${json[i].text}", ${json[i].name}, ${timestamp.toString()}</p>`
+  }
+  dataContainer.innerHTML = htmlToAdd; 
 }
 
 /**
