@@ -36,9 +36,7 @@ public class DataServlet extends HttpServlet {
   
   private static final DEFAULT_NUMBER_COMMENTS_TO_DISPLAY = 5;
 
-  /**
-    * Extracts user comment from form and stores it via datastore. 
-    */
+  /** Extracts user comment from form and stores it via datastore. */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String userComment = request.getParameter("text-input");
@@ -48,9 +46,7 @@ public class DataServlet extends HttpServlet {
     response.sendRedirect("/index.html");
   }
 
-  /**
-    * Stores user comment as entity in datastore.
-    */
+  /** Stores user comment as entity in datastore. */
   private void storeComment(String userComment) {
     Entity commentEntity = new Entity("Comment");
     commentEntity.setProperty("text", userComment);
@@ -101,18 +97,14 @@ public class DataServlet extends HttpServlet {
     return numberToDisplay;
   }
 
-  /** 
-    * Returns all user comments stored in datastore. 
-    */
+  /** Returns all user comments stored in datastore. */
   private PreparedQuery getAllComments() {
     Query query = new Query("Comment");
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     return datastore.prepare(query);
   }
 
-  /** 
-    * Returns JSON string representation of `data`.
-    */
+  /** Returns JSON string representation of `data`. */
   private String convertToJson(ArrayList<String> data) {
     Gson gson = new Gson(); 
     String json = gson.toJson(data);
