@@ -31,7 +31,12 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 /** Servlet that handles comment data. */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
+  
+  private static final DEFAULT_NUMBER_COMMENTS_TO_DISPLAY = 5;
 
+  /**
+    * Extracts user comment from form and stores it via datastore. 
+    */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String userComment = request.getParameter("text-input");
@@ -51,6 +56,10 @@ public class DataServlet extends HttpServlet {
     datastore.put(commentEntity);
   }
 
+  /** 
+    * Loads all user comments from datastore and returns JSON list of n 
+    * comments, where n is the number of comments the user has requested. 
+    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     PreparedQuery results = getAllComments();
@@ -85,7 +94,7 @@ public class DataServlet extends HttpServlet {
     } catch (Exception e) {
       System.err.println("Could not convert to int: " + parameterString +
           "\nSetting value to default: 5");
-      numberToDisplay = 5;
+      numberToDisplay = DEFAULT_NUMBER_COMMENTS_TO_DISPLAY;
     }
     return numberToDisplay;
   }
