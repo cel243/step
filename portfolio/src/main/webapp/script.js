@@ -116,7 +116,11 @@ function onEnlargeThisImage(thisImage) {
   * Fetches comment data from the server and displays it on the page.
   */
 function displayCommentSection() {
-  fetch('/data')
+  const selectNumberInput = document.getElementById('number-to-display');
+  const numberToDisplay = selectNumberInput
+    .options[selectNumberInput.selectedIndex].value;
+
+  fetch(`/data?numberToDisplay=${numberToDisplay}`)
     .then(response => response.json())
     .then(displayJSON);
 }
@@ -135,3 +139,12 @@ function displayJSON(json) {
   dataContainer.innerHTML = htmlToAdd; 
 }
 
+/**
+  * Deletes all comments from the datastore.
+  */
+function deleteAllComments() {
+  fetch(new Request('/delete-data', {method: 'POST'}))
+    .then(response => {
+      displayCommentSection();
+    })
+}

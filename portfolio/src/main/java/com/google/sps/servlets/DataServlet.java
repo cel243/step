@@ -24,37 +24,87 @@ import com.google.gson.Gson;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.SortDirection;
 
-/** Servlet that returns some example content. TODO: modify this file to handle comments data */
+/** 
+  * Servlet that uploads and retrieves persistent comment data using datastore.
+  */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
-
-  private ArrayList<String> comments;
-
-  @Override
-  public void init() {
-    comments = new ArrayList<String>();
-  }
-
+  
+  /** Extracts user comment from form and stores it via datastore. */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String userComment = request.getParameter("text-input");
     if (userComment != null) {
-      comments.add(userComment);
+      storeComment(userComment);
     }
     response.sendRedirect("/index.html");
   }
 
+  /** Stores user comment as entity in datastore. */
+  private void storeComment(String userComment) {
+    Entity commentEntity = new Entity("Comment");
+    commentEntity.setProperty("text", userComment);
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    datastore.put(commentEntity);
+  }
+
+  /** 
+    * Loads all user comments from datastore and returns JSON list of n 
+    * comments, where n is the number of comments the user has requested. 
+    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    PreparedQuery results = getAllComments();
+    
+    ArrayList<String> comments = new ArrayList<String>();
+    int numberToDisplay = getNumberToDisplay(request); 
+    int numberDisplayed = 0;
+
+    for(Entity comment : results.asIterable()) {
+      String commentText = (String) comment.getProperty("text");
+      comments.add(commentText);
+      numberDisplayed += 1;
+      if (numberDisplayed == numberToDisplay) {
+        break;
+      }
+    }
+
     String json = convertToJson(comments); 
     response.setContentType("application/json;");
     response.getWriter().println(json);
   }
 
   /** 
-    * Returns JSON string representation of `data`.
+    * Returns number of comments to display, based on user's 
+    * selection. 
+    * @throws IllegalArgumentException if value returned by 
+        `request.getParameter("numberToDisplay")` cannot be converted to 
+        an integer. 
     */
+  private int getNumberToDisplay(HttpServletRequest request)
+    throws IllegalArgumentException {
+    String parameterString = (String) request.getParameter("numberToDisplay");
+    int numberToDisplay;
+    try {
+      numberToDisplay = Integer.parseInt(parameterString);
+    } catch (NumberFormatException e) {
+      throw new IllegalArgumentException("Cannot convert to Integer");
+    }
+    return numberToDisplay;
+  }
+
+  /** Returns all user comments stored in datastore. */
+  private PreparedQuery getAllComments() {
+    Query query = new Query("Comment");
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    return datastore.prepare(query);
+  }
+
+  /** Returns JSON string representation of `data`. */
   private String convertToJson(ArrayList<String> data) {
     Gson gson = new Gson(); 
     String json = gson.toJson(data);
