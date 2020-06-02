@@ -28,7 +28,9 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 
-/** Servlet that handles comment data. */
+/** 
+  * Servlet that uploads and retrieves persistent comment data using datastore.
+  */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
   
