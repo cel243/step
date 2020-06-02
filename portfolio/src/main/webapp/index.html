@@ -17,58 +17,62 @@
         <a href="gallery.html">Gallery</a>
         <a href="projects.html">Projects</a>
     </div>
-    <div id="content">
-        <div id="white-box">
-            <h1 id="name-heading">About Me</h1>
-            <div id="blurb">
-                <p>I'm Caroline and this is my portfolio! A bit about me: I'm
-                    currently a rising Junior at Cornell's College of
-                    Engineering, majoring in Computer Science. On campus, I
-                    sing in the University Chorus and I also work as a TA
-                    for CS 2800: Discrete Math, one of my favorite courses
-                    I've taken at Cornell. My interests outside CS include
-                    Music and Linguistics, but I've known I wanted to study
-                    Computer Science ever since I received my first
-                    programmable calculator in middle school! Since
-                    beginning my degree, I've taken many fascinating classes
-                    in many areas of the field, including Natural Language
-                    Processing, Artificial Intelligence, Smartphone
-                    Computing Tech, Functional Programming, Data Structures,
-                    and more! I've loved them all, but I have a special
-                    place in my heart for theory classes like Algorithms.
-                    It's hard to say whether I have a favorite field within
-                    CS, since I'm still exploring and learning about new
-                    career paths and options, but I've had a great time so
-                    far working with robotics, data management, machine
-                    learning, and software engineering, and I can't wait to
-                    see what more I'll learn during this internship!
-                </p>
+    <div id="main-page-content">
+        <div id = "left-panel">
+            <div id="white-box">
+                <h1 id="name-heading">About Me</h1>
+                <div id="blurb">
+                    <p>I'm Caroline and this is my portfolio! A bit about me: 
+                       I'm currently a rising Junior at Cornell's College of
+                        Engineering, majoring in Computer Science. On campus, I
+                        sing in the University Chorus and I also work as a TA
+                        for CS 2800: Discrete Math, one of my favorite courses
+                        I've taken at Cornell. My interests outside CS include
+                        Music and Linguistics, but I've known I wanted to study
+                        Computer Science ever since I received my first
+                        programmable calculator in middle school! Since
+                        beginning my degree, I've taken many fascinating classes
+                        in many areas of the field, including Natural Language
+                        Processing, Artificial Intelligence, Smartphone
+                        Computing Tech, Functional Programming, Data Structures,
+                        and more! I've loved them all, but I have a special
+                        place in my heart for theory classes like Algorithms.
+                        It's hard to say whether I have a favorite field within
+                        CS, since I'm still exploring and learning about new
+                        career paths and options, but I've had a great time so
+                        far working with robotics, data management, machine
+                        learning, and software engineering, and I can't wait to
+                        see what more I'll learn during this internship!
+                    </p>
+                </div>
+            </div>
+            <p> Come check me out on
+                <a href="https://www.linkedin.com/in/caroline-lui-877638174/"
+                  target="_blank">LinkedIn</a> and
+                <a href="https://github.com/cel243" target="_blank">GitHub</a>!
+            </p>
+            <p>Below is my dog, Penny. Click on her to see another picture!</p>
+            <div id="penny-container">
+                <input id="penny-button" type="image" src="images/Penny-10.JPG"
+                            onClick="onClickPennyButton()"/>
             </div>
         </div>
-        <p> Come check me out on
-            <a href="https://www.linkedin.com/in/caroline-lui-877638174/"
-               target="_blank">LinkedIn</a> and
-            <a href="https://github.com/cel243" target="_blank">GitHub</a>!
-        </p>
-        <p>Below is my dog, Penny. Click on her to see another picture!</p>
-        <div id="penny-container">
-            <input id="penny-button" type="image" src="images/Penny-10.JPG"
-                        onClick="onClickPennyButton()"/>
+        <div id="right-panel">
+            <label for="number-to-display"> View Comments: </label>
+            <select name="number-to-display" id="number-to-display" 
+                    onchange="displayCommentSection()">
+                <option value="5">Up to 5</option>
+                <option value="10">Up to 10</option>
+                <option value="15">Up to 15</option>
+                <option value="20">Up to 20</option>
+            </select>
+            <div id="comment-section"></div>
+            <form action="/data" method="POST">
+                <textarea name="text-input" ></textarea>
+                <input type="submit" />
+            </form>
+            <button onclick="deleteAllComments()">Delete All Comments</button>
         </div>
-        <label for="number-to-display"> View Comments: </label>
-        <select name="number-to-display" id="number-to-display" 
-                onchange="displayCommentSection()">
-            <option value="5">Up to 5</option>
-            <option value="10">Up to 10</option>
-            <option value="15">Up to 15</option>
-            <option value="20">Up to 20</option>
-        </select>
-        <div id="comment-section"></div>
-        <form action="/data" method="POST">
-            <textarea name="text-input" ></textarea>
-            <input type="submit" />
-        </form>
-        <button onclick="deleteAllComments()">Delete All Comments</button>
     </div>
 </body>
 
