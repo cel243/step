@@ -27,16 +27,37 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime; 
 
 /** Servlet that handles comment data. */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
+  /** Represents a single comment */
+  private static class Comment {
+      String text;
+      String name;
+      String time;
+
+      Comment(String text, String name, String time) {
+        this.text = text;
+        this.name = name;
+        this.time = time;
+      }
+  }
+
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String userComment = request.getParameter("text-input");
+    String userName = request.getParameter("author");
+
+    DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+    LocalDateTime time = LocalDateTime.now();
+    String timestamp = timeFormat.format(time);
+
     if (userComment != null) {
-      storeComment(userComment);
+      storeComment(userComment, userName, timestamp);
     }
     response.sendRedirect("/index.html");
   }
@@ -44,9 +65,12 @@ public class DataServlet extends HttpServlet {
   /**
     * Stores user comment as entity in datastore.
     */
-  private void storeComment(String userComment) {
+  private void storeComment(String userComment, String userName, 
+    String timestamp) {
     Entity commentEntity = new Entity("Comment");
     commentEntity.setProperty("text", userComment);
+    commentEntity.setProperty("name", userName);
+    commentEntity.setProperty("time", timestamp);
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(commentEntity);
   }
@@ -55,13 +79,15 @@ public class DataServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     PreparedQuery results = getAllComments();
     
-    ArrayList<String> comments = new ArrayList<String>();
+    ArrayList<Comment> comments = new ArrayList<Comment>();
     int numberToDisplay = getNumberToDisplay(request); 
     int numberDisplayed = 0;
 
     for(Entity comment : results.asIterable()) {
       String commentText = (String) comment.getProperty("text");
-      comments.add(commentText);
+      String authorName = (String) comment.getProperty("name");
+      String commentTime = (String) comment.getProperty("time");
+      comments.add(new Comment(commentText, authorName, commentTime));
       numberDisplayed += 1;
       if (numberDisplayed == numberToDisplay) {
         break;
@@ -69,7 +95,7 @@ public class DataServlet extends HttpServlet {
     }
 
     String json = convertToJson(comments); 
-    response.setContentType("application/json;");
+    response.setContentType("text/html;");
     response.getWriter().println(json);
   }
 
@@ -102,9 +128,13 @@ public class DataServlet extends HttpServlet {
   /** 
     * Returns JSON string representation of `data`.
     */
-  private String convertToJson(ArrayList<String> data) {
+  private String convertToJson(ArrayList<Comment> data) {
+    String[] jsonComments = new String[data.size()];
     Gson gson = new Gson(); 
-    String json = gson.toJson(data);
+    for (int i = 0; i < jsonComments.length; i++) {
+      jsonComments[i] = gson.toJson(data.get(i));
+    }
+    String json = gson.toJson(jsonComments);
     return json;
   }
 }
