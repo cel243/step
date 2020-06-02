@@ -4,13 +4,40 @@ body {
     background-size: cover; 
 }
 
+#main-page-content {
+    text-align: center; 
+    line-height: 1.75; 
+    word-spacing: 0.4 em; 
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    align-content: center;
+}
+
 #content {
     text-align: center; 
     line-height: 1.75; 
     word-spacing: 0.4 em; 
+    width: 650px;
     margin-left: auto;
     margin-right: auto;
-    width: 650px;
+    align-content: center;
+}
+
+#left-panel {
+    width: 60%;
+    float: left;
+    margin-left: 10%;
+    margin-right: 0%;
+    align-content: center;
+    overflow: scroll; 
+}
+
+#right-panel {
+    width: 25%;
+    margin-left: 75%;
+    height: 650px;
+    overflow: scroll;
 }
 
 #list {
@@ -21,6 +48,12 @@ body {
     background: rgba(255,255,255,0.6); 
     padding-right: 1em;
     padding-left: 1em;
+    width: 80%;
+    margin-left: 10%;
+    margin-right: 10%;
+}
+
+#name-heading {
 }
 
 #blurb {
