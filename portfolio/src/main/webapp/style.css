@@ -42,6 +42,20 @@ body {
   align-content: center;
 }
 
+#comment-form input[type='submit'] {
+    background-color: rgba(255,255,255,0);
+    border: 1px solid #0000007d;
+    padding: 5px;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: 5px
+}
+
+#comment-form input[type='submit']:hover {
+    background-color: #ffffff8c;
+}
+
 #right-panel input[type='text'],
 #right-panel textarea {
     margin-bottom: 10px;
@@ -178,16 +192,16 @@ table {
 }
 
 table, th, td {
-   border: none;
+    border: none;
 }
 
 .comment-date {
-   font-size: 14px;
+    font-size: 14px;
 }
 
 #comment-section {
-  max-height: 450px;
-  overflow: scroll;
+    max-height: 450px;
+    overflow: scroll;
 }
 
 #comment-section-heading {
@@ -202,10 +216,38 @@ table, th, td {
     padding: 0px 5px 0px;
 }
 
+.comment-button button {
+    background-color: #ffffff;
+    border: none;
+    padding: 0px 4px 0px;
+    cursor: pointer;
+    font-size: 11px;
+}
+
+.comment-button button:hover {
+    background-color: #be0e0e;
+    color: white;
+}
+
 #clear-all-button {
     text-align: right;
     vertical-align: center;
     padding: 0px;
+}
+
+#clear-all-button button {
+    background-color: #ffffff00;
+    border: 1px solid #00000094;
+    padding: 4px 7px 4px;
+    text-align: center;
+    text-decoration: none;
+    margin: 2px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#clear-all-button button:hover {
+  background-color: rgba(255, 255, 255, 0.54)
 }
 
 #number-to-display-select-box {
