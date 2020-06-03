@@ -97,7 +97,7 @@ public class DataServlet extends HttpServlet {
       comments.subList(0, Math.min(numberToDisplay, comments.size()));
 
     String json = convertToJson(commentsToDisplay); 
-    response.setContentType("text/html;");
+    response.setContentType("application/json;");
     response.getWriter().println(json);
   }
 

@@ -39,7 +39,7 @@ body {
 }
 
 #comment-form-box {
-  align-content: center;
+    align-content: center;
 }
 
 #comment-form input[type='submit'] {
@@ -260,7 +260,7 @@ select:hover {
 }
 
 #clear-all-button button:hover {
-  background-color: rgba(255, 255, 255, 0.54)
+    background-color: rgba(255, 255, 255, 0.54)
 }
 
 #number-to-display-select-box {
