@@ -243,7 +243,7 @@ select:hover {
 }
 
 #clear-all-button {
-    text-align: right;
+    text-align: center;
     vertical-align: center;
     padding: 0px;
 }
@@ -260,7 +260,7 @@ select:hover {
 }
 
 #clear-all-button button:hover {
-    background-color: rgba(255, 255, 255, 0.54)
+    background-color: rgba(255, 255, 255, 0.54);
 }
 
 #number-to-display-select-box {
@@ -282,4 +282,50 @@ select:hover {
 
 .user-info-box {
     vertical-align: top;
+}
+
+.arrow {
+    border: solid black;
+    border-width: 0px 1.5px 1.5px 0px;
+    display: inline-block;
+    padding: 5px;
+}
+
+.right {
+    transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+}
+
+.left {
+    transform: rotate(135deg);
+    -webkit-transform: rotate(135deg);
+}
+
+#left-arrow-box {
+    text-align: right;
+    padding: 6px;
+}
+
+#right-arrow-box {
+    text-align: left;
+    padding: 6px;
+}
+
+#left-arrow-box button {
+    background-color: #ffffff00;
+    border: 1px solid rgba(0, 0, 0, 0.726);
+    border-radius: 5px;
+    padding: 6px 3px 4px 8px;
+}
+
+#right-arrow-box button {
+    background-color: #ffffff00;
+    border: 1px solid rgba(0, 0, 0, 0.746);
+    border-radius: 5px;
+    padding: 6px 8px 4px 3px;
+}
+
+#left-arrow-box button:hover, #right-arrow-box button:hover {
+    background-color: rgba(255, 255, 255, 0.54);
+    cursor: pointer;
 }
