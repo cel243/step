@@ -38,17 +38,43 @@ import java.lang.Math;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
+  private int nextUniqueId;
+
   /** Represents a single comment */
   private static class Comment {
       String text;
       String name;
       String time;
+      String id;
 
-      Comment(String text, String name, String time) {
+      Comment(String text, String name, String time, String id) {
         this.text = text;
         this.name = name;
         this.time = time;
+        this.id = id;
       }
+  }
+
+  /** 
+    * Iterates over all persistent comments upon server startup
+    * and assigns each a unique id number, then decides the value of
+    * the next valid unique id number that can be assigned to a 
+    * future comment. 
+    */
+  @Override
+  public void init() { 
+    System.out.println("init running");
+    PreparedQuery results = getAllComments();
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+    int uniqueId = 0;
+    for (Entity comment : results.asIterable()) {
+      datastore.delete(comment.getKey());
+      comment.setProperty("id", Integer.toString(uniqueId));
+      datastore.put(comment);
+      uniqueId++;
+    }
+    nextUniqueId = uniqueId;
   }
 
   /** Extracts user comment from form and stores it via datastore. */
@@ -57,20 +83,23 @@ public class DataServlet extends HttpServlet {
     String userComment = request.getParameter("text-input");
     String userName = request.getParameter("author");
     String timestamp = Long.toString(System.currentTimeMillis());
+    String id = Integer.toString(nextUniqueId);
+    nextUniqueId++;
 
     if (userComment != null || userComment.trim() == "") {
-      storeComment(userComment, userName, timestamp);
+      storeComment(userComment, userName, timestamp, id);
     }
     response.sendRedirect("/index.html");
   }
 
   /** Stores user comment as entity in datastore. */
   private void storeComment(String userComment, String userName, 
-    String timestamp) {
+    String timestamp, String id) {
     Entity commentEntity = new Entity("Comment");
     commentEntity.setProperty("text", userComment);
     commentEntity.setProperty("name", userName);
     commentEntity.setProperty("time", timestamp);
+    commentEntity.setProperty("id", id);
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(commentEntity);
   }
@@ -91,7 +120,8 @@ public class DataServlet extends HttpServlet {
       comments.add(new Comment(
           (String) comment.getProperty("text"),
           (String) comment.getProperty("name"),
-          (String) comment.getProperty("time")));
+          (String) comment.getProperty("time"),
+          (String) comment.getProperty("id")));
     });
     List<Comment> commentsToDisplay = 
       comments.subList(0, Math.min(numberToDisplay, comments.size()));
