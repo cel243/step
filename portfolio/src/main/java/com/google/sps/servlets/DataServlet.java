@@ -31,6 +31,8 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime; 
 import java.lang.Math;
+import com.google.common.base.Strings;
+
 
 /** 
   * Servlet that uploads and retrieves persistent comment data using datastore.
@@ -44,14 +46,33 @@ public class DataServlet extends HttpServlet {
   private static class Comment {
       String text;
       String name;
-      String time;
+      long time;
       String id;
 
-      Comment(String text, String name, String time, String id) {
+      Comment(String text, String name, long time, String id) {
         this.text = text;
         this.name = name;
         this.time = time;
         this.id = id;
+      }
+
+      /** Returns an entity representing this comment. */
+      static Entity toEntity(Comment c) {
+        Entity commentEntity = new Entity("Comment");
+        commentEntity.setProperty("text", c.text);
+        commentEntity.setProperty("name", c.name);
+        commentEntity.setProperty("time", c.time);
+        commentEntity.setProperty("id", c.id);
+        return commentEntity;
+      }
+
+      /** Returns a comment representing this entity */
+      static Comment fromEntity(Entity e) {
+        return new Comment(
+          (String) e.getProperty("text"),
+          (String) e.getProperty("name"),
+          Long.parseLong((String) e.getProperty("time")), 
+          (String) e.getProperty("id"));
       }
   }
 
@@ -78,28 +99,22 @@ public class DataServlet extends HttpServlet {
   /** Extracts user comment from form and stores it via datastore. */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String userComment = request.getParameter("text-input");
-    String userName = request.getParameter("author");
-    String timestamp = Long.toString(System.currentTimeMillis());
+    String userComment = request.getParameter("text-input").trim();
+    String userName = request.getParameter("author").trim();
+    if (Strings.isNullOrEmpty(userName)) {
+      userName = "Anonymous";
+    }
+    long timestamp = System.currentTimeMillis();
     String id = Integer.toString(nextUniqueId);
     nextUniqueId++;
 
-    if (userComment != null || userComment.trim() == "") {
-      storeComment(userComment, userName, timestamp, id);
+    if (!Strings.isNullOrEmpty(userComment)) {    
+      DatastoreService datastore = 
+        DatastoreServiceFactory.getDatastoreService();
+      datastore.put(Comment.toEntity(
+        new Comment(userComment, userName, timestamp, id)));
     }
     response.sendRedirect("/index.html");
-  }
-
-  /** Stores user comment as entity in datastore. */
-  private void storeComment(String userComment, String userName, 
-    String timestamp, String id) {
-    Entity commentEntity = new Entity("Comment");
-    commentEntity.setProperty("text", userComment);
-    commentEntity.setProperty("name", userName);
-    commentEntity.setProperty("time", timestamp);
-    commentEntity.setProperty("id", id);
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    datastore.put(commentEntity);
   }
 
   /** 
@@ -112,14 +127,9 @@ public class DataServlet extends HttpServlet {
     
     ArrayList<Comment> comments = new ArrayList<Comment>();
     int numberToDisplay = getNumberToDisplay(request); 
-    int numberDisplayed = 0;
 
     results.asIterable().forEach(comment -> {
-      comments.add(new Comment(
-          (String) comment.getProperty("text"),
-          (String) comment.getProperty("name"),
-          (String) comment.getProperty("time"),
-          (String) comment.getProperty("id")));
+      comments.add(Comment.fromEntity(comment));
     });
     List<Comment> commentsToDisplay = 
       comments.subList(0, Math.min(numberToDisplay, comments.size()));
