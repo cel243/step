@@ -31,6 +31,8 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime; 
 import java.lang.Math;
+import com.google.common.base.Strings;
+
 
 /** 
   * Servlet that uploads and retrieves persistent comment data using datastore.
@@ -54,11 +56,14 @@ public class DataServlet extends HttpServlet {
   /** Extracts user comment from form and stores it via datastore. */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String userComment = request.getParameter("text-input");
-    String userName = request.getParameter("author");
+    String userComment = request.getParameter("text-input").trim();
+    String userName = request.getParameter("author").trim();
+    if (Strings.isNullOrEmpty(userName)) {
+      userName = "Anonymous";
+    }
     String timestamp = Long.toString(System.currentTimeMillis());
 
-    if (userComment != null || userComment.trim() == "") {
+    if (!Strings.isNullOrEmpty(userComment)) {
       storeComment(userComment, userName, timestamp);
     }
     response.sendRedirect("/index.html");
