@@ -71,7 +71,7 @@ public class DataServlet extends HttpServlet {
         return new Comment(
           (String) e.getProperty("text"),
           (String) e.getProperty("name"),
-          Long.parseLong((String) e.getProperty("time")), 
+          (long) e.getProperty("time"), 
           (String) e.getProperty("id"));
       }
   }
