@@ -69,7 +69,6 @@ public class DataServlet extends HttpServlet {
 
     int uniqueId = 0;
     for (Entity comment : results.asIterable()) {
-      datastore.delete(comment.getKey());
       comment.setProperty("id", Integer.toString(uniqueId));
       datastore.put(comment);
       uniqueId++;
