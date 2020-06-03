@@ -51,6 +51,23 @@ public class DataServlet extends HttpServlet {
         this.name = name;
         this.time = time;
       }
+
+      /** Returns an entity representing this comment. */
+      static Entity toEntity(Comment c) {
+        Entity commentEntity = new Entity("Comment");
+        commentEntity.setProperty("text", c.text);
+        commentEntity.setProperty("name", c.name);
+        commentEntity.setProperty("time", c.time);
+        return commentEntity;
+      }
+
+      /** Returns a comment representing this entity */
+      static Comment fromEntity(Entity e) {
+        return new Comment(
+          (String) e.getProperty("text"),
+          (String) e.getProperty("name"),
+          (String) e.getProperty("time"));
+      }
   }
 
   /** Extracts user comment from form and stores it via datastore. */
@@ -63,21 +80,13 @@ public class DataServlet extends HttpServlet {
     }
     String timestamp = Long.toString(System.currentTimeMillis());
 
-    if (!Strings.isNullOrEmpty(userComment)) {
-      storeComment(userComment, userName, timestamp);
+    if (!Strings.isNullOrEmpty(userComment)) {    
+      DatastoreService datastore = 
+        DatastoreServiceFactory.getDatastoreService();
+      datastore.put(Comment.toEntity(
+        new Comment(userComment, userName, timestamp)));
     }
     response.sendRedirect("/index.html");
-  }
-
-  /** Stores user comment as entity in datastore. */
-  private void storeComment(String userComment, String userName, 
-    String timestamp) {
-    Entity commentEntity = new Entity("Comment");
-    commentEntity.setProperty("text", userComment);
-    commentEntity.setProperty("name", userName);
-    commentEntity.setProperty("time", timestamp);
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    datastore.put(commentEntity);
   }
 
   /** 
@@ -90,13 +99,9 @@ public class DataServlet extends HttpServlet {
     
     ArrayList<Comment> comments = new ArrayList<Comment>();
     int numberToDisplay = getNumberToDisplay(request); 
-    int numberDisplayed = 0;
 
     results.asIterable().forEach(comment -> {
-      comments.add(new Comment(
-          (String) comment.getProperty("text"),
-          (String) comment.getProperty("name"),
-          (String) comment.getProperty("time")));
+      comments.add(Comment.fromEntity(comment));
     });
     List<Comment> commentsToDisplay = 
       comments.subList(0, Math.min(numberToDisplay, comments.size()));
