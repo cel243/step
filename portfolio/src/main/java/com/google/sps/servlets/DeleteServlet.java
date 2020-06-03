@@ -46,11 +46,8 @@ public class DeleteServlet extends HttpServlet {
     PreparedQuery results = datastore.prepare(query);
 
     results.asIterable().forEach(comment -> { 
-      System.out.println("Are they equal? ");
-      System.out.println("1) " + whichCommentToDelete);
-      System.out.println("2) " + (String) comment.getProperty("id"));
-      System.out.println(whichCommentToDelete.equals((String) comment.getProperty("id")));
-      if (whichCommentToDelete == "all" || whichCommentToDelete.equals((String) comment.getProperty("id"))) {
+      if (whichCommentToDelete.equals( "\"all\"") || 
+          whichCommentToDelete.equals((String) comment.getProperty("id"))) {
         datastore.delete(comment.getKey());
       }
     });

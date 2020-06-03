@@ -194,7 +194,7 @@ function prettyPrintTime(timeInMilliseconds) {
 
 /** Deletes all comments from the datastore. */
 function deleteAllComments() {
-  fetch(new Request('/delete-data?which-data="all"', {method: 'POST'}))
+  fetch(new Request('/delete-data?whichData="all"', {method: 'POST'}))
     .then(response => {
       displayCommentSection();
     });
