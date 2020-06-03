@@ -126,16 +126,17 @@ function displayCommentSection() {
 }
 
 /** 
-  * Outputs JSON object as list on page. 
-  * @param {JSON} json The JSON to be formatted. 
+  * Outputs formatted comment section, where each comment 
+  * has a name and date to the left, text to the right, 
+  * and all comments are aligned vertically and stacked on top
+  * of one another. 
+  * @param {JSON} json The JSON representing the list of comment objects. 
   */
 function displayJSON(json) {
-  console.log("in function");
   const dataContainer = document.getElementById('comment-section');
-  htmlToAdd =`<table>` +
-    `<tr><td></td><td></td><td></td>` +
-    `<td></td><td></td><td></td><td></td>` +
-    `</tr>`;
+  htmlToAdd =`<table> <tr><td></td><td></td><td></td>` +
+    `<td></td><td></td><td></td><td></td></tr>`;
+
   if (json.length === 0) {
     htmlToAdd += 
       `<tr rowspan="5">` +
@@ -143,22 +144,11 @@ function displayJSON(json) {
           `Be the first to leave a comment!` +
       ` </td>` +
       `</tr>`;
-    
   }
   else {
-    for (let i = 0; i < json.length; i++) {
-      htmlToAdd += 
-        `<tr>` +
-        ` <td class="comment-button"><button>X</button></td>` +
-        ` <td colspan = 2 class="user-info-box">` +
-        `   <b><u>${json[i].name}: </b></u><br>` +
-        `   <i class="comment-date">${prettyPrintTime(json[i].time)}</i>` +
-        ` </td>` +
-        ` <td colspan="4">` +
-            `${json[i].text}` +
-        ` </td>` +
-        `</tr>`;
-    }
+    let allCommentHTML = [...Array(json.length).keys()]
+      .map(i => getCommentHTML(json, i));
+    allCommentHTML.forEach(commentHTML => htmlToAdd += commentHTML);
   }
 
   htmlToAdd += `</table>`; 
@@ -166,7 +156,28 @@ function displayJSON(json) {
 }
 
 /**
-  * Returns a time of the form: Saturday, June 16, 5:30.
+  * Returns the HTML representation of `json[i]`
+  * as a row in the comment section table.
+  * @param {JSON} json The JSON representing the list of all comments.
+  * @param {int} i The index of the desired comment.
+  * @return {String} The HTML representation. */
+function getCommentHTML(json, i) {
+  html =
+    `<tr>` +
+    ` <td class="comment-button"><button>X</button></td>` +
+    ` <td colspan = 2 class="user-info-box">` +
+    `   <b><u>${json[i].name}: </b></u><br>` +
+    `   <i class="comment-date">${prettyPrintTime(json[i].time)}</i>` +
+    ` </td>` +
+    ` <td colspan="4">` +
+        `${json[i].text}` +
+    ` </td>` +
+    `</tr>`;
+  return html;
+}
+
+/**
+  * Returns a time of the form: June 16, 5:30.
   * @param {Date} timeInmilliseconds The time in milliseconds since the epoch. 
   * @return {String} The nicely-formatted string representing that time. 
   */
