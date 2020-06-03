@@ -133,8 +133,8 @@ function displayJSON(json) {
   console.log("in function");
   const dataContainer = document.getElementById('comment-section');
   htmlToAdd =`<table>` +
-    `<tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>` +
-    `<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>` +
+    `<tr><td></td><td></td><td></td>` +
+    `<td></td><td></td><td></td><td></td>` +
     `</tr>`;
   if (json.length === 0) {
     htmlToAdd += 

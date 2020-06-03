@@ -210,6 +210,19 @@ table, th, td {
     padding: 0px;
 }
 
+select {
+    background-color: #ffffff00;
+    border: 1px solid #00000087;
+    border-radius: 5px;
+    padding: 2px;
+    cursor:pointer;
+    font-size: 14px;
+}
+
+select:hover {
+  background-color: #ffffffd4
+}
+
 .comment-button {
     vertical-align: top;
     text-align: right;
@@ -251,7 +264,7 @@ table, th, td {
 }
 
 #number-to-display-select-box {
-    padding: 0px;
+    padding: 0px 0px 5px;
 }
 
 
