@@ -58,25 +58,52 @@
             </div>
         </div>
         <div id="right-panel">
-            <h3>Comments: </h3>
-            <label for="number-to-display"> View Comments: </label>
-            <select name="number-to-display" id="number-to-display" 
-                    onchange="displayCommentSection()">
-                <option value="5">Up to 5</option>
-                <option value="10">Up to 10</option>
-                <option value="15">Up to 15</option>
-                <option value="20">Up to 20</option>
-            </select>
+            <table>
+                <tr>
+                    <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+                    <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td colspan="4" id="comment-section-heading">
+                        Comments:
+                    </td>
+                    <td></td>
+                    <td colspan="2" id="clear-all-button">
+                        <button onclick="deleteAllComments()">
+                            Clear All 
+                        </button>
+                    </td>
+                </tr> 
+                <tr>
+                    <td colspan="7" id="number-to-display-select-box">
+                        <label for="number-to-display">Display up to: </label>
+                        <select name="number-to-display" id="number-to-display"
+                            onchange="displayCommentSection()">
+                            <option value="5">5 comments.</option>
+                            <option value="10">10 comments.</option>
+                            <option value="15">15 comments.</option>
+                            <option value="20">20 comments.</option>
+                        </select>
+                    </td>
+            </table>
             <div id="comment-section"></div>
+            <table>
+                <tr>
+                    <td id="leave-a-comment">
+                        Leave a comment:
+                    </td>
+                </tr> 
+            </table>
+            <div id="comment-form-box">
             <form action="/data" method="POST" id="comment-form">
-                <label for="author" class="required">Name</label>
                 <input type="text" name="author" id="author" value="" 
-                    tabindex="1">
+                    tabindex="1" required="required" placeholder="Name">
                 <textarea name="text-input" id="text-input" rows="10" 
-                    tabindex="4"></textarea>
+                    tabindex="4" required="required"></textarea>
                 <input type="submit" />
             </form>
-            <button onclick="deleteAllComments()">Delete All Comments</button>
+            </div>
         </div>
     </div>
 </body>

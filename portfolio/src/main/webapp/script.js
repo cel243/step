@@ -130,12 +130,38 @@ function displayCommentSection() {
   * @param {JSON} json The JSON to be formatted. 
   */
 function displayJSON(json) {
+  console.log("in function");
   const dataContainer = document.getElementById('comment-section');
-  htmlToAdd = '';
-  for (let i = 0; i < json.length; i++) {
-    htmlToAdd += `<p><b>${json[i].name}: </b>` + 
-      `(<i>${prettyPrintTime(json[i].time)}</i>) ${json[i].text}</p>`;
+  htmlToAdd =`<table>` +
+    `<tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>` +
+    `<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>` +
+    `</tr>`;
+  if (json.length === 0) {
+    htmlToAdd += 
+      `<tr rowspan="5">` +
+      ` <td colspan="7" id="be-the-first">` +
+          `Be the first to leave a comment!` +
+      ` </td>` +
+      `</tr>`;
+    
   }
+  else {
+    for (let i = 0; i < json.length; i++) {
+      htmlToAdd += 
+        `<tr>` +
+        ` <td class="comment-button"><button>X</button></td>` +
+        ` <td colspan = 2 class="user-info-box">` +
+        `   <b><u>${json[i].name}: </b></u><br>` +
+        `   <i class="comment-date">${prettyPrintTime(json[i].time)}</i>` +
+        ` </td>` +
+        ` <td colspan="4">` +
+            `${json[i].text}` +
+        ` </td>` +
+        `</tr>`;
+    }
+  }
+
+  htmlToAdd += `</table>`; 
   dataContainer.innerHTML = htmlToAdd; 
 }
 

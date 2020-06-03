@@ -56,10 +56,6 @@ public class DataServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String userComment = request.getParameter("text-input");
     String userName = request.getParameter("author");
-    System.out.println(userName);
-    if (userName == null || userName.trim() == "") {
-      userName = "Anonymous";
-    }
     String timestamp = Long.toString(System.currentTimeMillis());
 
     if (userComment != null || userComment.trim() == "") {
@@ -98,7 +94,7 @@ public class DataServlet extends HttpServlet {
           (String) comment.getProperty("time")));
     });
     List<Comment> commentsToDisplay = 
-      comments.subList(0, Math.min(numberToDisplay - 1, comments.size()));
+      comments.subList(0, Math.min(numberToDisplay, comments.size()));
 
     String json = convertToJson(commentsToDisplay); 
     response.setContentType("text/html;");
