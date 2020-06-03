@@ -178,7 +178,8 @@ function getCommentHTML(json, i) {
 
 /**
   * Returns a time of the form: June 16, 5:30.
-  * @param {Date} timeInmilliseconds The time in milliseconds since the epoch. 
+  * @param {number} timeInmilliseconds The time in milliseconds since the 
+      epoch. 
   * @return {String} The nicely-formatted string representing that time. 
   */
 function prettyPrintTime(timeInMilliseconds) {

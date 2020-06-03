@@ -44,9 +44,9 @@ public class DataServlet extends HttpServlet {
   private static class Comment {
       String text;
       String name;
-      String time;
+      long time;
 
-      Comment(String text, String name, String time) {
+      Comment(String text, String name, long time) {
         this.text = text;
         this.name = name;
         this.time = time;
@@ -66,7 +66,7 @@ public class DataServlet extends HttpServlet {
         return new Comment(
           (String) e.getProperty("text"),
           (String) e.getProperty("name"),
-          (String) e.getProperty("time"));
+          Long.parseLong((String) e.getProperty("time")));
       }
   }
 
@@ -78,7 +78,7 @@ public class DataServlet extends HttpServlet {
     if (Strings.isNullOrEmpty(userName)) {
       userName = "Anonymous";
     }
-    String timestamp = Long.toString(System.currentTimeMillis());
+    long timestamp = System.currentTimeMillis();
 
     if (!Strings.isNullOrEmpty(userComment)) {    
       DatastoreService datastore = 
