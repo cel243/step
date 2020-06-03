@@ -63,7 +63,6 @@ public class DataServlet extends HttpServlet {
     */
   @Override
   public void init() { 
-    System.out.println("init running");
     PreparedQuery results = getAllComments();
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 

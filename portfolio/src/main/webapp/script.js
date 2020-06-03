@@ -164,7 +164,8 @@ function displayJSON(json) {
 function getCommentHTML(json, i) {
   html =
     `<tr>` +
-    ` <td class="comment-button"><button>X</button></td>` +
+    ` <td class="comment-button">` + 
+    `   <button onclick="deleteThisComment(${json[i].id})">X</button></td>` +
     ` <td colspan = 2 class="user-info-box">` +
     `   <b><u>${json[i].name}: </b></u><br>` +
     `   <i class="comment-date">${prettyPrintTime(json[i].time)}</i>` +
@@ -188,14 +189,21 @@ function prettyPrintTime(timeInMilliseconds) {
   const months = ["January", "February", "March", "April", "May", "June", 
     "July", "August", "September", "October", "November", "December"];
 
-  return `${months[time.getMonth()]} ${time.getDate()}, ${time.getHours()}:${time.getMinutes()}`
+  return `${months[time.getMonth()]} ${time.getDate()}, ${time.getHours()}:${time.getMinutes()}`;
 }
 
-/**
-  * Deletes all comments from the datastore.
-  */
+/** Deletes all comments from the datastore. */
 function deleteAllComments() {
-  fetch(new Request('/delete-data', {method: 'POST'}))
+  fetch(new Request('/delete-data?which-data="all"', {method: 'POST'}))
+    .then(response => {
+      displayCommentSection();
+    });
+}
+
+/** Deletes the comment with id `commentId` from the datastore. */
+function deleteThisComment(commentId) {
+  fetch(new Request(`/delete-data?whichData=${commentId}`, 
+    {method: 'POST'}))
     .then(response => {
       displayCommentSection();
     })
