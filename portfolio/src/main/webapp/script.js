@@ -164,7 +164,8 @@ function displayJSON(json) {
 function getCommentHTML(json, i) {
   html =
     `<tr>` +
-    ` <td class="comment-button"><button>X</button></td>` +
+    ` <td class="comment-button">` + 
+    `   <button onclick="deleteThisComment(${json[i].id})">X</button></td>` +
     ` <td colspan = 2 class="user-info-box">` +
     `   <b><u>${json[i].name}: </b></u><br>` +
     `   <i class="comment-date">${prettyPrintTime(json[i].time)}</i>` +
@@ -177,7 +178,7 @@ function getCommentHTML(json, i) {
 }
 
 /**
-  * Returns a time of the form: June 16, 5:30.
+  * Returns a time of the form: Jun 16, 5:30.
   * @param {number} timeInmilliseconds The time in milliseconds since the 
       epoch. 
   * @return {String} The nicely-formatted string representing that time. 
@@ -188,14 +189,26 @@ function prettyPrintTime(timeInMilliseconds) {
   let dateInformation = time.toString().split(" ");
   let timeInformation = dateInformation[4].split(":");
 
+  // Example output of toString(): 
+  // Tue Aug 19 1975 23:15:30 GMT+0200 (CEST)
+  let dateInformation = time.toString().split(" ");
+  let timeInformation = dateInformation[4].split(":");
+
   return `${dateInformation[1]} ${dateInformation[2]}, ${timeInformation[0]}:${timeInformation[1]}`;
 }
 
-/**
-  * Deletes all comments from the datastore.
-  */
+/** Deletes all comments from the datastore. */
 function deleteAllComments() {
-  fetch(new Request('/delete-data', {method: 'POST'}))
+  fetch(new Request('/delete-data?whichData="all"', {method: 'POST'}))
+    .then(response => {
+      displayCommentSection();
+    });
+}
+
+/** Deletes the comment with id `commentId` from the datastore. */
+function deleteThisComment(commentId) {
+  fetch(new Request(`/delete-data?whichData=${commentId}`, 
+    {method: 'POST'}))
     .then(response => {
       displayCommentSection();
     })
