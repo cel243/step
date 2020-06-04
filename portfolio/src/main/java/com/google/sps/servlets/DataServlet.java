@@ -33,7 +33,6 @@ import java.time.LocalDateTime;
 import java.lang.Math;
 import com.google.common.base.Strings;
 
-
 /** 
   * Servlet that uploads and retrieves persistent comment data using datastore.
   */
