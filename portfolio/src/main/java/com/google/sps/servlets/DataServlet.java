@@ -137,7 +137,7 @@ public class DataServlet extends HttpServlet {
     String searchQuery = (String) request.getParameter("search");
     searchQuery = searchQuery.substring(1,searchQuery.length() - 1);
 
-    getFilteredComments(results, comments, searchQuery);
+    comments = getFilteredComments(results, comments, searchQuery);
     Range<Integer> commentRange = getRangeOfCommentsToDisplay(
       paginationInstruction, numberToDisplay, comments.size());
     List<Comment> commentsToDisplay = 
@@ -220,20 +220,16 @@ public class DataServlet extends HttpServlet {
     * @param comments An empty list to be filled. 
     * @param search A string to filter the comments by. 
     */
-  private void getFilteredComments(PreparedQuery results, 
+  private ArrayList<Comment> getFilteredComments(PreparedQuery results, 
     ArrayList<Comment> comments, String search) {
-      if (Strings.isNullOrEmpty(search)) {
-        results.asIterable().forEach(commentEntity -> {
-          comments.add(Comment.fromEntity(commentEntity));
-        });
-      } else {
-        results.asIterable().forEach(commentEntity -> {
-          Comment comment = Comment.fromEntity(commentEntity);
-          if (satisfiesSearch(comment, search)) {
-            comments.add(comment);
-          }
-        });
-      }
+    results.asIterable().forEach(commentEntity -> {
+      comments.add(Comment.fromEntity(commentEntity));
+    });
+
+    ArrayList<Comment> filteredComments = new ArrayList<Comment>();
+    Iterables.filter(comments, c -> satisfiesSearch(c, search))
+      .forEach(c -> filteredComments.add(c));
+    return filteredComments;
   }
 
   /** 
@@ -241,7 +237,11 @@ public class DataServlet extends HttpServlet {
     * comment text or aythor name. 
     */
   private boolean satisfiesSearch(Comment comment, String search) {
-    return comment.text.contains(search) || comment.name.contains(search);
+    if (Strings.isNullOrEmpty(search)) {
+      return true;
+    } else {
+      return comment.text.contains(search) || comment.name.contains(search);
+    }
   }
 
   /** Returns JSON string representation of `data`. */
