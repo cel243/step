@@ -53,11 +53,11 @@ public class DataServlet extends HttpServlet {
       }
 
       /** Returns an entity representing this comment. */
-      static Entity toEntity(Comment c) {
+      Entity toEntity() {
         Entity commentEntity = new Entity("Comment");
-        commentEntity.setProperty("text", c.text);
-        commentEntity.setProperty("name", c.name);
-        commentEntity.setProperty("time", c.time);
+        commentEntity.setProperty("text", text);
+        commentEntity.setProperty("name", name);
+        commentEntity.setProperty("time", time);
         return commentEntity;
       }
 
@@ -66,7 +66,7 @@ public class DataServlet extends HttpServlet {
         return new Comment(
           (String) e.getProperty("text"),
           (String) e.getProperty("name"),
-          Long.parseLong((String) e.getProperty("time")));
+          (long) e.getProperty("time"));
       }
   }
 
@@ -83,8 +83,7 @@ public class DataServlet extends HttpServlet {
     if (!Strings.isNullOrEmpty(userComment)) {    
       DatastoreService datastore = 
         DatastoreServiceFactory.getDatastoreService();
-      datastore.put(Comment.toEntity(
-        new Comment(userComment, userName, timestamp)));
+      datastore.put((new Comment(userComment, userName, timestamp)).toEntity());
     }
     response.sendRedirect("/index.html");
   }

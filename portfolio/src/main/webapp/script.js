@@ -185,11 +185,10 @@ function getCommentHTML(json, i) {
 function prettyPrintTime(timeInMilliseconds) {
   let time = new Date(0);
   time.setUTCMilliseconds(timeInMilliseconds);
+  let dateInformation = time.toString().split(" ");
+  let timeInformation = dateInformation[4].split(":");
 
-  const months = ["January", "February", "March", "April", "May", "June", 
-    "July", "August", "September", "October", "November", "December"];
-
-  return `${months[time.getMonth()]} ${time.getDate()}, ${time.getHours()}:${time.getMinutes()}`
+  return `${dateInformation[1]} ${dateInformation[2]}, ${timeInformation[0]}:${timeInformation[1]}`;
 }
 
 /**
