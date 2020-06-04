@@ -186,6 +186,8 @@ function getCommentHTML(json, i) {
 function prettyPrintTime(timeInMilliseconds) {
   let time = new Date(0);
   time.setUTCMilliseconds(timeInMilliseconds);
+  let dateInformation = time.toString().split(" ");
+  let timeInformation = dateInformation[4].split(":");
 
   // Example output of toString(): 
   // Tue Aug 19 1975 23:15:30 GMT+0200 (CEST)
