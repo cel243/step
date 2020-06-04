@@ -142,7 +142,7 @@ function displayCommentSection(pageAction) {
   const numberToDisplay = selectNumberInput
     .options[selectNumberInput.selectedIndex].value;
   let searchQuery = document.getElementById('search').value;
-  if (String.isNullOrWhiteSpace(searchQuery)) {
+  if (!searchQuery || !searchQuery.trim()) {
     searchQuery = "";
   }
 

@@ -67,6 +67,11 @@ body {
     color: #353535;
 }
 
+#clear-search-box button:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
 #comment-form-box {
     align-content: center;
 }
