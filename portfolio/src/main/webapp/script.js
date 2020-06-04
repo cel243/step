@@ -114,13 +114,16 @@ function onEnlargeThisImage(thisImage) {
 
 /** 
   * Fetches comment data from the server and displays it on the page.
+  * @param {String} pageAction Either "none", "next", or "previous", indicating
+      whether the site should display the next page of comments, the previous, 
+      or stay on the same page.
   */
-function displayCommentSection() {
+function displayCommentSection(pageAction) {
   const selectNumberInput = document.getElementById('number-to-display');
   const numberToDisplay = selectNumberInput
     .options[selectNumberInput.selectedIndex].value;
 
-  fetch(`/data?numberToDisplay=${numberToDisplay}`)
+  fetch(`/data?numberToDisplay=${numberToDisplay}&pageAction="${pageAction}"`)
     .then(response => response.json())
     .then(displayJSON);
 }
@@ -164,7 +167,8 @@ function displayJSON(json) {
 function getCommentHTML(json, i) {
   html =
     `<tr>` +
-    ` <td class="comment-button"><button>X</button></td>` +
+    ` <td class="comment-button">` + 
+    `   <button onclick="deleteThisComment(${json[i].id})">X</button></td>` +
     ` <td colspan = 2 class="user-info-box">` +
     `   <b><u>${json[i].name}: </b></u><br>` +
     `   <i class="comment-date">${prettyPrintTime(json[i].time)}</i>` +
@@ -177,7 +181,7 @@ function getCommentHTML(json, i) {
 }
 
 /**
-  * Returns a time of the form: June 16, 5:30.
+  * Returns a time of the form: Jun 16, 5:30.
   * @param {number} timeInmilliseconds The time in milliseconds since the 
       epoch. 
   * @return {String} The nicely-formatted string representing that time. 
@@ -185,18 +189,28 @@ function getCommentHTML(json, i) {
 function prettyPrintTime(timeInMilliseconds) {
   let time = new Date(0);
   time.setUTCMilliseconds(timeInMilliseconds);
+
+  // Example output of toString(): 
+  // Tue Aug 19 1975 23:15:30 GMT+0200 (CEST)
   let dateInformation = time.toString().split(" ");
   let timeInformation = dateInformation[4].split(":");
 
   return `${dateInformation[1]} ${dateInformation[2]}, ${timeInformation[0]}:${timeInformation[1]}`;
 }
 
-/**
-  * Deletes all comments from the datastore.
-  */
+/** Deletes all comments from the datastore. */
 function deleteAllComments() {
-  fetch(new Request('/delete-data', {method: 'POST'}))
+  fetch(new Request('/delete-data?whichData="all"', {method: 'POST'}))
     .then(response => {
-      displayCommentSection();
+      displayCommentSection('none');
+    });
+}
+
+/** Deletes the comment with id `commentId` from the datastore. */
+function deleteThisComment(commentId) {
+  fetch(new Request(`/delete-data?whichData=${commentId}`, 
+    {method: 'POST'}))
+    .then(response => {
+      displayCommentSection('none');
     })
 }

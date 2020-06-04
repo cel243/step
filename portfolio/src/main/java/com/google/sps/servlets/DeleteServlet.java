@@ -33,18 +33,24 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 @WebServlet("/delete-data")
 public class DeleteServlet extends HttpServlet {
 
-  /** Deletes all comments from datastore. */
+  /** Deletes comments from datastore subject to query string. If
+    * `whichData="all"` then all comments are deleted. If `whichData`
+    * is a specific comment id, that comment is deleted. */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    PreparedQuery results = getAllComments(datastore);
-    results.asIterable().forEach(comment -> datastore.delete(comment.getKey()));
-  }
+    String whichCommentToDelete = 
+      (String) request.getParameter("whichData");
 
-  /** Returns all user comments stored via datastore. */
-  private PreparedQuery getAllComments(DatastoreService datastore) {
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     Query query = new Query("Comment");
-    return datastore.prepare(query);
+    PreparedQuery results = datastore.prepare(query);
+
+    results.asIterable().forEach(comment -> { 
+      if (whichCommentToDelete.equals( "\"all\"") || 
+          whichCommentToDelete.equals((String) comment.getProperty("id"))) {
+        datastore.delete(comment.getKey());
+      }
+    });
   }
 
 }
