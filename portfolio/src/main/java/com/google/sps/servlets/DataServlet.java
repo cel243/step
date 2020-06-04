@@ -32,14 +32,10 @@ import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime; 
 import java.lang.Math;
 import com.google.common.base.Strings;
-<<<<<<< HEAD
 import com.google.common.collect.Iterables;
 import com.google.common.base.Predicates;
 import com.google.common.base.Predicate;
-=======
 import com.google.common.collect.Range;
-
->>>>>>> 6569ff2c97feefa4c87475bf9038aeb6c7201ead
 
 /** 
   * Servlet that uploads and retrieves persistent comment data using datastore.
