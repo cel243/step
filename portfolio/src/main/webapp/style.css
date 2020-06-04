@@ -38,6 +38,35 @@ body {
     text-align: center;
 }
 
+#search-form-box {
+    align-content: left;
+    vertical-align: top;
+    padding-bottom: 5px;
+    padding-top: 0px;
+}
+
+#search-form-box input {
+    background-color: #ffffff00;
+    border: solid #000000c7;
+    border-width: 0px 0px 1px 0px;
+    padding: 3px;
+    font-size:16px;
+    width: 114%;
+}
+
+#clear-search-box {
+    vertical-align: bottom;
+    align-content: left;
+    padding-bottom: 0px;
+}
+
+#clear-search-box button {
+    background-color: #ffffff00;
+    border: none;
+    font-size: 15px;
+    color: #353535;
+}
+
 #comment-form-box {
     align-content: center;
 }
@@ -56,8 +85,8 @@ body {
     background-color: #ffffff8c;
 }
 
-#right-panel input[type='text'],
-#right-panel textarea {
+#comment-form-box input[type='text'],
+#comment-form-box textarea {
     margin-bottom: 10px;
     display: block;
     width: 70%;
@@ -272,7 +301,7 @@ select:hover {
 
 
 #leave-a-comment {
-    padding: 30px 0px 15px 0px;
+    padding: 0px 0px 15px 0px;
     font-size: 20px;
 }
 
