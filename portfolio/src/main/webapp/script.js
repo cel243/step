@@ -126,17 +126,69 @@ function displayCommentSection() {
 }
 
 /** 
-  * Outputs JSON object as list on page. 
-  * @param {JSON} json The JSON to be formatted. 
+  * Outputs formatted comment section, where each comment 
+  * has a name and date to the left, text to the right, 
+  * and all comments are aligned vertically and stacked on top
+  * of one another. 
+  * @param {JSON} json The JSON representing the list of comment objects. 
   */
 function displayJSON(json) {
   const dataContainer = document.getElementById('comment-section');
-  let htmlToAdd = `<ul>`;
-  for (let i = 0; i < json.length; i++) {
-    htmlToAdd += `<li>${json[i]}</li>`;
+  htmlToAdd =`<table> <tr><td></td><td></td><td></td>` +
+    `<td></td><td></td><td></td><td></td></tr>`;
+
+  if (json.length === 0) {
+    htmlToAdd += 
+      `<tr rowspan="5">` +
+      ` <td colspan="7" id="be-the-first">` +
+          `Be the first to leave a comment!` +
+      ` </td>` +
+      `</tr>`;
   }
-  htmlToAdd += `</ul>`;
+  else {
+    let allCommentHTML = [...Array(json.length).keys()]
+      .map(i => getCommentHTML(json, i));
+    allCommentHTML.forEach(commentHTML => htmlToAdd += commentHTML);
+  }
+
+  htmlToAdd += `</table>`; 
   dataContainer.innerHTML = htmlToAdd; 
+}
+
+/**
+  * Returns the HTML representation of `json[i]`
+  * as a row in the comment section table.
+  * @param {JSON} json The JSON representing the list of all comments.
+  * @param {int} i The index of the desired comment.
+  * @return {String} The HTML representation. */
+function getCommentHTML(json, i) {
+  html =
+    `<tr>` +
+    ` <td class="comment-button"><button>X</button></td>` +
+    ` <td colspan = 2 class="user-info-box">` +
+    `   <b><u>${json[i].name}: </b></u><br>` +
+    `   <i class="comment-date">${prettyPrintTime(json[i].time)}</i>` +
+    ` </td>` +
+    ` <td colspan="4">` +
+        `${json[i].text}` +
+    ` </td>` +
+    `</tr>`;
+  return html;
+}
+
+/**
+  * Returns a time of the form: June 16, 5:30.
+  * @param {number} timeInmilliseconds The time in milliseconds since the 
+      epoch. 
+  * @return {String} The nicely-formatted string representing that time. 
+  */
+function prettyPrintTime(timeInMilliseconds) {
+  let time = new Date(0);
+  time.setUTCMilliseconds(timeInMilliseconds);
+  let dateInformation = time.toString().split(" ");
+  let timeInformation = dateInformation[4].split(":");
+
+  return `${dateInformation[1]} ${dateInformation[2]}, ${timeInformation[0]}:${timeInformation[1]}`;
 }
 
 /**

@@ -30,14 +30,49 @@ body {
     margin-left: 10%;
     margin-right: 0%;
     align-content: center;
-    overflow: scroll; 
 }
 
 #right-panel {
     width: 25%;
     margin-left: 75%;
-    height: 650px;
-    overflow: scroll;
+    text-align: center;
+}
+
+#comment-form-box {
+    align-content: center;
+}
+
+#comment-form input[type='submit'] {
+    background-color: rgba(255,255,255,0);
+    border: 1px solid #0000007d;
+    padding: 5px;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: 5px
+}
+
+#comment-form input[type='submit']:hover {
+    background-color: #ffffff8c;
+}
+
+#right-panel input[type='text'],
+#right-panel textarea {
+    margin-bottom: 10px;
+    display: block;
+    width: 70%;
+    margin-left: auto;
+    margin-right: auto;
+
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -o-border-radius: 5px;
+    -ms-border-radius: 5px;
+    -khtml-border-radius: 5px;
+    border-radius: 5px;
+
+    line-height: 1.4em;
 }
 
 #list {
@@ -141,4 +176,110 @@ body {
     text-align: center;
     background-color: rgb(255, 255, 255);
     font-size: 25px;
+}
+
+td {
+    padding: 0px 5px 25px 0px;
+    text-align: left;
+    width: 14%;
+    overflow: wrap;
+}
+
+table {
+    width: 98%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: none;
+}
+
+.comment-date {
+    font-size: 14px;
+}
+
+#comment-section {
+    max-height: 450px;
+    overflow: scroll;
+}
+
+#comment-section-heading {
+    vertical-align: center;
+    font-size: 30px;
+    padding: 0px;
+}
+
+select {
+    background-color: #ffffff00;
+    border: 1px solid #00000087;
+    border-radius: 5px;
+    padding: 2px;
+    cursor:pointer;
+    font-size: 14px;
+}
+
+select:hover {
+  background-color: #ffffffd4
+}
+
+.comment-button {
+    vertical-align: top;
+    text-align: right;
+    padding: 0px 5px 0px;
+}
+
+.comment-button button {
+    background-color: #ffffff;
+    border: none;
+    padding: 0px 4px 0px;
+    cursor: pointer;
+    font-size: 11px;
+}
+
+.comment-button button:hover {
+    background-color: #be0e0e;
+    color: white;
+}
+
+#clear-all-button {
+    text-align: right;
+    vertical-align: center;
+    padding: 0px;
+}
+
+#clear-all-button button {
+    background-color: #ffffff00;
+    border: 1px solid #00000094;
+    padding: 4px 7px 4px;
+    text-align: center;
+    text-decoration: none;
+    margin: 2px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#clear-all-button button:hover {
+    background-color: rgba(255, 255, 255, 0.54)
+}
+
+#number-to-display-select-box {
+    padding: 0px 0px 5px;
+}
+
+
+#leave-a-comment {
+    padding: 30px 0px 15px 0px;
+    font-size: 20px;
+}
+
+#be-the-first {
+    padding: 50px;
+    vertical-align: center;
+    text-align: center;
+    font-size: 20px;
+}
+
+.user-info-box {
+    vertical-align: top;
 }
