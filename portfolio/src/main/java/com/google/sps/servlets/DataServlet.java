@@ -57,12 +57,12 @@ public class DataServlet extends HttpServlet {
       }
 
       /** Returns an entity representing this comment. */
-      static Entity toEntity(Comment c) {
+      Entity toEntity(Comment c) {
         Entity commentEntity = new Entity("Comment");
-        commentEntity.setProperty("text", c.text);
-        commentEntity.setProperty("name", c.name);
-        commentEntity.setProperty("time", c.time);
-        commentEntity.setProperty("id", c.id);
+        commentEntity.setProperty("text", text);
+        commentEntity.setProperty("name", name);
+        commentEntity.setProperty("time", time);
+        commentEntity.setProperty("id", id);
         return commentEntity;
       }
 
@@ -111,8 +111,8 @@ public class DataServlet extends HttpServlet {
     if (!Strings.isNullOrEmpty(userComment)) {    
       DatastoreService datastore = 
         DatastoreServiceFactory.getDatastoreService();
-      datastore.put(Comment.toEntity(
-        new Comment(userComment, userName, timestamp, id)));
+      datastore.put((new Comment(userComment, userName, timestamp, id))
+        .toEntity());
     }
     response.sendRedirect("/index.html");
   }
