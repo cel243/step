@@ -136,7 +136,6 @@ public class DataServlet extends HttpServlet {
     String paginationInstruction = (String) request.getParameter("pageAction");
     String searchQuery = (String) request.getParameter("search");
     searchQuery = searchQuery.substring(1,searchQuery.length() - 1);
-    System.out.println("SEARCH: " + searchQuery);
 
     getFilteredComments(results, comments, searchQuery);
     Range<Integer> commentRange = getRangeOfCommentsToDisplay(
@@ -149,8 +148,6 @@ public class DataServlet extends HttpServlet {
     String json = convertToJson(commentsToDisplay); 
     response.setContentType("application/json;");
     response.getWriter().println(json);
-
-    System.out.println(json);
   }
 
   /** Returns the range of comments that should be displayed on
@@ -175,7 +172,7 @@ public class DataServlet extends HttpServlet {
       if (instruction.equals("\"previous\"")) {
         startIndex = Math.max(0, currentIndexOfFirstComment - numberToDisplay);
       } else if (instruction.equals("\"next\"")) {
-        if (currentIndexOfFirstComment + numberToDisplay > 
+        if (currentIndexOfFirstComment + numberToDisplay >= 
             totalNumberComments) {
           startIndex = currentIndexOfFirstComment;
         } else {
@@ -225,14 +222,11 @@ public class DataServlet extends HttpServlet {
     */
   private void getFilteredComments(PreparedQuery results, 
     ArrayList<Comment> comments, String search) {
-
       if (Strings.isNullOrEmpty(search)) {
-        System.out.println("IS NULL OR EMPTY");
         results.asIterable().forEach(commentEntity -> {
           comments.add(Comment.fromEntity(commentEntity));
         });
       } else {
-        System.out.println("IS NOT NULL OR EMPTY");
         results.asIterable().forEach(commentEntity -> {
           Comment comment = Comment.fromEntity(commentEntity);
           if (satisfiesSearch(comment, search)) {
@@ -247,8 +241,6 @@ public class DataServlet extends HttpServlet {
     * comment text or aythor name. 
     */
   private boolean satisfiesSearch(Comment comment, String search) {
-    System.out.println(comment.text+" contains "+search+": "+comment.text.contains(search));
-    System.out.println(comment.name+" contains "+search+": "+comment.name.contains(search));
     return comment.text.contains(search) || comment.name.contains(search);
   }
 
