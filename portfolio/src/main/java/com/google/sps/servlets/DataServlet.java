@@ -32,6 +32,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime; 
 import java.lang.Math;
 import com.google.common.base.Strings;
+import com.google.common.collect.Iterables;
+import com.google.common.base.Predicates;
+import com.google.common.base.Predicate;
 
 /** 
   * Servlet that uploads and retrieves persistent comment data using datastore.
@@ -130,10 +133,10 @@ public class DataServlet extends HttpServlet {
     ArrayList<Comment> comments = new ArrayList<Comment>();
     int numberToDisplay = getNumberToDisplay(request); 
     String paginationInstruction = (String) request.getParameter("pageAction");
+    String searchQuery = (String) request.getParameter("search");
 
-    results.asIterable().forEach(comment -> {
-      comments.add(Comment.fromEntity(comment));
-    });
+    getFilteredComments(results, comments, searchQuery);
+
     int[] commentRange = getRangeOfCommentsToDisplay(paginationInstruction, 
       numberToDisplay, comments.size());
     List<Comment> commentsToDisplay = 
@@ -207,6 +210,21 @@ public class DataServlet extends HttpServlet {
       .addSort("time", SortDirection.DESCENDING);
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     return datastore.prepare(query);
+  }
+
+  /** 
+    * fills `comments` with all user comments that contain `search` in either
+    * the comment text, date, or author name. 
+    * @param results All available comment entities in the database.
+    * @param comments An empty list to be filled. 
+    * @param search A string to filter the comments by. 
+    */
+  private void getFilteredComments(PreparedQuery results, 
+    ArrayList<Comment> comments, String search) {
+      results.asIterable().forEach(comment -> {
+        comments.add(Comment.fromEntity(comment));
+      });
+
   }
 
   /** Returns JSON string representation of `data`. */

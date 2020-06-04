@@ -141,7 +141,10 @@ function displayCommentSection(pageAction) {
   const selectNumberInput = document.getElementById('number-to-display');
   const numberToDisplay = selectNumberInput
     .options[selectNumberInput.selectedIndex].value;
-  const searchQuery = document.getElementById('search').value;
+  let searchQuery = document.getElementById('search').value;
+  if (String.isNullOrWhiteSpace(searchQuery)) {
+    searchQuery = "";
+  }
 
   fetch(`/data?numberToDisplay=${numberToDisplay}` + 
     `&pageAction="${pageAction}"&search="${searchQuery}"`)
