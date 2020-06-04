@@ -57,7 +57,7 @@ public class DataServlet extends HttpServlet {
       }
 
       /** Returns an entity representing this comment. */
-      Entity toEntity(Comment c) {
+      Entity toEntity() {
         Entity commentEntity = new Entity("Comment");
         commentEntity.setProperty("text", text);
         commentEntity.setProperty("name", name);
