@@ -238,3 +238,10 @@ function deleteThisComment(commentId) {
       displayCommentSection('none');
     })
 }
+
+/** Clears the current search of the comment section. */
+function onClearSearch() {
+  let searchBar = document.getElementById("search");
+  searchBar.value = "";
+  displayCommentSection('none');
+}
