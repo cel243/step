@@ -14,6 +14,25 @@
 
 const NUM_AVAILABLE_IMAGES = 13;
 
+/** Initializes the page. */
+function onLoad() {
+  displayCommentSection('none');
+  initializeSearchBar();
+}
+
+/** 
+  * Sets up event listener for search bar such that enter key
+  * triggers action. 
+  */
+function initializeSearchBar() {
+  let searchBar = document.getElementById("search");
+  searchBar.addEventListener("keydown", function (e) {
+    if(e.keyCode == 13) {
+      displayCommentSection('none');
+    }
+  });
+}
+
 /** 
   * Generates a random image url from the available pictures of Penny.
   * @returns {String} This returns new random valid image url.
@@ -122,8 +141,10 @@ function displayCommentSection(pageAction) {
   const selectNumberInput = document.getElementById('number-to-display');
   const numberToDisplay = selectNumberInput
     .options[selectNumberInput.selectedIndex].value;
+  const searchQuery = document.getElementById('search').value;
 
-  fetch(`/data?numberToDisplay=${numberToDisplay}&pageAction="${pageAction}"`)
+  fetch(`/data?numberToDisplay=${numberToDisplay}` + 
+    `&pageAction="${pageAction}"&search="${searchQuery}"`)
     .then(response => response.json())
     .then(displayJSON);
 }
