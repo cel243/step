@@ -8,7 +8,7 @@
     <script src="script.js"></script>
 </head>
 
-<body onload="displayCommentSection()">
+<body onload="displayCommentSection('none')">
     <div class="header">
         <h1>Portfolio Webpage</h1> 
     </div>
@@ -87,12 +87,12 @@
                         </select>
                     </td>
                     <td id="left-arrow-box">
-                         <button>
+                         <button onclick="displayCommentSection('previous')">
                               <i class="arrow left" id="left-arrow"></i>
                          </button>
                     </td>
                     <td id="right-arrow-box">
-                        <button>
+                        <button onclick="displayCommentSection('next')">
                             <i class="arrow right" id="right-arrow"></i>
                         </button>
                     </td>

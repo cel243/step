@@ -114,13 +114,16 @@ function onEnlargeThisImage(thisImage) {
 
 /** 
   * Fetches comment data from the server and displays it on the page.
+  * @param {String} pageAction Either "none", "next", or "previous", indicating
+      whether the site should display the next page of comments, the previous, 
+      or stay on the same page.
   */
-function displayCommentSection() {
+function displayCommentSection(pageAction) {
   const selectNumberInput = document.getElementById('number-to-display');
   const numberToDisplay = selectNumberInput
     .options[selectNumberInput.selectedIndex].value;
 
-  fetch(`/data?numberToDisplay=${numberToDisplay}`)
+  fetch(`/data?numberToDisplay=${numberToDisplay}&pageAction="${pageAction}"`)
     .then(response => response.json())
     .then(displayJSON);
 }
@@ -199,7 +202,7 @@ function prettyPrintTime(timeInMilliseconds) {
 function deleteAllComments() {
   fetch(new Request('/delete-data?whichData="all"', {method: 'POST'}))
     .then(response => {
-      displayCommentSection();
+      displayCommentSection('none');
     });
 }
 
@@ -208,6 +211,6 @@ function deleteThisComment(commentId) {
   fetch(new Request(`/delete-data?whichData=${commentId}`, 
     {method: 'POST'}))
     .then(response => {
-      displayCommentSection();
+      displayCommentSection('none');
     })
 }
