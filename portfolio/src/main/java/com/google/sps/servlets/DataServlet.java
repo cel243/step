@@ -214,8 +214,8 @@ public class DataServlet extends HttpServlet {
   }
 
   /** 
-    * fills `comments` with all user comments that contain `search` in either
-    * the comment text, date, or author name. 
+    * Returns all user comments that contain `search` in either
+    * the comment text or author name. 
     * @param results All available comment entities in the database.
     * @param comments An empty list to be filled. 
     * @param search A string to filter the comments by. 
@@ -234,7 +234,7 @@ public class DataServlet extends HttpServlet {
 
   /** 
     * Returns true if this comment contains the search string in the
-    * comment text or aythor name. 
+    * comment text or author name. 
     */
   private boolean satisfiesSearch(Comment comment, String search) {
     if (Strings.isNullOrEmpty(search)) {

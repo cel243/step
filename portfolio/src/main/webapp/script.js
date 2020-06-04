@@ -163,16 +163,23 @@ function displayJSON(json) {
   const dataContainer = document.getElementById('comment-section');
   htmlToAdd =`<table> <tr><td></td><td></td><td></td>` +
     `<td></td><td></td><td></td><td></td></tr>`;
+  let searchQuery = document.getElementById('search').value;
 
-  if (json.length === 0) {
+  if (json.length === 0 && (!searchQuery || !searchQuery.trim())) {
     htmlToAdd += 
       `<tr rowspan="5">` +
       ` <td colspan="7" id="be-the-first">` +
           `Be the first to leave a comment!` +
       ` </td>` +
       `</tr>`;
-  }
-  else {
+  } else if (json.length === 0) {
+    htmlToAdd += 
+      `<tr rowspan="5">` +
+      ` <td colspan="7" id="be-the-first">` +
+          `Sorry, we couldn't find anything!` +
+      ` </td>` +
+      `</tr>`;
+  } else {
     let allCommentHTML = [...Array(json.length).keys()]
       .map(i => getCommentHTML(json, i));
     allCommentHTML.forEach(commentHTML => htmlToAdd += commentHTML);
