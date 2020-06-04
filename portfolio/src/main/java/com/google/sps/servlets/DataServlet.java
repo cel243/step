@@ -32,6 +32,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime; 
 import java.lang.Math;
 import com.google.common.base.Strings;
+import com.google.common.collect.Range;
 
 
 /** 
@@ -135,11 +136,12 @@ public class DataServlet extends HttpServlet {
     results.asIterable().forEach(comment -> {
       comments.add(Comment.fromEntity(comment));
     });
-    int[] commentRange = getRangeOfCommentsToDisplay(paginationInstruction, 
-      numberToDisplay, comments.size());
+    Range<Integer> commentRange = getRangeOfCommentsToDisplay(
+      paginationInstruction, numberToDisplay, comments.size());
     List<Comment> commentsToDisplay = 
-      comments.subList(commentRange[0], commentRange[1]);
-    currentIndexOfFirstComment = commentRange[0];
+      comments.subList(commentRange.lowerEndpoint(), 
+      commentRange.upperEndpoint());
+    currentIndexOfFirstComment = commentRange.lowerEndpoint();
 
     String json = convertToJson(commentsToDisplay); 
     response.setContentType("application/json;");
@@ -156,11 +158,11 @@ public class DataServlet extends HttpServlet {
         on the page.
     * @param totalNumberComments Indicates the number of comments currently
         in the database.
-    * @return An array of the form `[startIndex, stopIndex + 1]`, where
+    * @return A range from `startIndex` to `stopIndex + 1`, where
         startIndex is the index of the first comment that should be displayed
         and stopIndex is the index of the last comment that should be
         displayed. */
-  private int[] getRangeOfCommentsToDisplay(String instruction, 
+  private Range<Integer> getRangeOfCommentsToDisplay(String instruction, 
     int numberToDisplay, int totalNumberComments) {
       int startIndex;
       int stopIndex;
@@ -179,8 +181,7 @@ public class DataServlet extends HttpServlet {
       }
       stopIndex = Math.min(totalNumberComments, startIndex + numberToDisplay);
 
-      int[] range = {startIndex, stopIndex};
-      return range;
+      return Range.closed(startIndex, stopIndex);
   }
 
   /** 
