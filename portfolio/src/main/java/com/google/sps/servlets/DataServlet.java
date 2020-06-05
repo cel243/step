@@ -43,16 +43,14 @@ import com.google.common.collect.Range;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
-  private int nextUniqueId;
-
   /** Represents a single comment */
   private static class Comment {
       String text;
       String name;
       long time;
-      String id;
+      long id;
 
-      Comment(String text, String name, long time, String id) {
+      Comment(String text, String name, long time, long id) {
         this.text = text;
         this.name = name;
         this.time = time;
@@ -65,7 +63,6 @@ public class DataServlet extends HttpServlet {
         commentEntity.setProperty("text", text);
         commentEntity.setProperty("name", name);
         commentEntity.setProperty("time", time);
-        commentEntity.setProperty("id", id);
         return commentEntity;
       }
 
@@ -75,28 +72,8 @@ public class DataServlet extends HttpServlet {
           (String) e.getProperty("text"),
           (String) e.getProperty("name"),
           (long) e.getProperty("time"), 
-          (String) e.getProperty("id"));
+          e.getKey().getId());
       }
-  }
-
-  /** 
-    * Iterates over all persistent comments upon server startup
-    * and assigns each a unique id number, then decides the value of
-    * the next valid unique id number that can be assigned to a 
-    * future comment. 
-    */
-  @Override
-  public void init() { 
-    PreparedQuery results = getAllComments();
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-
-    int uniqueId = 0;
-    for (Entity comment : results.asIterable()) {
-      comment.setProperty("id", Integer.toString(uniqueId));
-      datastore.put(comment);
-      uniqueId++;
-    }
-    nextUniqueId = uniqueId;
   }
 
   /** Extracts user comment from form and stores it via datastore. */
@@ -108,13 +85,11 @@ public class DataServlet extends HttpServlet {
       userName = "Anonymous";
     }
     long timestamp = System.currentTimeMillis();
-    String id = Integer.toString(nextUniqueId);
-    nextUniqueId++;
 
     if (!Strings.isNullOrEmpty(userComment)) {    
       DatastoreService datastore = 
         DatastoreServiceFactory.getDatastoreService();
-      datastore.put((new Comment(userComment, userName, timestamp, id))
+      datastore.put((new Comment(userComment, userName, timestamp, 0))
         .toEntity());
     }
     response.sendRedirect("/index.html");
@@ -147,6 +122,8 @@ public class DataServlet extends HttpServlet {
     String json = convertToJson(commentsToDisplay, newPageToken); 
     response.setContentType("application/json;");
     response.getWriter().println(json);
+
+    System.out.println(json);
   }
 
   /** Returns the range of comments that should be displayed on

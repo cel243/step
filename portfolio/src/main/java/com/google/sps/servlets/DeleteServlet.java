@@ -45,12 +45,18 @@ public class DeleteServlet extends HttpServlet {
     Query query = new Query("Comment");
     PreparedQuery results = datastore.prepare(query);
 
-    results.asIterable().forEach(comment -> { 
-      if (whichCommentToDelete.equals( "\"all\"") || 
-          whichCommentToDelete.equals((String) comment.getProperty("id"))) {
+    if (whichCommentToDelete.equals("\"all\"")) {
+      results.asIterable().forEach(comment -> {
         datastore.delete(comment.getKey());
-      }
-    });
+      });
+    } else {
+      Long id = Long.parseLong(whichCommentToDelete);
+      results.asIterable().forEach(comment -> {
+        if (comment.getKey().getId() == id) {
+          datastore.delete(comment.getKey());
+        }
+      });
+    }
   }
 
 }
