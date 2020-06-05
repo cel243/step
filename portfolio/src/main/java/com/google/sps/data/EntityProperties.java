@@ -1,5 +1,10 @@
+package com.google.sps.data;
+
 /** File containing constants used throughout project. */
 public final class EntityProperties {
+
+  private EntityProperties() {}
+
   /* Entity Properties: */
 
   /** The property representing the text of a comment on the webpage. */

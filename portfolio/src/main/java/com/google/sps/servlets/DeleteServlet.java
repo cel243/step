@@ -28,6 +28,7 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.sps.data.RequestParameters;
 
 /** Servlet that deletes all persistent comment data from datastore. */
 @WebServlet("/delete-data")
@@ -39,7 +40,7 @@ public class DeleteServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String whichCommentToDelete = 
-      (String) request.getParameter("whichData");
+      (String) request.getParameter(RequestParameters.WHICH_COMMENT_TO_DELETE);
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     Query query = new Query("Comment");

@@ -37,6 +37,8 @@ import com.google.common.base.Predicates;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Range;
 import java.lang.StringBuilder;
+import com.google.sps.data.EntityProperties;
+import com.google.sps.data.RequestParameters;
 
 /** 
   * Servlet that uploads and retrieves persistent comment data using datastore.
@@ -61,18 +63,18 @@ public class DataServlet extends HttpServlet {
       /** Returns an entity representing this comment. */
       Entity toEntity() {
         Entity commentEntity = new Entity("Comment");
-        commentEntity.setProperty("text", text);
-        commentEntity.setProperty("name", name);
-        commentEntity.setProperty("time", time);
+        commentEntity.setProperty(EntityProperties.COMMENT_TEXT, text);
+        commentEntity.setProperty(EntityProperties.COMMENT_AUTHOR, name);
+        commentEntity.setProperty(EntityProperties.COMMENT_TIMESTAMP, time);
         return commentEntity;
       }
 
       /** Returns a comment representing this entity */
       static Comment fromEntity(Entity e) {
         return new Comment(
-          (String) e.getProperty("text"),
-          (String) e.getProperty("name"),
-          (long) e.getProperty("time"), 
+          (String) e.getProperty(EntityProperties.COMMENT_TEXT),
+          (String) e.getProperty(EntityProperties.COMMENT_AUTHOR),
+          (long) e.getProperty(EntityProperties.COMMENT_TIMESTAMP), 
           e.getKey().getId());
       }
   }
@@ -80,8 +82,10 @@ public class DataServlet extends HttpServlet {
   /** Extracts user comment from form and stores it via datastore. */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String userComment = request.getParameter("text-input").trim();
-    String userName = request.getParameter("author").trim();
+    String userComment = request.getParameter(
+      RequestParameters.INPUTTED_TEXT).trim();
+    String userName = request.getParameter(
+      RequestParameters.INPUTTED_AUTHOR_NAME).trim();
     if (Strings.isNullOrEmpty(userName)) {
       userName = "Anonymous";
     }
@@ -104,11 +108,13 @@ public class DataServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     int numberToDisplay = getNumberToDisplay(request); 
-    String paginationInstruction = (String) request.getParameter("pageAction");
-    String searchQuery = (String) request.getParameter("search");
+    String paginationInstruction = (String) request.getParameter(
+      RequestParameters.PAGE_ACTION);
+    String searchQuery = (String) request.getParameter(
+      RequestParameters.SEARCH_QUERY);
     searchQuery = searchQuery.substring(1,searchQuery.length() - 1);
     int pageToken = Integer.parseInt(
-      (String) request.getParameter("pageToken"));;
+      (String) request.getParameter(RequestParameters.PAGE_TOKEN));
 
     PreparedQuery results = getAllComments();
     ArrayList<Comment> unfilteredComments = new ArrayList<Comment>();
@@ -180,7 +186,8 @@ public class DataServlet extends HttpServlet {
     */
   private int getNumberToDisplay(HttpServletRequest request)
     throws IllegalArgumentException {
-    String parameterString = (String) request.getParameter("numberToDisplay");
+    String parameterString = (String) request.getParameter(
+      RequestParameters.NUMBER_PER_PAGE);
     int numberToDisplay;
     try {
       numberToDisplay = Integer.parseInt(parameterString);
@@ -193,7 +200,7 @@ public class DataServlet extends HttpServlet {
   /** Returns all user comments stored in datastore. */
   private PreparedQuery getAllComments() {
     Query query = new Query("Comment")
-      .addSort("time", SortDirection.DESCENDING);
+      .addSort(EntityProperties.COMMENT_TIMESTAMP, SortDirection.DESCENDING);
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     return datastore.prepare(query);
   }
@@ -226,16 +233,12 @@ public class DataServlet extends HttpServlet {
 
   /** Returns JSON string representation of `data`. */
   private String convertToJson(List<Comment> data, int pageToken) {
+    List<Object> combineData = new ArrayList<Object>();
+    combineData.add(pageToken);
+    combineData.add(data);
+
     Gson gson = new Gson(); 
-    String json = gson.toJson(data);
-
-    StringBuilder stringBuilder = new StringBuilder(30 + json.length());
-    stringBuilder.append("[{\"pageToken\" : ");
-    stringBuilder.append(Integer.toString(pageToken));
-    stringBuilder.append(" }, ");
-    stringBuilder.append(json);
-    stringBuilder.append("]");
-
-    return stringBuilder.toString();
+    String json = gson.toJson(combineData);
+    return json;
   }
 }

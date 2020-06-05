@@ -1,5 +1,10 @@
+package com.google.sps.data;
+
 /** File containing constants used throughout project. */
 public final class RequestParameters {
+
+  private RequestParameters() {}
+
   /* Request Parameters for DataServlet POST: */
 
   /** The text of a submitted comment. */
