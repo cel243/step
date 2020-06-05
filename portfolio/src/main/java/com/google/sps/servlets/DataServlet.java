@@ -226,16 +226,12 @@ public class DataServlet extends HttpServlet {
 
   /** Returns JSON string representation of `data`. */
   private String convertToJson(List<Comment> data, int pageToken) {
+    List<Object> combineData = new ArrayList<Object>();
+    combineData.add(pageToken);
+    combineData.add(data);
+
     Gson gson = new Gson(); 
-    String json = gson.toJson(data);
-
-    StringBuilder stringBuilder = new StringBuilder(30 + json.length());
-    stringBuilder.append("[{\"pageToken\" : ");
-    stringBuilder.append(Integer.toString(pageToken));
-    stringBuilder.append(" }, ");
-    stringBuilder.append(json);
-    stringBuilder.append("]");
-
-    return stringBuilder.toString();
+    String json = gson.toJson(combineData);
+    return json;
   }
 }

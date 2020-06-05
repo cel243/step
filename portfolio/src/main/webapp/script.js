@@ -163,7 +163,7 @@ function displayCommentSection(pageAction) {
   * @param {JSON} json The JSON representing the list of comment objects. 
   */
 function displayJSON(json) {
-  pageToken = json[0].pageToken;
+  pageToken = json[0];
   json = json[1];
 
   const dataContainer = document.getElementById('comment-section');
