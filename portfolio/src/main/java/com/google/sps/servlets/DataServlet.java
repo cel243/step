@@ -36,6 +36,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.base.Predicates;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Range;
+import java.lang.StringBuilder;
 
 /** 
   * Servlet that uploads and retrieves persistent comment data using datastore.
@@ -122,8 +123,6 @@ public class DataServlet extends HttpServlet {
     String json = convertToJson(commentsToDisplay, newPageToken); 
     response.setContentType("application/json;");
     response.getWriter().println(json);
-
-    System.out.println(json);
   }
 
   /** Returns the range of comments that should be displayed on
@@ -229,6 +228,14 @@ public class DataServlet extends HttpServlet {
   private String convertToJson(List<Comment> data, int pageToken) {
     Gson gson = new Gson(); 
     String json = gson.toJson(data);
-    return "[{\"pageToken\" : "+pageToken+" }, "+json+"]";
+
+    StringBuilder stringBuilder = new StringBuilder(30 + json.length());
+    stringBuilder.append("[{\"pageToken\" : ");
+    stringBuilder.append(Integer.toString(pageToken));
+    stringBuilder.append(" }, ");
+    stringBuilder.append(json);
+    stringBuilder.append("]");
+
+    return stringBuilder.toString();
   }
 }
