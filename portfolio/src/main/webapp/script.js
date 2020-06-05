@@ -13,6 +13,7 @@
 // limitations under the License.
 
 const NUM_AVAILABLE_IMAGES = 13;
+let pageToken = 0;
 
 /** 
   * Generates a random image url from the available pictures of Penny.
@@ -123,7 +124,8 @@ function displayCommentSection(pageAction) {
   const numberToDisplay = selectNumberInput
     .options[selectNumberInput.selectedIndex].value;
 
-  fetch(`/data?numberToDisplay=${numberToDisplay}&pageAction="${pageAction}"`)
+  fetch(`/data?numberToDisplay=${numberToDisplay}` +
+    `&pageAction="${pageAction}"&pageToken=${pageToken}`)
     .then(response => response.json())
     .then(displayJSON);
 }
@@ -136,6 +138,9 @@ function displayCommentSection(pageAction) {
   * @param {JSON} json The JSON representing the list of comment objects. 
   */
 function displayJSON(json) {
+  pageToken = json[0].pageToken;
+  json = json[1];
+
   const dataContainer = document.getElementById('comment-section');
   htmlToAdd =`<table> <tr><td></td><td></td><td></td>` +
     `<td></td><td></td><td></td><td></td></tr>`;
