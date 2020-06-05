@@ -181,7 +181,7 @@ public class DataServlet extends HttpServlet {
       }
       stopIndex = Math.min(totalNumberComments, startIndex + numberToDisplay);
 
-      if (stopIndex == startIndex) {
+      if (stopIndex <= startIndex) {
         startIndex = Math.max(0, stopIndex - numberToDisplay);
       }
 
