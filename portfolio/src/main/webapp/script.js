@@ -29,6 +29,7 @@ function initializeSearchBar() {
   let searchBar = document.getElementById("search");
   searchBar.addEventListener("keydown", function (e) {
     if(e.keyCode == 13) {
+      pageToken = 0;
       displayCommentSection('none');
     }
   });
@@ -253,5 +254,6 @@ function deleteThisComment(commentId) {
 function onClearSearch() {
   let searchBar = document.getElementById("search");
   searchBar.value = "";
+  pageToken = 0;
   displayCommentSection('none');
 }
