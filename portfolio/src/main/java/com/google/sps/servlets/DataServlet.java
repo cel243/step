@@ -98,13 +98,11 @@ public class DataServlet extends HttpServlet {
 
   /** 
     * Loads all user comments from datastore and returns JSON list of n 
-    * comments, where n is the number of comments the user has requested. 
+    * comments, where n is the number of comments the user has requested, 
+    * filtered by any search query the user may have entered.
     */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    PreparedQuery results = getAllComments();
-    ArrayList<Comment> comments = new ArrayList<Comment>();
-
     int numberToDisplay = getNumberToDisplay(request); 
     String paginationInstruction = (String) request.getParameter("pageAction");
     String searchQuery = (String) request.getParameter("search");
@@ -112,7 +110,14 @@ public class DataServlet extends HttpServlet {
     int pageToken = Integer.parseInt(
       (String) request.getParameter("pageToken"));;
 
-    comments = getFilteredComments(results, comments, searchQuery);
+    PreparedQuery results = getAllComments();
+    ArrayList<Comment> unfilteredComments = new ArrayList<Comment>();
+    results.asIterable().forEach(commentEntity -> {
+      unfilteredComments.add(Comment.fromEntity(commentEntity));
+    });
+    ArrayList<Comment> comments = getFilteredComments(unfilteredComments, 
+      searchQuery);
+
     Range<Integer> commentRange = getRangeOfCommentsToDisplay(
       paginationInstruction, numberToDisplay, comments.size(), pageToken);
     List<Comment> commentsToDisplay = 
@@ -196,16 +201,11 @@ public class DataServlet extends HttpServlet {
   /** 
     * Returns all user comments that contain `search` in either
     * the comment text or author name. 
-    * @param results All available comment entities in the database.
-    * @param comments An empty list to be filled. 
+    * @param comments List containing all comments in database.
     * @param search A string to filter the comments by. 
     */
-  private ArrayList<Comment> getFilteredComments(PreparedQuery results, 
+  private ArrayList<Comment> getFilteredComments( 
     ArrayList<Comment> comments, String search) {
-    results.asIterable().forEach(commentEntity -> {
-      comments.add(Comment.fromEntity(commentEntity));
-    });
-
     ArrayList<Comment> filteredComments = new ArrayList<Comment>();
     Iterables.filter(comments, c -> satisfiesSearch(c, search))
       .forEach(c -> filteredComments.add(c));
