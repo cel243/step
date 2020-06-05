@@ -13,6 +13,7 @@
 // limitations under the License.
 
 const NUM_AVAILABLE_IMAGES = 13;
+let pageToken = 0;
 
 /** Initializes the page. */
 function onLoad() {
@@ -147,7 +148,8 @@ function displayCommentSection(pageAction) {
   }
 
   fetch(`/data?numberToDisplay=${numberToDisplay}` + 
-    `&pageAction="${pageAction}"&search="${searchQuery}"`)
+    `&pageAction="${pageAction}"&search="${searchQuery}"` +
+    `&pageToken=${pageToken}`)
     .then(response => response.json())
     .then(displayJSON);
 }
@@ -160,6 +162,9 @@ function displayCommentSection(pageAction) {
   * @param {JSON} json The JSON representing the list of comment objects. 
   */
 function displayJSON(json) {
+  pageToken = json[0].pageToken;
+  json = json[1];
+
   const dataContainer = document.getElementById('comment-section');
   htmlToAdd =`<table> <tr><td></td><td></td><td></td>` +
     `<td></td><td></td><td></td><td></td></tr>`;

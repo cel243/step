@@ -44,7 +44,6 @@ import com.google.common.collect.Range;
 public class DataServlet extends HttpServlet {
 
   private int nextUniqueId;
-  private int currentIndexOfFirstComment;
 
   /** Represents a single comment */
   private static class Comment {
@@ -88,8 +87,6 @@ public class DataServlet extends HttpServlet {
     */
   @Override
   public void init() { 
-    currentIndexOfFirstComment = 0;
-
     PreparedQuery results = getAllComments();
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
@@ -130,22 +127,24 @@ public class DataServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     PreparedQuery results = getAllComments();
-    
     ArrayList<Comment> comments = new ArrayList<Comment>();
+
     int numberToDisplay = getNumberToDisplay(request); 
     String paginationInstruction = (String) request.getParameter("pageAction");
     String searchQuery = (String) request.getParameter("search");
     searchQuery = searchQuery.substring(1,searchQuery.length() - 1);
+    int pageToken = Integer.parseInt(
+      (String) request.getParameter("pageToken"));;
 
     comments = getFilteredComments(results, comments, searchQuery);
     Range<Integer> commentRange = getRangeOfCommentsToDisplay(
-      paginationInstruction, numberToDisplay, comments.size());
+      paginationInstruction, numberToDisplay, comments.size(), pageToken);
     List<Comment> commentsToDisplay = 
       comments.subList(commentRange.lowerEndpoint(), 
       commentRange.upperEndpoint());
-    currentIndexOfFirstComment = commentRange.lowerEndpoint();
+    int newPageToken = commentRange.lowerEndpoint();
 
-    String json = convertToJson(commentsToDisplay); 
+    String json = convertToJson(commentsToDisplay, newPageToken); 
     response.setContentType("application/json;");
     response.getWriter().println(json);
   }
@@ -165,23 +164,26 @@ public class DataServlet extends HttpServlet {
         and stopIndex is the index of the last comment that should be
         displayed. */
   private Range<Integer> getRangeOfCommentsToDisplay(String instruction, 
-    int numberToDisplay, int totalNumberComments) {
+    int numberToDisplay, int totalNumberComments, int pageToken) {
       int startIndex;
       int stopIndex;
 
       if (instruction.equals("\"previous\"")) {
-        startIndex = Math.max(0, currentIndexOfFirstComment - numberToDisplay);
+        startIndex = Math.max(0, pageToken - numberToDisplay);
       } else if (instruction.equals("\"next\"")) {
-        if (currentIndexOfFirstComment + numberToDisplay >= 
-            totalNumberComments) {
-          startIndex = currentIndexOfFirstComment;
+        if (pageToken + numberToDisplay >= totalNumberComments) {
+          startIndex = pageToken;
         } else {
-          startIndex = currentIndexOfFirstComment + numberToDisplay;
+          startIndex = pageToken + numberToDisplay;
         }
       } else {
-        startIndex = currentIndexOfFirstComment;
+        startIndex = pageToken;
       }
       stopIndex = Math.min(totalNumberComments, startIndex + numberToDisplay);
+
+      if (stopIndex == startIndex) {
+        startIndex = Math.max(0, stopIndex - numberToDisplay);
+      }
 
       return Range.closed(startIndex, stopIndex);
   }
@@ -245,9 +247,9 @@ public class DataServlet extends HttpServlet {
   }
 
   /** Returns JSON string representation of `data`. */
-  private String convertToJson(List<Comment> data) {
+  private String convertToJson(List<Comment> data, int pageToken) {
     Gson gson = new Gson(); 
     String json = gson.toJson(data);
-    return json;
+    return "[{\"pageToken\" : "+pageToken+" }, "+json+"]";
   }
 }
