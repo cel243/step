@@ -227,7 +227,7 @@ function prettyPrintTime(timeInMilliseconds) {
   const options = {month: 'short', day: 'numeric', hour: 'numeric', 
     minute: 'numeric', hour12: true };
 
-  return new Intl.DateTimeFormat(undefined, options).format(time);
+  return date.toLocaleDateString(undefined, options);
 }
 
 /** Deletes all comments from the datastore. */
