@@ -224,13 +224,10 @@ function getCommentHTML(json, i) {
 function prettyPrintTime(timeInMilliseconds) {
   let time = new Date(0);
   time.setUTCMilliseconds(timeInMilliseconds);
+  const options = {month: 'short', day: 'numeric', hour: 'numeric', 
+    minute: 'numeric', hour12: true };
 
-  // Example output of toString(): 
-  // Tue Aug 19 1975 23:15:30 GMT+0200 (CEST)
-  let dateInformation = time.toString().split(" ");
-  let timeInformation = dateInformation[4].split(":");
-
-  return `${dateInformation[1]} ${dateInformation[2]}, ${timeInformation[0]}:${timeInformation[1]}`;
+  return new Intl.DateTimeFormat(undefined, options).format(time);
 }
 
 /** Deletes all comments from the datastore. */
