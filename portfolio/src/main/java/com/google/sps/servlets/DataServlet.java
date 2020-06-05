@@ -136,6 +136,8 @@ public class DataServlet extends HttpServlet {
         on the page.
     * @param totalNumberComments Indicates the number of comments currently
         in the database.
+    * @param pageToken The current index of the first comment being displayed 
+        on the page. 
     * @return A range from `startIndex` to `stopIndex + 1`, where
         startIndex is the index of the first comment that should be displayed
         and stopIndex is the index of the last comment that should be
