@@ -8,7 +8,7 @@
     <script src="script.js"></script>
 </head>
 
-<body onload="displayCommentSection()">
+<body onload="displayCommentSection('none')">
     <div class="header">
         <h1>Portfolio Webpage</h1> 
     </div>
@@ -76,15 +76,25 @@
                     </td>
                 </tr> 
                 <tr>
-                    <td colspan="7" id="number-to-display-select-box">
+                    <td colspan="5" id="number-to-display-select-box">
                         <label for="number-to-display">Display up to: </label>
                         <select name="number-to-display" id="number-to-display"
-                            onchange="displayCommentSection()">
+                            onchange="displayCommentSection('none')">
                             <option value="5">5 comments.</option>
                             <option value="10">10 comments.</option>
                             <option value="15">15 comments.</option>
                             <option value="20">20 comments.</option>
                         </select>
+                    </td>
+                    <td id="left-arrow-box">
+                         <button onclick="displayCommentSection('previous')">
+                              <i class="arrow left" id="left-arrow"></i>
+                         </button>
+                    </td>
+                    <td id="right-arrow-box">
+                        <button onclick="displayCommentSection('next')">
+                            <i class="arrow right" id="right-arrow"></i>
+                        </button>
                     </td>
             </table>
             <div id="comment-section"></div>

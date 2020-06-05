@@ -32,6 +32,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime; 
 import java.lang.Math;
 import com.google.common.base.Strings;
+import com.google.common.collect.Range;
 
 /** 
   * Servlet that uploads and retrieves persistent comment data using datastore.
@@ -126,16 +127,62 @@ public class DataServlet extends HttpServlet {
     
     ArrayList<Comment> comments = new ArrayList<Comment>();
     int numberToDisplay = getNumberToDisplay(request); 
+    String paginationInstruction = (String) request.getParameter("pageAction");
+    int pageToken = Integer.parseInt(
+      (String) request.getParameter("pageToken"));;
 
     results.asIterable().forEach(comment -> {
       comments.add(Comment.fromEntity(comment));
     });
+    Range<Integer> commentRange = getRangeOfCommentsToDisplay(
+      paginationInstruction, numberToDisplay, comments.size(), pageToken);
     List<Comment> commentsToDisplay = 
-      comments.subList(0, Math.min(numberToDisplay, comments.size()));
+      comments.subList(commentRange.lowerEndpoint(), 
+      commentRange.upperEndpoint());
+    int newPageToken = commentRange.lowerEndpoint();
 
-    String json = convertToJson(commentsToDisplay); 
+    String json = convertToJson(commentsToDisplay, newPageToken); 
     response.setContentType("application/json;");
     response.getWriter().println(json);
+  }
+
+  /** Returns the range of comments that should be displayed on
+    * the site, given the user's instructions (reflecting
+    * whether to jump forward a page, jump backwards, or
+    * stay on the same page of comments).
+    * @param instruction Of the form ""next"", ""previous"", 
+        or ""none"".
+    * @param numberToDisplay Indicates the desired number of comments
+        on the page.
+    * @param totalNumberComments Indicates the number of comments currently
+        in the database.
+    * @return A range from `startIndex` to `stopIndex + 1`, where
+        startIndex is the index of the first comment that should be displayed
+        and stopIndex is the index of the last comment that should be
+        displayed. */
+  private Range<Integer> getRangeOfCommentsToDisplay(String instruction, 
+    int numberToDisplay, int totalNumberComments, int pageToken) {
+      int startIndex;
+      int stopIndex;
+
+      if (instruction.equals("\"previous\"")) {
+        startIndex = Math.max(0, pageToken - numberToDisplay);
+      } else if (instruction.equals("\"next\"")) {
+        if (pageToken + numberToDisplay >= totalNumberComments) {
+          startIndex = pageToken;
+        } else {
+          startIndex = pageToken + numberToDisplay;
+        }
+      } else {
+        startIndex = pageToken;
+      }
+      stopIndex = Math.min(totalNumberComments, startIndex + numberToDisplay);
+
+      if (stopIndex == startIndex) {
+        startIndex = Math.max(0, stopIndex - numberToDisplay);
+      }
+
+      return Range.closed(startIndex, stopIndex);
   }
 
   /** 
@@ -166,9 +213,9 @@ public class DataServlet extends HttpServlet {
   }
 
   /** Returns JSON string representation of `data`. */
-  private String convertToJson(List<Comment> data) {
+  private String convertToJson(List<Comment> data, int pageToken) {
     Gson gson = new Gson(); 
     String json = gson.toJson(data);
-    return json;
+    return "[{\"pageToken\" : "+pageToken+" }, "+json+"]";
   }
 }
