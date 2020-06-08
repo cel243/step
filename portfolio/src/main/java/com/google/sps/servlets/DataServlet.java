@@ -263,7 +263,8 @@ public class DataServlet extends HttpServlet {
     if (Strings.isNullOrEmpty(search)) {
       return true;
     } else {
-      return comment.text.contains(search) || comment.username.contains(search);
+      return comment.text.contains(search) || 
+        comment.username.contains(search) || comment.email.contains(search);
     }
   }
 

@@ -26,10 +26,13 @@ function onLoad() {
 
 /** Determines whether the current user is signed in, and if so, 
   * displays the form where the user could leave a comment. If
-  * not, it displays a link to sign in.
+  * not, it displays a link to sign in and gets rid of the clear
+  * all button.
   * @param json The json returned by the GET request to /authenticate  */
 function displayCommentForm(json) {
   let commentFormBox = document.getElementById("comment-form");
+  let clearAllButtonBox = document.getElementById("clear-all-button");
+
   if (json.isLoggedIn) {
     const username = !json.username.trim() ? 
       `placeholder="Please enter a username."` : `value="${json.username}"`;
@@ -52,6 +55,7 @@ function displayCommentForm(json) {
       `</div>` +
       `<div id="log-out"><a href="${json.logOutLink}">Log out</a> here.`;
   } else {
+    clearAllButtonBox.innerHTML = ``;
     commentFormBox.innerHTML = `<div id="please-sign-in">Please` +
       ` <a href="${json.logInLink}">sign in</a> to leave a comment.</div>`
   }
