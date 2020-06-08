@@ -199,8 +199,9 @@ function displayCommentSection(pageAction) {
   * @param {JSON} json The JSON representing the list of comment objects. 
   */
 function displayJSON(json) {
-  pageToken = json[0];
-  json = json[1];
+  pageToken = json.pageToken;
+  const currentUserId = json.currentUserId;
+  json = json.commentData;
 
   const dataContainer = document.getElementById('comment-section');
   htmlToAdd =`<table> <tr><td></td><td></td><td></td>` +
@@ -221,7 +222,7 @@ function displayJSON(json) {
       `</tr>`;
   } else {
     let allCommentHTML = [...Array(json.length).keys()]
-      .map(i => getCommentHTML(json, i));
+      .map(i => getCommentHTML(currentUserId, json, i));
     allCommentHTML.forEach(commentHTML => htmlToAdd += commentHTML);
   }
 
@@ -235,11 +236,12 @@ function displayJSON(json) {
   * @param {JSON} json The JSON representing the list of all comments.
   * @param {int} i The index of the desired comment.
   * @return {String} The HTML representation. */
-function getCommentHTML(json, i) {
+function getCommentHTML(currentUserId, json, i) {
   html =
     `<tr>` +
-    ` <td class="comment-button">` + 
-    `   <button onclick="deleteThisComment(${json[i].id})">X</button></td>` +
+    ` <td class="comment-button">` +
+    `   ${getCommentButtonHTML(currentUserId, json[i])}` + 
+    ` </td>` +
     ` <td colspan = 2 class="user-info-box">` +
     `   <b><abbr title="${json[i].email}">${json[i].username}</abbr>:</b><br>` +
     `   <i class="comment-date">${prettyPrintTime(json[i].time)}</i>` +
@@ -249,6 +251,23 @@ function getCommentHTML(json, i) {
     ` </td>` +
     `</tr>`;
   return html;
+}
+
+/** 
+  * Returns the HTML for a button that will delete this comment if
+  * this comment was written by the current user. Otherwise it
+  * returns no button. 
+  * @param {String} currentUserId the id of the current user.
+  * @param {JSON} commentObject the json object representing the comment 
+      in question. 
+  */
+function getCommentButtonHTML(currentUserId, commentObject) {
+  if (currentUserId === commentObject.userId) {
+    return `<button onclick="deleteThisComment(${commentObject.id})">` +
+      `X</button>`;
+  } else {
+    return ``;
+  }
 }
 
 /**

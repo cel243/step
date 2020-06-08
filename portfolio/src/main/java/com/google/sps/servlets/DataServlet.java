@@ -133,6 +133,14 @@ public class DataServlet extends HttpServlet {
     */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    UserService userService = UserServiceFactory.getUserService();
+    String currentUserId;
+    if (!userService.isUserLoggedIn()) {
+      currentUserId = "";
+    } else {
+      currentUserId = userService.getCurrentUser().getUserId();
+    }
+
     int numberToDisplay = getNumberToDisplay(request); 
     String paginationInstruction = (String) request.getParameter(
       RequestParameters.PAGE_ACTION);
@@ -157,7 +165,8 @@ public class DataServlet extends HttpServlet {
       commentRange.upperEndpoint());
     int newPageToken = commentRange.lowerEndpoint();
 
-    String json = convertToJson(commentsToDisplay, newPageToken); 
+    String json = convertToJson(commentsToDisplay, newPageToken, 
+      currentUserId); 
     response.setContentType("application/json;");
     response.getWriter().println(json);
   }
@@ -256,11 +265,16 @@ public class DataServlet extends HttpServlet {
     }
   }
 
-  /** Returns JSON string representation of `data`. */
-  private String convertToJson(List<Comment> data, int pageToken) {
-    List<Object> combineData = new ArrayList<Object>();
-    combineData.add(pageToken);
-    combineData.add(data);
+  /** 
+    * Returns JSON string representation of `data`, `pageToken`, 
+    * and `currentUserId`. 
+    */
+  private String convertToJson(List<Comment> data, int pageToken, 
+    String currentUserId) {
+    HashMap<String, Object> combineData = new HashMap<String, Object>();
+    combineData.put("pageToken", pageToken);
+    combineData.put("commentData", data);
+    combineData.put("currentUserId", currentUserId);
 
     Gson gson = new Gson(); 
     String json = gson.toJson(combineData);
