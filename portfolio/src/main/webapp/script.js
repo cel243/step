@@ -262,7 +262,7 @@ function getCommentHTML(currentUserId, json, i) {
       in question. 
   */
 function getCommentButtonHTML(currentUserId, commentObject) {
-  if (currentUserId === commentObject.userId) {
+  if (currentUserId === commentObject.userId || currentUserId === "ADMIN") {
     return `<button onclick="deleteThisComment(${commentObject.id})">` +
       `X</button>`;
   } else {

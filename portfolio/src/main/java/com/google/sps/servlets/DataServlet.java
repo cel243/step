@@ -137,6 +137,8 @@ public class DataServlet extends HttpServlet {
     String currentUserId;
     if (!userService.isUserLoggedIn()) {
       currentUserId = "";
+    } else if (userService.isUserAdmin()) {
+      currentUserId = "ADMIN";
     } else {
       currentUserId = userService.getCurrentUser().getUserId();
     }
