@@ -50,12 +50,14 @@ public class DataServlet extends HttpServlet {
       String name;
       long time;
       long id;
+      String userId;
 
-      Comment(String text, String name, long time, long id) {
+      Comment(String text, String name, long time, long id, String userId) {
         this.text = text;
         this.name = name;
         this.time = time;
         this.id = id;
+        this.userId = userId;
       }
 
       /** Returns an entity representing this comment. */
@@ -64,6 +66,7 @@ public class DataServlet extends HttpServlet {
         commentEntity.setProperty(EntityProperties.COMMENT_TEXT, text);
         commentEntity.setProperty(EntityProperties.COMMENT_AUTHOR, name);
         commentEntity.setProperty(EntityProperties.COMMENT_TIMESTAMP, time);
+        commentEntity.setProperty("userId", userId);
         return commentEntity;
       }
 
@@ -73,13 +76,20 @@ public class DataServlet extends HttpServlet {
           (String) e.getProperty(EntityProperties.COMMENT_TEXT),
           (String) e.getProperty(EntityProperties.COMMENT_AUTHOR),
           (long) e.getProperty(EntityProperties.COMMENT_TIMESTAMP), 
-          e.getKey().getId());
+          e.getKey().getId(),
+          (String) e.getProperty("userId"));
       }
   }
 
   /** Extracts user comment from form and stores it via datastore. */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    UserService userService = UserServiceFactory.getUserService();
+    if (!userService.isUserLoggedIn()) {
+      response.sendRedirect("/index.html");
+      return;
+    }
+
     String userComment = request.getParameter(
       RequestParameters.INPUTTED_TEXT).trim();
     String userName = request.getParameter(
@@ -88,11 +98,13 @@ public class DataServlet extends HttpServlet {
       userName = "Anonymous";
     }
     long timestamp = System.currentTimeMillis();
+    String userId = userService.getCurrentUser().getUserId();
 
     if (!Strings.isNullOrEmpty(userComment)) {    
       DatastoreService datastore = 
         DatastoreServiceFactory.getDatastoreService();
-      Key key = datastore.put((new Comment(userComment, userName, timestamp, 0))
+      Key key = datastore.put(
+        (new Comment(userComment, userName, timestamp, 0, userId))
         .toEntity());
       try {
         Entity commentJustAdded = datastore.get(key);
