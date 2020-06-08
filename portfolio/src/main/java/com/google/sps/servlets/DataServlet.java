@@ -25,6 +25,7 @@ import com.google.gson.Gson;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
@@ -34,6 +35,8 @@ import com.google.common.collect.Range;
 import com.google.sps.data.EntityProperties;
 import com.google.sps.data.RequestParameters;
 import java.util.stream.Collectors;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 
 /** 
   * Servlet that uploads and retrieves persistent comment data using datastore.
@@ -89,8 +92,15 @@ public class DataServlet extends HttpServlet {
     if (!Strings.isNullOrEmpty(userComment)) {    
       DatastoreService datastore = 
         DatastoreServiceFactory.getDatastoreService();
-      datastore.put((new Comment(userComment, userName, timestamp, 0))
+      Key key = datastore.put((new Comment(userComment, userName, timestamp, 0))
         .toEntity());
+      try {
+        Entity commentJustAdded = datastore.get(key);
+        commentJustAdded.setProperty(EntityProperties.COMMENT_ID, key.getId());
+        datastore.put(commentJustAdded);
+      } catch (com.google.appengine.api.datastore.EntityNotFoundException e) {
+        //we have just added this entity
+      }
     }
     response.sendRedirect("/index.html");
   }

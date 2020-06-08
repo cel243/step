@@ -43,20 +43,19 @@ public class DeleteServlet extends HttpServlet {
       (String) request.getParameter(RequestParameters.WHICH_COMMENT_TO_DELETE);
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    Query query = new Query("Comment");
-    PreparedQuery results = datastore.prepare(query);
 
     if (whichCommentToDelete.equals("\"all\"")) {
+      Query query = new Query("Comment");
+      PreparedQuery results = datastore.prepare(query);
       results.asIterable().forEach(comment -> {
         datastore.delete(comment.getKey());
       });
     } else {
-      Long id = Long.parseLong(whichCommentToDelete);
-      results.asIterable().forEach(comment -> {
-        if (comment.getKey().getId() == id) {
-          datastore.delete(comment.getKey());
-        }
-      });
+      long id = Long.parseLong(whichCommentToDelete);
+      Query query = new Query("Comment").setFilter(new Query.FilterPredicate
+        (EntityProperties.COMMENT_ID, Query.FilterOperator.EQUAL, id));
+      Entity commentWithCorrectId = datastore.prepare(query).asSingleEntity();
+      datastore.delete(commentWithCorrectId.getKey());
     }
   }
 

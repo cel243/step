@@ -16,4 +16,8 @@ public final class EntityProperties {
   /** The property representing the timestamp when the comment was posted (in 
     * milliseconds since the epoch). */
   public static final String COMMENT_TIMESTAMP = "time";
+
+  /** The property representing the numeric id of this entiity in the 
+    * datastore. Used for deleting comments. */
+  public static final String COMMENT_ID = "id";
 }
