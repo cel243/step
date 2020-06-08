@@ -21,6 +21,9 @@ public final class EntityProperties {
     * datastore. Used for deleting comments. */
   public static final String COMMENT_ID = "id";
 
+  /** The property representing the email of the author of this comment */
+  public static final String USER_EMAIL = "email";
+
   /* User Properties */
 
   /** The property representing the user id */

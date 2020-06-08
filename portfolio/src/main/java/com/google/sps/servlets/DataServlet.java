@@ -53,13 +53,16 @@ public class DataServlet extends HttpServlet {
       long time;
       long id;
       String userId;
+      String email;
 
-      Comment(String text, String username, long time, long id, String userId) {
+      Comment(String text, String username, long time, long id, 
+        String userId, String email) {
         this.text = text;
         this.username = username;
         this.time = time;
         this.id = id;
         this.userId = userId;
+        this.email = email;
       }
 
       /** Returns an entity representing this comment. */
@@ -68,6 +71,7 @@ public class DataServlet extends HttpServlet {
         commentEntity.setProperty(EntityProperties.COMMENT_TEXT, text);
         commentEntity.setProperty(EntityProperties.COMMENT_TIMESTAMP, time);
         commentEntity.setProperty(EntityProperties.USER_ID_OF_AUTHOR, userId);
+        commentEntity.setProperty(EntityProperties.USER_EMAIL, email);
         return commentEntity;
       }
 
@@ -79,7 +83,8 @@ public class DataServlet extends HttpServlet {
             (String) e.getProperty(EntityProperties.USER_ID_OF_AUTHOR)),
           (long) e.getProperty(EntityProperties.COMMENT_TIMESTAMP), 
           e.getKey().getId(),
-          (String) e.getProperty(EntityProperties.USER_ID_OF_AUTHOR));
+          (String) e.getProperty(EntityProperties.USER_ID_OF_AUTHOR),
+          (String) e.getProperty(EntityProperties.USER_EMAIL));
       }
   }
 
@@ -101,13 +106,15 @@ public class DataServlet extends HttpServlet {
     }
     long timestamp = System.currentTimeMillis();
     String userId = userService.getCurrentUser().getUserId();
+    String email = userService.getCurrentUser().getEmail();
     AuthenticationServlet.updateUserName(userName, userId);
 
     if (!Strings.isNullOrEmpty(userComment)) {    
       DatastoreService datastore = 
         DatastoreServiceFactory.getDatastoreService();
       Key key = datastore.put(
-        (new Comment(userComment, "", timestamp, 0, userId)).toEntity());
+        (new Comment(userComment, "", timestamp, 0, userId, email))
+        .toEntity());
       try {
         Entity commentJustAdded = datastore.get(key);
         commentJustAdded.setProperty(EntityProperties.COMMENT_ID, key.getId());

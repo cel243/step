@@ -241,7 +241,7 @@ function getCommentHTML(json, i) {
     ` <td class="comment-button">` + 
     `   <button onclick="deleteThisComment(${json[i].id})">X</button></td>` +
     ` <td colspan = 2 class="user-info-box">` +
-    `   <b><u>${json[i].username}: </b></u><br>` +
+    `   <b><abbr title="${json[i].email}">${json[i].username}</abbr>:</b><br>` +
     `   <i class="comment-date">${prettyPrintTime(json[i].time)}</i>` +
     ` </td>` +
     ` <td colspan="4">` +
