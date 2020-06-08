@@ -28,17 +28,12 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
-import java.time.format.DateTimeFormatter;
-import java.time.LocalDateTime; 
 import java.lang.Math;
 import com.google.common.base.Strings;
-import com.google.common.collect.Iterables;
-import com.google.common.base.Predicates;
-import com.google.common.base.Predicate;
 import com.google.common.collect.Range;
-import java.lang.StringBuilder;
 import com.google.sps.data.EntityProperties;
 import com.google.sps.data.RequestParameters;
+import java.util.stream.Collectors;
 
 /** 
   * Servlet that uploads and retrieves persistent comment data using datastore.
@@ -121,7 +116,7 @@ public class DataServlet extends HttpServlet {
     results.asIterable().forEach(commentEntity -> {
       unfilteredComments.add(Comment.fromEntity(commentEntity));
     });
-    ArrayList<Comment> comments = getFilteredComments(unfilteredComments, 
+    List<Comment> comments = getFilteredComments(unfilteredComments, 
       searchQuery);
 
     Range<Integer> commentRange = getRangeOfCommentsToDisplay(
@@ -211,11 +206,10 @@ public class DataServlet extends HttpServlet {
     * @param comments List containing all comments in database.
     * @param search A string to filter the comments by. 
     */
-  private ArrayList<Comment> getFilteredComments( 
+  private List<Comment> getFilteredComments( 
     ArrayList<Comment> comments, String search) {
-    ArrayList<Comment> filteredComments = new ArrayList<Comment>();
-    Iterables.filter(comments, c -> satisfiesSearch(c, search))
-      .forEach(c -> filteredComments.add(c));
+    List<Comment> filteredComments = comments.stream()
+      .filter(c -> satisfiesSearch(c, search)).collect(Collectors.toList());
     return filteredComments;
   }
 
