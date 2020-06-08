@@ -28,6 +28,7 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.sps.data.RequestParameters;
 
 /** Servlet that deletes all persistent comment data from datastore. */
 @WebServlet("/delete-data")
@@ -39,18 +40,24 @@ public class DeleteServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String whichCommentToDelete = 
-      (String) request.getParameter("whichData");
+      (String) request.getParameter(RequestParameters.WHICH_COMMENT_TO_DELETE);
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     Query query = new Query("Comment");
     PreparedQuery results = datastore.prepare(query);
 
-    results.asIterable().forEach(comment -> { 
-      if (whichCommentToDelete.equals( "\"all\"") || 
-          whichCommentToDelete.equals((String) comment.getProperty("id"))) {
+    if (whichCommentToDelete.equals("\"all\"")) {
+      results.asIterable().forEach(comment -> {
         datastore.delete(comment.getKey());
-      }
-    });
+      });
+    } else {
+      Long id = Long.parseLong(whichCommentToDelete);
+      results.asIterable().forEach(comment -> {
+        if (comment.getKey().getId() == id) {
+          datastore.delete(comment.getKey());
+        }
+      });
+    }
   }
 
 }

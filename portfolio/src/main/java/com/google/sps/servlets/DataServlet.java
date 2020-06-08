@@ -28,11 +28,12 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
-import java.time.format.DateTimeFormatter;
-import java.time.LocalDateTime; 
 import java.lang.Math;
 import com.google.common.base.Strings;
 import com.google.common.collect.Range;
+import com.google.sps.data.EntityProperties;
+import com.google.sps.data.RequestParameters;
+import java.util.stream.Collectors;
 
 /** 
   * Servlet that uploads and retrieves persistent comment data using datastore.
@@ -40,16 +41,14 @@ import com.google.common.collect.Range;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
-  private int nextUniqueId;
-
   /** Represents a single comment */
   private static class Comment {
       String text;
       String name;
       long time;
-      String id;
+      long id;
 
-      Comment(String text, String name, long time, String id) {
+      Comment(String text, String name, long time, long id) {
         this.text = text;
         this.name = name;
         this.time = time;
@@ -59,59 +58,38 @@ public class DataServlet extends HttpServlet {
       /** Returns an entity representing this comment. */
       Entity toEntity() {
         Entity commentEntity = new Entity("Comment");
-        commentEntity.setProperty("text", text);
-        commentEntity.setProperty("name", name);
-        commentEntity.setProperty("time", time);
-        commentEntity.setProperty("id", id);
+        commentEntity.setProperty(EntityProperties.COMMENT_TEXT, text);
+        commentEntity.setProperty(EntityProperties.COMMENT_AUTHOR, name);
+        commentEntity.setProperty(EntityProperties.COMMENT_TIMESTAMP, time);
         return commentEntity;
       }
 
       /** Returns a comment representing this entity */
       static Comment fromEntity(Entity e) {
         return new Comment(
-          (String) e.getProperty("text"),
-          (String) e.getProperty("name"),
-          (long) e.getProperty("time"), 
-          (String) e.getProperty("id"));
+          (String) e.getProperty(EntityProperties.COMMENT_TEXT),
+          (String) e.getProperty(EntityProperties.COMMENT_AUTHOR),
+          (long) e.getProperty(EntityProperties.COMMENT_TIMESTAMP), 
+          e.getKey().getId());
       }
-  }
-
-  /** 
-    * Iterates over all persistent comments upon server startup
-    * and assigns each a unique id number, then decides the value of
-    * the next valid unique id number that can be assigned to a 
-    * future comment. 
-    */
-  @Override
-  public void init() { 
-    PreparedQuery results = getAllComments();
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-
-    int uniqueId = 0;
-    for (Entity comment : results.asIterable()) {
-      comment.setProperty("id", Integer.toString(uniqueId));
-      datastore.put(comment);
-      uniqueId++;
-    }
-    nextUniqueId = uniqueId;
   }
 
   /** Extracts user comment from form and stores it via datastore. */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String userComment = request.getParameter("text-input").trim();
-    String userName = request.getParameter("author").trim();
+    String userComment = request.getParameter(
+      RequestParameters.INPUTTED_TEXT).trim();
+    String userName = request.getParameter(
+      RequestParameters.INPUTTED_AUTHOR_NAME).trim();
     if (Strings.isNullOrEmpty(userName)) {
       userName = "Anonymous";
     }
     long timestamp = System.currentTimeMillis();
-    String id = Integer.toString(nextUniqueId);
-    nextUniqueId++;
 
     if (!Strings.isNullOrEmpty(userComment)) {    
       DatastoreService datastore = 
         DatastoreServiceFactory.getDatastoreService();
-      datastore.put((new Comment(userComment, userName, timestamp, id))
+      datastore.put((new Comment(userComment, userName, timestamp, 0))
         .toEntity());
     }
     response.sendRedirect("/index.html");
@@ -119,21 +97,28 @@ public class DataServlet extends HttpServlet {
 
   /** 
     * Loads all user comments from datastore and returns JSON list of n 
-    * comments, where n is the number of comments the user has requested. 
+    * comments, where n is the number of comments the user has requested, 
+    * filtered by any search query the user may have entered.
     */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    PreparedQuery results = getAllComments();
-    
-    ArrayList<Comment> comments = new ArrayList<Comment>();
     int numberToDisplay = getNumberToDisplay(request); 
-    String paginationInstruction = (String) request.getParameter("pageAction");
+    String paginationInstruction = (String) request.getParameter(
+      RequestParameters.PAGE_ACTION);
+    String searchQuery = (String) request.getParameter(
+      RequestParameters.SEARCH_QUERY);
+    searchQuery = searchQuery.substring(1,searchQuery.length() - 1);
     int pageToken = Integer.parseInt(
-      (String) request.getParameter("pageToken"));;
+      (String) request.getParameter(RequestParameters.PAGE_TOKEN));
 
-    results.asIterable().forEach(comment -> {
-      comments.add(Comment.fromEntity(comment));
+    PreparedQuery results = getAllComments();
+    ArrayList<Comment> unfilteredComments = new ArrayList<Comment>();
+    results.asIterable().forEach(commentEntity -> {
+      unfilteredComments.add(Comment.fromEntity(commentEntity));
     });
+    List<Comment> comments = getFilteredComments(unfilteredComments, 
+      searchQuery);
+
     Range<Integer> commentRange = getRangeOfCommentsToDisplay(
       paginationInstruction, numberToDisplay, comments.size(), pageToken);
     List<Comment> commentsToDisplay = 
@@ -156,6 +141,8 @@ public class DataServlet extends HttpServlet {
         on the page.
     * @param totalNumberComments Indicates the number of comments currently
         in the database.
+    * @param pageToken The current index of the first comment being displayed 
+        on the page. 
     * @return A range from `startIndex` to `stopIndex + 1`, where
         startIndex is the index of the first comment that should be displayed
         and stopIndex is the index of the last comment that should be
@@ -178,7 +165,7 @@ public class DataServlet extends HttpServlet {
       }
       stopIndex = Math.min(totalNumberComments, startIndex + numberToDisplay);
 
-      if (stopIndex == startIndex) {
+      if (stopIndex <= startIndex) {
         startIndex = Math.max(0, stopIndex - numberToDisplay);
       }
 
@@ -194,7 +181,8 @@ public class DataServlet extends HttpServlet {
     */
   private int getNumberToDisplay(HttpServletRequest request)
     throws IllegalArgumentException {
-    String parameterString = (String) request.getParameter("numberToDisplay");
+    String parameterString = (String) request.getParameter(
+      RequestParameters.NUMBER_PER_PAGE);
     int numberToDisplay;
     try {
       numberToDisplay = Integer.parseInt(parameterString);
@@ -207,15 +195,44 @@ public class DataServlet extends HttpServlet {
   /** Returns all user comments stored in datastore. */
   private PreparedQuery getAllComments() {
     Query query = new Query("Comment")
-      .addSort("time", SortDirection.DESCENDING);
+      .addSort(EntityProperties.COMMENT_TIMESTAMP, SortDirection.DESCENDING);
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     return datastore.prepare(query);
   }
 
+  /** 
+    * Returns all user comments that contain `search` in either
+    * the comment text or author name. 
+    * @param comments List containing all comments in database.
+    * @param search A string to filter the comments by. 
+    */
+  private List<Comment> getFilteredComments( 
+    ArrayList<Comment> comments, String search) {
+    List<Comment> filteredComments = comments.stream()
+      .filter(c -> satisfiesSearch(c, search)).collect(Collectors.toList());
+    return filteredComments;
+  }
+
+  /** 
+    * Returns true if this comment contains the search string in the
+    * comment text or author name. 
+    */
+  private boolean satisfiesSearch(Comment comment, String search) {
+    if (Strings.isNullOrEmpty(search)) {
+      return true;
+    } else {
+      return comment.text.contains(search) || comment.name.contains(search);
+    }
+  }
+
   /** Returns JSON string representation of `data`. */
   private String convertToJson(List<Comment> data, int pageToken) {
+    List<Object> combineData = new ArrayList<Object>();
+    combineData.add(pageToken);
+    combineData.add(data);
+
     Gson gson = new Gson(); 
-    String json = gson.toJson(data);
-    return "[{\"pageToken\" : "+pageToken+" }, "+json+"]";
+    String json = gson.toJson(combineData);
+    return json;
   }
 }

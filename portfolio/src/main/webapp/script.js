@@ -15,6 +15,26 @@
 const NUM_AVAILABLE_IMAGES = 13;
 let pageToken = 0;
 
+/** Initializes the page. */
+function onLoad() {
+  displayCommentSection('none');
+  initializeSearchBar();
+}
+
+/** 
+  * Sets up event listener for search bar such that enter key
+  * triggers action. 
+  */
+function initializeSearchBar() {
+  let searchBar = document.getElementById("search");
+  searchBar.addEventListener("keydown", function (e) {
+    if(e.keyCode == 13) {
+      pageToken = 0;
+      displayCommentSection('none');
+    }
+  });
+}
+
 /** 
   * Generates a random image url from the available pictures of Penny.
   * @returns {String} This returns new random valid image url.
@@ -123,9 +143,14 @@ function displayCommentSection(pageAction) {
   const selectNumberInput = document.getElementById('number-to-display');
   const numberToDisplay = selectNumberInput
     .options[selectNumberInput.selectedIndex].value;
+  let searchQuery = document.getElementById('search').value;
+  if (!searchQuery || !searchQuery.trim()) {
+    searchQuery = "";
+  }
 
-  fetch(`/data?numberToDisplay=${numberToDisplay}` +
-    `&pageAction="${pageAction}"&pageToken=${pageToken}`)
+  fetch(`/data?numberToDisplay=${numberToDisplay}` + 
+    `&pageAction="${pageAction}"&search="${searchQuery}"` +
+    `&pageToken=${pageToken}`)
     .then(response => response.json())
     .then(displayJSON);
 }
@@ -138,22 +163,27 @@ function displayCommentSection(pageAction) {
   * @param {JSON} json The JSON representing the list of comment objects. 
   */
 function displayJSON(json) {
-  pageToken = json[0].pageToken;
+  pageToken = json[0];
   json = json[1];
 
   const dataContainer = document.getElementById('comment-section');
   htmlToAdd =`<table> <tr><td></td><td></td><td></td>` +
     `<td></td><td></td><td></td><td></td></tr>`;
 
+  let searchQuery = document.getElementById('search').value;
+  let noResultsMessage = "Sorry, we couldn't find anything!";
+  if (!searchQuery || !searchQuery.trim()) {
+    noResultsMessage = "Be the first to leave a comment!";
+  }
+
   if (json.length === 0) {
     htmlToAdd += 
       `<tr rowspan="5">` +
       ` <td colspan="7" id="be-the-first">` +
-          `Be the first to leave a comment!` +
+          `${noResultsMessage}` +
       ` </td>` +
       `</tr>`;
-  }
-  else {
+  } else {
     let allCommentHTML = [...Array(json.length).keys()]
       .map(i => getCommentHTML(json, i));
     allCommentHTML.forEach(commentHTML => htmlToAdd += commentHTML);
@@ -194,15 +224,11 @@ function getCommentHTML(json, i) {
 function prettyPrintTime(timeInMilliseconds) {
   let time = new Date(0);
   time.setUTCMilliseconds(timeInMilliseconds);
-  let dateInformation = time.toString().split(" ");
-  let timeInformation = dateInformation[4].split(":");
 
-  // Example output of toString(): 
-  // Tue Aug 19 1975 23:15:30 GMT+0200 (CEST)
-  let dateInformation = time.toString().split(" ");
-  let timeInformation = dateInformation[4].split(":");
+  const options = {month: 'short', day: 'numeric', hour: 'numeric', 
+    minute: 'numeric', hour12: true };
 
-  return `${dateInformation[1]} ${dateInformation[2]}, ${timeInformation[0]}:${timeInformation[1]}`;
+  return time.toLocaleDateString(undefined, options);
 }
 
 /** Deletes all comments from the datastore. */
@@ -220,4 +246,12 @@ function deleteThisComment(commentId) {
     .then(response => {
       displayCommentSection('none');
     })
+}
+
+/** Clears the current search of the comment section. */
+function onClearSearch() {
+  let searchBar = document.getElementById("search");
+  searchBar.value = "";
+  pageToken = 0;
+  displayCommentSection('none');
 }

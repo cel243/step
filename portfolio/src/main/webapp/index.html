@@ -8,7 +8,7 @@
     <script src="script.js"></script>
 </head>
 
-<body onload="displayCommentSection('none')">
+<body onload="onLoad()">
     <div class="header">
         <h1>Portfolio Webpage</h1> 
     </div>
@@ -100,7 +100,20 @@
             <div id="comment-section"></div>
             <table>
                 <tr>
-                    <td id="leave-a-comment">
+                    <td></td><td></td><td></td>
+                    <td></td><td></td><td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td id="search-form-box" colspan="4">
+                        <input type="text" name="search" id="search" value="" tabindex="1" placeholder="Search">
+                    </td>
+                    <td id="clear-search-box" >
+                        <button onclick="onClearSearch()">X</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td id="leave-a-comment" colspan="7">
                         Leave a comment:
                     </td>
                 </tr> 
