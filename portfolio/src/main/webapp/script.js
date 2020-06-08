@@ -19,6 +19,40 @@ let pageToken = 0;
 function onLoad() {
   displayCommentSection('none');
   initializeSearchBar();
+  fetch(`/authenticate`)
+  .then(response => response.json())
+  .then(displayCommentForm);
+}
+
+/** Determines whether the current user is signed in, and if so, 
+  * displays the form where the user could leave a comment. If
+  * not, it displays a link to sign in.
+  * @param json The json returned by the GET request to /authenticate  */
+function displayCommentForm(json) {
+  let commentFormBox = document.getElementById("comment-form");
+  if (json.isLoggedIn) {
+    commentFormBox.innerHTML = 
+      `<table>` +
+          `<tr>` +
+              `<td id="leave-a-comment">` +
+                  `Leave a comment:` +
+              `</td>` +
+          `</tr>` + 
+      `</table>` +
+      `<div id="comment-form-box">` +
+        `<form action="/data" method="POST" id="comment-form">` +
+            `<input type="text" name="author" id="author" value=""` +
+                `tabindex="1" required="required" placeholder="Name">` +
+            `<textarea name="text-input" id="text-input" rows="10"` + 
+                `tabindex="4" required="required"></textarea>` +
+            `<input type="submit" />` +
+        `</form>` +
+      `</div>` +
+      `<div id="log-out"><a href="${json.logOutLink}">Log out</a> here.`;
+  } else {
+    commentFormBox.innerHTML = `<div id="please-sign-in">Please` +
+      ` <a href="${json.logInLink}">sign in</a> to leave a comment.</div>`
+  }
 }
 
 /** 

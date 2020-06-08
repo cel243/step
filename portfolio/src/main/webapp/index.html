@@ -112,21 +112,8 @@
                         <button onclick="onClearSearch()">X</button>
                     </td>
                 </tr>
-                <tr>
-                    <td id="leave-a-comment" colspan="7">
-                        Leave a comment:
-                    </td>
-                </tr> 
             </table>
-            <div id="comment-form-box">
-            <form action="/data" method="POST" id="comment-form">
-                <input type="text" name="author" id="author" value="" 
-                    tabindex="1" required="required" placeholder="Name">
-                <textarea name="text-input" id="text-input" rows="10" 
-                    tabindex="4" required="required"></textarea>
-                <input type="submit" />
-            </form>
-            </div>
+            <div id="comment-form"></div>
         </div>
     </div>
 </body>
