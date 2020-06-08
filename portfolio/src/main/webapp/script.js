@@ -224,6 +224,7 @@ function getCommentHTML(json, i) {
 function prettyPrintTime(timeInMilliseconds) {
   let time = new Date(0);
   time.setUTCMilliseconds(timeInMilliseconds);
+
   const options = {month: 'short', day: 'numeric', hour: 'numeric', 
     minute: 'numeric', hour12: true };
 
