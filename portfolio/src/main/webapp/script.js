@@ -31,6 +31,8 @@ function onLoad() {
 function displayCommentForm(json) {
   let commentFormBox = document.getElementById("comment-form");
   if (json.isLoggedIn) {
+    const username = !json.username.trim() ? 
+      `placeholder="Please enter a username."` : `value="${json.username}"`;
     commentFormBox.innerHTML = 
       `<table>` +
           `<tr>` +
@@ -41,8 +43,8 @@ function displayCommentForm(json) {
       `</table>` +
       `<div id="comment-form-box">` +
         `<form action="/data" method="POST" id="comment-form">` +
-            `<input type="text" name="author" id="author" value=""` +
-                `tabindex="1" required="required" placeholder="Name">` +
+            `<input type="text" name="author" id="author" ` +
+                `tabindex="1" required="required" ${username}>` +
             `<textarea name="text-input" id="text-input" rows="10"` + 
                 `tabindex="4" required="required"></textarea>` +
             `<input type="submit" />` +
@@ -239,7 +241,7 @@ function getCommentHTML(json, i) {
     ` <td class="comment-button">` + 
     `   <button onclick="deleteThisComment(${json[i].id})">X</button></td>` +
     ` <td colspan = 2 class="user-info-box">` +
-    `   <b><u>${json[i].name}: </b></u><br>` +
+    `   <b><u>${json[i].username}: </b></u><br>` +
     `   <i class="comment-date">${prettyPrintTime(json[i].time)}</i>` +
     ` </td>` +
     ` <td colspan="4">` +

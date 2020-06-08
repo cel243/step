@@ -5,13 +5,13 @@ public final class EntityProperties {
 
   private EntityProperties() {}
 
-  /* Entity Properties: */
+  /* Comment Properties: */
 
   /** The property representing the text of a comment on the webpage. */
   public static final String COMMENT_TEXT = "text";
 
-  /** The property representing the name of the author of a comment. */
-  public static final String COMMENT_AUTHOR = "name";
+  /** The property representing the user id of the author of a comment. */
+  public static final String USER_ID_OF_AUTHOR = "userId";
 
   /** The property representing the timestamp when the comment was posted (in 
     * milliseconds since the epoch). */
@@ -20,4 +20,12 @@ public final class EntityProperties {
   /** The property representing the numeric id of this entiity in the 
     * datastore. Used for deleting comments. */
   public static final String COMMENT_ID = "id";
+
+  /* User Properties */
+
+  /** The property representing the user id */
+  public static final String USER_ID = "userId";
+
+  /** The property representing the username of this user */
+  public static final String USERNAME = "username";
 }

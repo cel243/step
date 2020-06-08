@@ -45,6 +45,10 @@ import java.util.HashMap;
 @WebServlet("/authenticate")
 public class AuthenticationServlet extends HttpServlet {
 
+  /** 
+    * Checks whether the user is currently logged in and provides
+    * a log-in link if not, and a log-out link if not. 
+    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     UserService userService = UserServiceFactory.getUserService();
@@ -55,6 +59,8 @@ public class AuthenticationServlet extends HttpServlet {
       authenticationStatusInfo.put("isLoggedIn", true);
       String logOutLink = userService.createLogoutURL("/index.html");
       authenticationStatusInfo.put("logOutLink", logOutLink);
+      authenticationStatusInfo.put("username", getUserName(
+        userService.getCurrentUser().getUserId()));
     } else {
       authenticationStatusInfo.put("isLoggedIn", false);
       String logInLink = userService.createLoginURL("/index.html");
@@ -62,9 +68,49 @@ public class AuthenticationServlet extends HttpServlet {
     }
 
     String json = (new Gson()).toJson(authenticationStatusInfo);
-    System.out.println(json);
     response.setContentType("application/json;");
     response.getWriter().println(json);
+  }
+
+  /** 
+    * Returns the username currently associated with this user id.
+    * If no username is currently associated with this user, returns
+    * the empty string.
+    */
+  public static String getUserName(String userId) {
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    Query query = new Query("User").setFilter(
+      new Query.FilterPredicate(
+        EntityProperties.USER_ID, Query.FilterOperator.EQUAL, userId));
+    Entity user = datastore.prepare(query).asSingleEntity();
+
+    if (user == null) {
+      return "";
+    } else {
+      return (String) user.getProperty(EntityProperties.USERNAME);
+    }
+  }
+
+  /** 
+    * Updates the username in the datastore associated with this 
+    * user id to be `newUserName`. 
+    */
+  public static void updateUserName(String newUserName, String userId) {
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    Query query = new Query("User").setFilter(
+      new Query.FilterPredicate(
+        EntityProperties.USER_ID, Query.FilterOperator.EQUAL, userId));
+    Entity user = datastore.prepare(query).asSingleEntity();
+
+    if (user == null) {
+      Entity newUser = new Entity("User");
+      newUser.setProperty(EntityProperties.USER_ID, userId);
+      newUser.setProperty(EntityProperties.USERNAME, newUserName);
+      datastore.put(newUser);
+    } else if (!((String) user.getProperty(EntityProperties.USERNAME)).equals(newUserName)) {
+      user.setProperty(EntityProperties.USERNAME, newUserName);
+      datastore.put(user);
+    }
   }
 
 }

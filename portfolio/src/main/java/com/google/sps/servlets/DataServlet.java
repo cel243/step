@@ -34,9 +34,11 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Range;
 import com.google.sps.data.EntityProperties;
 import com.google.sps.data.RequestParameters;
+import com.google.sps.servlets.AuthenticationServlet;
 import java.util.stream.Collectors;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
+import java.util.HashMap;
 
 /** 
   * Servlet that uploads and retrieves persistent comment data using datastore.
@@ -47,14 +49,14 @@ public class DataServlet extends HttpServlet {
   /** Represents a single comment */
   private static class Comment {
       String text;
-      String name;
+      String username;
       long time;
       long id;
       String userId;
 
-      Comment(String text, String name, long time, long id, String userId) {
+      Comment(String text, String username, long time, long id, String userId) {
         this.text = text;
-        this.name = name;
+        this.username = username;
         this.time = time;
         this.id = id;
         this.userId = userId;
@@ -64,9 +66,8 @@ public class DataServlet extends HttpServlet {
       Entity toEntity() {
         Entity commentEntity = new Entity("Comment");
         commentEntity.setProperty(EntityProperties.COMMENT_TEXT, text);
-        commentEntity.setProperty(EntityProperties.COMMENT_AUTHOR, name);
         commentEntity.setProperty(EntityProperties.COMMENT_TIMESTAMP, time);
-        commentEntity.setProperty("userId", userId);
+        commentEntity.setProperty(EntityProperties.USER_ID_OF_AUTHOR, userId);
         return commentEntity;
       }
 
@@ -74,10 +75,11 @@ public class DataServlet extends HttpServlet {
       static Comment fromEntity(Entity e) {
         return new Comment(
           (String) e.getProperty(EntityProperties.COMMENT_TEXT),
-          (String) e.getProperty(EntityProperties.COMMENT_AUTHOR),
+          AuthenticationServlet.getUserName(
+            (String) e.getProperty(EntityProperties.USER_ID_OF_AUTHOR)),
           (long) e.getProperty(EntityProperties.COMMENT_TIMESTAMP), 
           e.getKey().getId(),
-          (String) e.getProperty("userId"));
+          (String) e.getProperty(EntityProperties.USER_ID_OF_AUTHOR));
       }
   }
 
@@ -99,13 +101,13 @@ public class DataServlet extends HttpServlet {
     }
     long timestamp = System.currentTimeMillis();
     String userId = userService.getCurrentUser().getUserId();
+    AuthenticationServlet.updateUserName(userName, userId);
 
     if (!Strings.isNullOrEmpty(userComment)) {    
       DatastoreService datastore = 
         DatastoreServiceFactory.getDatastoreService();
       Key key = datastore.put(
-        (new Comment(userComment, userName, timestamp, 0, userId))
-        .toEntity());
+        (new Comment(userComment, "", timestamp, 0, userId)).toEntity());
       try {
         Entity commentJustAdded = datastore.get(key);
         commentJustAdded.setProperty(EntityProperties.COMMENT_ID, key.getId());
@@ -243,7 +245,7 @@ public class DataServlet extends HttpServlet {
     if (Strings.isNullOrEmpty(search)) {
       return true;
     } else {
-      return comment.text.contains(search) || comment.name.contains(search);
+      return comment.text.contains(search) || comment.username.contains(search);
     }
   }
 
