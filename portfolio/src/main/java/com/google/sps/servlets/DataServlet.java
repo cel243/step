@@ -70,7 +70,7 @@ public class DataServlet extends HttpServlet {
         Entity commentEntity = new Entity("Comment");
         commentEntity.setProperty(EntityProperties.COMMENT_TEXT, text);
         commentEntity.setProperty(EntityProperties.COMMENT_TIMESTAMP, time);
-        commentEntity.setProperty(EntityProperties.USER_ID_OF_AUTHOR, userId);
+        commentEntity.setProperty(EntityProperties.USER_ID, userId);
         commentEntity.setProperty(EntityProperties.USER_EMAIL, email);
         return commentEntity;
       }
@@ -80,10 +80,10 @@ public class DataServlet extends HttpServlet {
         return new Comment(
           (String) e.getProperty(EntityProperties.COMMENT_TEXT),
           AuthenticationServlet.getUserName(
-            (String) e.getProperty(EntityProperties.USER_ID_OF_AUTHOR)),
+            (String) e.getProperty(EntityProperties.USER_ID)),
           (long) e.getProperty(EntityProperties.COMMENT_TIMESTAMP), 
           e.getKey().getId(),
-          (String) e.getProperty(EntityProperties.USER_ID_OF_AUTHOR),
+          (String) e.getProperty(EntityProperties.USER_ID),
           (String) e.getProperty(EntityProperties.USER_EMAIL));
       }
   }

@@ -58,7 +58,7 @@ public class DeleteServlet extends HttpServlet {
       PreparedQuery results = datastore.prepare(query);
       results.asIterable().forEach(comment -> {
         if (currentUserId.equals((String) comment.getProperty(
-          EntityProperties.USER_ID_OF_AUTHOR)) || 
+          EntityProperties.USER_ID)) || 
           userService.isUserAdmin()) {
           datastore.delete(comment.getKey());
         }
