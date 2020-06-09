@@ -97,8 +97,9 @@ public class DataServlet extends HttpServlet {
         * Updates comment text to include HTML wikipedia links giving more
         * information on the named entities in the comment text. 
         */
-      void getNamedEntityLinks() {
+      Comment getNamedEntityLinks() {
         text = SentimentAnalyzer.getHTMLWithNamedEntityLinks(text);
+        return this;
       }
   }
 
