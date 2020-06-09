@@ -1,14 +1,15 @@
 package com.google.sps.functionality;
 
-import com.google.cloud.language.v1.Entity;
-import com.google.cloud.language.v1.LanguageServiceClient;
 import com.google.cloud.language.v1.Document;
+import com.google.cloud.language.v1.LanguageServiceClient;
+import com.google.cloud.language.v1.Sentiment;
+import com.google.cloud.language.v1.Entity;
 import com.google.cloud.language.v1.AnalyzeEntitiesResponse;
 import java.util.List;
 import java.util.Map;
 import com.google.cloud.language.v1.AnalyzeSentimentResponse;
-import com.google.cloud.language.v1.Sentiment;
 import java.lang.StringBuilder;
+import com.google.cloud.language.v1.AnalyzeEntitiesRequest;
 
 /** Class that analyzes the sentiment and content of text.  */
 public class SentimentAnalyzer { 
@@ -19,13 +20,18 @@ public class SentimentAnalyzer {
   public static String getSentiment(String text) {
     Document document = Document.newBuilder().setContent(text).setType
       (Document.Type.PLAIN_TEXT).build();
-    LanguageServiceClient languageService = new LanguageServiceClient.create();
+    float score = 0;
 
-    Sentiment sentiment = languageService.analyzeSentiment(document)
-      .getDocumentSentiment();
-    float score = sentiment.getScore();
+    try (LanguageServiceClient languageService = 
+      LanguageServiceClient.create()) {
+      Sentiment sentiment = languageService.analyzeSentiment(document)
+        .getDocumentSentiment();
+      score = sentiment.getScore();
 
-    languageService.close();
+      languageService.close();
+    } catch (java.io.IOException e) {
+      System.err.println("Failed to create LanguageServiceClient");
+    }
 
     if (score < -0.1) {
       return "Negative";
@@ -45,14 +51,20 @@ public class SentimentAnalyzer {
   public static String getHTMLWithNamedEntityLinks(String text) {
     Document document = Document.newBuilder().setContent(text).setType
       (Document.Type.PLAIN_TEXT).build();
-    LanguageServiceClient languageService = new LanguageServiceClient.create();
+    AnalyzeEntitiesRequest request = AnalyzeEntitiesRequest.newBuilder().setDocument(document).build();
     StringBuilder textWithLinks = new StringBuilder(text);
 
-    List<Entity> entities = languageService.analyzeEntities(document)
-      .getEntitiesList();
-    entities.forEach(entity -> insertLink(entity, textWithLinks));
-    
-    langaugeService.close();
+    try (LanguageServiceClient languageService = 
+      LanguageServiceClient.create()) {
+      List<Entity> entities = languageService.analyzeEntities(request)
+        .getEntitiesList();
+      entities.forEach(entity -> insertLink(entity, textWithLinks));
+      
+      languageService.close();
+    } catch (java.io.IOException e) {
+      System.err.println("Failed to create LanguageServiceClient");
+    }
+
     return textWithLinks.toString();
   }
 
@@ -63,8 +75,7 @@ public class SentimentAnalyzer {
     * entity analysis. 
     */
   private static void insertLink(Entity entity, StringBuilder textWithLinks) {
-    if (entity.containsMetadata() && entity.getMetadataMap()
-      .containsKey("wikipedia_url")) {
+    if (entity.containsMetadata("wikipedia_url")) {
         textWithLinks.insert(textWithLinks.indexOf(entity.getName()), 
           "<a href=\""+entity.getMetadataMap().get("wikipedia_url")+"\">");
         textWithLinks.insert(
