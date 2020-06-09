@@ -11,7 +11,7 @@ import com.google.cloud.language.v1.Sentiment;
 import java.lang.StringBuilder;
 
 /** Class that analyzes the sentiment and content of text.  */
-public class Sentiment { 
+public class SentimentAnalyzer { 
   /** 
     * Analyzes the sentiment of `text` and returns "Negative",
     * "Positive", or "Neutral" depending on the detected sentiment.

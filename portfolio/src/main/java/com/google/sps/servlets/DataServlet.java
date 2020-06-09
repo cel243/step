@@ -34,7 +34,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Range;
 import com.google.sps.data.EntityProperties;
 import com.google.sps.data.RequestParameters;
-import com.google.sps.functionality.Sentiment;
+import com.google.sps.functionality.SentimentAnalyzer;
 import com.google.sps.servlets.AuthenticationServlet;
 import java.util.stream.Collectors;
 import com.google.appengine.api.users.UserService;
@@ -76,7 +76,7 @@ public class DataServlet extends HttpServlet {
         commentEntity.setProperty(EntityProperties.USER_ID, userId);
         commentEntity.setProperty(EntityProperties.USER_EMAIL, email);
         commentEntity.setProperty(EntityProperties.COMMENT_SENTIMENT, 
-          Sentiment.getSentiment(text));
+          SentimentAnalyzer.getSentiment(text));
         return commentEntity;
       }
 
@@ -98,7 +98,7 @@ public class DataServlet extends HttpServlet {
         * information on the named entities in the comment text. 
         */
       void getNamedEntityLinks() {
-        text = Sentiment.getHTMLWithNamedEntityLinks(text);
+        text = SentimentAnalyzer.getHTMLWithNamedEntityLinks(text);
       }
   }
 
