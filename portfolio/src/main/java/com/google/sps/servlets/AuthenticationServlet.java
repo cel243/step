@@ -47,7 +47,7 @@ public class AuthenticationServlet extends HttpServlet {
 
   /** 
     * Checks whether the user is currently logged in and provides
-    * a log-in link if not, and a log-out link if not. 
+    * a log-out link and username if so, and a log-in link if not. 
     */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
