@@ -11,7 +11,6 @@ import com.google.cloud.language.v1.Sentiment;
 import java.lang.StringBuilder;
 
 /** Class that analyzes the sentiment and content of text.  */
-@WebServlet("/data")
 public class Sentiment { 
   /** 
     * Analyzes the sentiment of `text` and returns "Negative",
@@ -29,7 +28,7 @@ public class Sentiment {
     languageService.close();
 
     if (score < -0.1) {
-      return "Negative"
+      return "Negative";
     } else if (score < 0.1) {
       return "Neutral";
     } else {

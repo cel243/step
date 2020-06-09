@@ -34,12 +34,12 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Range;
 import com.google.sps.data.EntityProperties;
 import com.google.sps.data.RequestParameters;
+import com.google.sps.functionality.Sentiment;
 import com.google.sps.servlets.AuthenticationServlet;
 import java.util.stream.Collectors;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import java.util.HashMap;
-import com.google.sps.functionality.Sentiment;
 
 /** 
   * Servlet that uploads and retrieves persistent comment data using datastore.
