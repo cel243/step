@@ -43,7 +43,7 @@ public class Sentiment {
     * entities that were detected in `text`, if the entity recognition
     * analysis of the text yields these wikipedia links.
     */
-  public static String getHTMLWithNamedEnttiyLinks(String text) {
+  public static String getHTMLWithNamedEntityLinks(String text) {
     Document document = Document.newBuilder().setContent(text).setType
       (Document.Type.PLAIN_TEXT).build();
     LanguageServiceClient languageService = new LanguageServiceClient.create();

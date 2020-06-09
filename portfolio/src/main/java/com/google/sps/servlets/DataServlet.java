@@ -39,6 +39,7 @@ import java.util.stream.Collectors;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import java.util.HashMap;
+import com.google.sps.functionality.Sentiment;
 
 /** 
   * Servlet that uploads and retrieves persistent comment data using datastore.
@@ -54,15 +55,17 @@ public class DataServlet extends HttpServlet {
       long id;
       String userId;
       String email;
+      String sentiment;
 
       Comment(String text, String username, long time, long id, 
-        String userId, String email) {
+        String userId, String email, String sentiment) {
         this.text = text;
         this.username = username;
         this.time = time;
         this.id = id;
         this.userId = userId;
         this.email = email;
+        this.sentiment = sentiment;
       }
 
       /** Returns an entity representing this comment. */
@@ -72,6 +75,8 @@ public class DataServlet extends HttpServlet {
         commentEntity.setProperty(EntityProperties.COMMENT_TIMESTAMP, time);
         commentEntity.setProperty(EntityProperties.USER_ID, userId);
         commentEntity.setProperty(EntityProperties.USER_EMAIL, email);
+        commentEntity.setProperty(EntityProperties.COMMENT_SENTIMENT, 
+          Sentiment.getSentiment(text));
         return commentEntity;
       }
 
@@ -84,7 +89,16 @@ public class DataServlet extends HttpServlet {
           (long) e.getProperty(EntityProperties.COMMENT_TIMESTAMP), 
           e.getKey().getId(),
           (String) e.getProperty(EntityProperties.USER_ID),
-          (String) e.getProperty(EntityProperties.USER_EMAIL));
+          (String) e.getProperty(EntityProperties.USER_EMAIL),
+          (String) e.getProperty(EntityProperties.COMMENT_SENTIMENT));
+      }
+
+      /** 
+        * Updates comment text to include HTML wikipedia links giving more
+        * information on the named entities in the comment text. 
+        */
+      void getNamedEntityLinks() {
+        text = Sentiment.getHTMLWithNamedEntityLinks(text);
       }
   }
 
@@ -113,7 +127,7 @@ public class DataServlet extends HttpServlet {
       DatastoreService datastore = 
         DatastoreServiceFactory.getDatastoreService();
       Key key = datastore.put(
-        (new Comment(userComment, "", timestamp, 0, userId, email))
+        (new Comment(userComment, "", timestamp, 0, userId, email, ""))
         .toEntity());
       try {
         Entity commentJustAdded = datastore.get(key);
@@ -155,7 +169,8 @@ public class DataServlet extends HttpServlet {
     PreparedQuery results = getAllComments();
     ArrayList<Comment> unfilteredComments = new ArrayList<Comment>();
     results.asIterable().forEach(commentEntity -> {
-      unfilteredComments.add(Comment.fromEntity(commentEntity));
+      unfilteredComments.add(Comment.fromEntity(commentEntity)
+        .getNamedEntityLinks());
     });
     List<Comment> comments = getFilteredComments(unfilteredComments, 
       searchQuery);

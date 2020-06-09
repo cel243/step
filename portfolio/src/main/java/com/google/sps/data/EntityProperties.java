@@ -21,6 +21,9 @@ public final class EntityProperties {
   /** The property representing the email of the author of this comment */
   public static final String USER_EMAIL = "email";
 
+  /** The property representing the sentiment of this comment. */
+  public static final String COMMENT_SENTIMENT = "sentiment";
+
   /* User Properties: */
 
   /** The property representing the username of this user */
