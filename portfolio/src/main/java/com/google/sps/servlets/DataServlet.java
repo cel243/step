@@ -25,6 +25,7 @@ import com.google.gson.Gson;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
@@ -33,7 +34,11 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Range;
 import com.google.sps.data.EntityProperties;
 import com.google.sps.data.RequestParameters;
+import com.google.sps.servlets.AuthenticationServlet;
 import java.util.stream.Collectors;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
+import java.util.HashMap;
 
 /** 
   * Servlet that uploads and retrieves persistent comment data using datastore.
@@ -44,23 +49,29 @@ public class DataServlet extends HttpServlet {
   /** Represents a single comment */
   private static class Comment {
       String text;
-      String name;
+      String username;
       long time;
       long id;
+      String userId;
+      String email;
 
-      Comment(String text, String name, long time, long id) {
+      Comment(String text, String username, long time, long id, 
+        String userId, String email) {
         this.text = text;
-        this.name = name;
+        this.username = username;
         this.time = time;
         this.id = id;
+        this.userId = userId;
+        this.email = email;
       }
 
       /** Returns an entity representing this comment. */
       Entity toEntity() {
         Entity commentEntity = new Entity("Comment");
         commentEntity.setProperty(EntityProperties.COMMENT_TEXT, text);
-        commentEntity.setProperty(EntityProperties.COMMENT_AUTHOR, name);
         commentEntity.setProperty(EntityProperties.COMMENT_TIMESTAMP, time);
+        commentEntity.setProperty(EntityProperties.USER_ID, userId);
+        commentEntity.setProperty(EntityProperties.USER_EMAIL, email);
         return commentEntity;
       }
 
@@ -68,15 +79,24 @@ public class DataServlet extends HttpServlet {
       static Comment fromEntity(Entity e) {
         return new Comment(
           (String) e.getProperty(EntityProperties.COMMENT_TEXT),
-          (String) e.getProperty(EntityProperties.COMMENT_AUTHOR),
+          AuthenticationServlet.getUserName(
+            (String) e.getProperty(EntityProperties.USER_ID)),
           (long) e.getProperty(EntityProperties.COMMENT_TIMESTAMP), 
-          e.getKey().getId());
+          e.getKey().getId(),
+          (String) e.getProperty(EntityProperties.USER_ID),
+          (String) e.getProperty(EntityProperties.USER_EMAIL));
       }
   }
 
   /** Extracts user comment from form and stores it via datastore. */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    UserService userService = UserServiceFactory.getUserService();
+    if (!userService.isUserLoggedIn()) {
+      response.sendRedirect("/index.html");
+      return;
+    }
+
     String userComment = request.getParameter(
       RequestParameters.INPUTTED_TEXT).trim();
     String userName = request.getParameter(
@@ -85,12 +105,23 @@ public class DataServlet extends HttpServlet {
       userName = "Anonymous";
     }
     long timestamp = System.currentTimeMillis();
+    String userId = userService.getCurrentUser().getUserId();
+    String email = userService.getCurrentUser().getEmail();
+    AuthenticationServlet.updateUserName(userName, userId);
 
     if (!Strings.isNullOrEmpty(userComment)) {    
       DatastoreService datastore = 
         DatastoreServiceFactory.getDatastoreService();
-      datastore.put((new Comment(userComment, userName, timestamp, 0))
+      Key key = datastore.put(
+        (new Comment(userComment, "", timestamp, 0, userId, email))
         .toEntity());
+      try {
+        Entity commentJustAdded = datastore.get(key);
+        commentJustAdded.setProperty(EntityProperties.COMMENT_ID, key.getId());
+        datastore.put(commentJustAdded);
+      } catch (com.google.appengine.api.datastore.EntityNotFoundException e) {
+        //we have just added this entity
+      }
     }
     response.sendRedirect("/index.html");
   }
@@ -102,6 +133,16 @@ public class DataServlet extends HttpServlet {
     */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    UserService userService = UserServiceFactory.getUserService();
+    String currentUserId;
+    if (!userService.isUserLoggedIn()) {
+      currentUserId = "";
+    } else if (userService.isUserAdmin()) {
+      currentUserId = "ADMIN";
+    } else {
+      currentUserId = userService.getCurrentUser().getUserId();
+    }
+
     int numberToDisplay = getNumberToDisplay(request); 
     String paginationInstruction = (String) request.getParameter(
       RequestParameters.PAGE_ACTION);
@@ -126,7 +167,8 @@ public class DataServlet extends HttpServlet {
       commentRange.upperEndpoint());
     int newPageToken = commentRange.lowerEndpoint();
 
-    String json = convertToJson(commentsToDisplay, newPageToken); 
+    String json = convertToJson(commentsToDisplay, newPageToken, 
+      currentUserId); 
     response.setContentType("application/json;");
     response.getWriter().println(json);
   }
@@ -221,15 +263,21 @@ public class DataServlet extends HttpServlet {
     if (Strings.isNullOrEmpty(search)) {
       return true;
     } else {
-      return comment.text.contains(search) || comment.name.contains(search);
+      return comment.text.contains(search) || 
+        comment.username.contains(search) || comment.email.contains(search);
     }
   }
 
-  /** Returns JSON string representation of `data`. */
-  private String convertToJson(List<Comment> data, int pageToken) {
-    List<Object> combineData = new ArrayList<Object>();
-    combineData.add(pageToken);
-    combineData.add(data);
+  /** 
+    * Returns JSON string representation of `data`, `pageToken`, 
+    * and `currentUserId`. 
+    */
+  private String convertToJson(List<Comment> data, int pageToken, 
+    String currentUserId) {
+    HashMap<String, Object> combineData = new HashMap<String, Object>();
+    combineData.put("pageToken", pageToken);
+    combineData.put("commentData", data);
+    combineData.put("currentUserId", currentUserId);
 
     Gson gson = new Gson(); 
     String json = gson.toJson(combineData);

@@ -19,6 +19,46 @@ let pageToken = 0;
 function onLoad() {
   displayCommentSection('none');
   initializeSearchBar();
+  fetch(`/authenticate`)
+  .then(response => response.json())
+  .then(displayCommentForm);
+}
+
+/** Determines whether the current user is signed in, and if so, 
+  * displays the form where the user could leave a comment. If
+  * not, it displays a link to sign in and gets rid of the clear
+  * all button.
+  * @param json The json returned by the GET request to /authenticate  */
+function displayCommentForm(json) {
+  let commentFormBox = document.getElementById("comment-form");
+  let clearAllButtonBox = document.getElementById("clear-all-button");
+
+  if (json.isLoggedIn) {
+    const username = !json.username.trim() ? 
+      `placeholder="Please enter a username."` : `value="${json.username}"`;
+    commentFormBox.innerHTML = 
+      `<table>` +
+          `<tr>` +
+              `<td id="leave-a-comment">` +
+                  `Leave a comment:` +
+              `</td>` +
+          `</tr>` + 
+      `</table>` +
+      `<div id="comment-form-box">` +
+        `<form action="/data" method="POST" id="comment-form">` +
+            `<input type="text" name="author" id="author" ` +
+                `tabindex="1" required="required" ${username}>` +
+            `<textarea name="text-input" id="text-input" rows="10"` + 
+                `tabindex="4" required="required"></textarea>` +
+            `<input type="submit" />` +
+        `</form>` +
+      `</div>` +
+      `<div id="log-out"><a href="${json.logOutLink}">Log out</a> here.`;
+  } else {
+    clearAllButtonBox.innerHTML = ``;
+    commentFormBox.innerHTML = `<div id="please-sign-in">Please` +
+      ` <a href="${json.logInLink}">sign in</a> to leave a comment.</div>`
+  }
 }
 
 /** 
@@ -163,8 +203,9 @@ function displayCommentSection(pageAction) {
   * @param {JSON} json The JSON representing the list of comment objects. 
   */
 function displayJSON(json) {
-  pageToken = json[0];
-  json = json[1];
+  pageToken = json.pageToken;
+  const currentUserId = json.currentUserId;
+  json = json.commentData;
 
   const dataContainer = document.getElementById('comment-section');
   htmlToAdd =`<table> <tr><td></td><td></td><td></td>` +
@@ -185,7 +226,7 @@ function displayJSON(json) {
       `</tr>`;
   } else {
     let allCommentHTML = [...Array(json.length).keys()]
-      .map(i => getCommentHTML(json, i));
+      .map(i => getCommentHTML(currentUserId, json, i));
     allCommentHTML.forEach(commentHTML => htmlToAdd += commentHTML);
   }
 
@@ -199,13 +240,14 @@ function displayJSON(json) {
   * @param {JSON} json The JSON representing the list of all comments.
   * @param {int} i The index of the desired comment.
   * @return {String} The HTML representation. */
-function getCommentHTML(json, i) {
+function getCommentHTML(currentUserId, json, i) {
   html =
     `<tr>` +
-    ` <td class="comment-button">` + 
-    `   <button onclick="deleteThisComment(${json[i].id})">X</button></td>` +
+    ` <td class="comment-button">` +
+    `   ${getCommentButtonHTML(currentUserId, json[i])}` + 
+    ` </td>` +
     ` <td colspan = 2 class="user-info-box">` +
-    `   <b><u>${json[i].name}: </b></u><br>` +
+    `   <b><abbr title="${json[i].email}">${json[i].username}</abbr>:</b><br>` +
     `   <i class="comment-date">${prettyPrintTime(json[i].time)}</i>` +
     ` </td>` +
     ` <td colspan="4">` +
@@ -213,6 +255,23 @@ function getCommentHTML(json, i) {
     ` </td>` +
     `</tr>`;
   return html;
+}
+
+/** 
+  * Returns the HTML for a button that will delete this comment if
+  * this comment was written by the current user. Otherwise it
+  * returns no button. 
+  * @param {String} currentUserId the id of the current user.
+  * @param {JSON} commentObject the json object representing the comment 
+      in question. 
+  */
+function getCommentButtonHTML(currentUserId, commentObject) {
+  if (currentUserId === commentObject.userId || currentUserId === "ADMIN") {
+    return `<button onclick="deleteThisComment(${commentObject.id})">` +
+      `X</button>`;
+  } else {
+    return ``;
+  }
 }
 
 /**

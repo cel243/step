@@ -28,7 +28,11 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.sps.data.RequestParameters;
+import com.google.sps.data.EntityProperties;
+import com.google.sps.servlets.AuthenticationServlet;
 
 /** Servlet that deletes all persistent comment data from datastore. */
 @WebServlet("/delete-data")
@@ -39,24 +43,32 @@ public class DeleteServlet extends HttpServlet {
     * is a specific comment id, that comment is deleted. */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    UserService userService = UserServiceFactory.getUserService();
+    if (!userService.isUserLoggedIn()) {
+      return;
+    } 
+    String currentUserId = userService.getCurrentUser().getUserId();
+
     String whichCommentToDelete = 
       (String) request.getParameter(RequestParameters.WHICH_COMMENT_TO_DELETE);
 
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    Query query = new Query("Comment");
-    PreparedQuery results = datastore.prepare(query);
-
     if (whichCommentToDelete.equals("\"all\"")) {
+      Query query = new Query("Comment");
+      PreparedQuery results = datastore.prepare(query);
       results.asIterable().forEach(comment -> {
-        datastore.delete(comment.getKey());
-      });
-    } else {
-      Long id = Long.parseLong(whichCommentToDelete);
-      results.asIterable().forEach(comment -> {
-        if (comment.getKey().getId() == id) {
+        if (currentUserId.equals((String) comment.getProperty(
+          EntityProperties.USER_ID)) || 
+          userService.isUserAdmin()) {
           datastore.delete(comment.getKey());
         }
       });
+    } else {
+      long id = Long.parseLong(whichCommentToDelete);
+      Query query = new Query("Comment").setFilter(new Query.FilterPredicate
+        (EntityProperties.COMMENT_ID, Query.FilterOperator.EQUAL, id));
+      Entity commentWithCorrectId = datastore.prepare(query).asSingleEntity();
+      datastore.delete(commentWithCorrectId.getKey());
     }
   }
 
