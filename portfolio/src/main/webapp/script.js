@@ -247,7 +247,8 @@ function getCommentHTML(currentUserId, json, i) {
     `   ${getCommentButtonHTML(currentUserId, json[i])}` + 
     ` </td>` +
     ` <td colspan = 2 class="user-info-box">` +
-    `   <b><abbr title="${json[i].email}">${json[i].username}</abbr>:</b><br>` +
+    `   <b><abbr title="${json[i].email}">${json[i].username}</abbr>:</b>` +
+        ` ${displaySentiment(json[i].sentiment)}<br>` +
     `   <i class="comment-date">${prettyPrintTime(json[i].time)}</i>` +
     ` </td>` +
     ` <td colspan="4">` +
@@ -255,6 +256,21 @@ function getCommentHTML(currentUserId, json, i) {
     ` </td>` +
     `</tr>`;
   return html;
+}
+
+/** 
+  * Returns an emoticon reflecting whether the sentiement
+  * of this comment is "Positive", "Negative",
+  * or "Neutral". 
+  */
+function displaySentiment(sentiment){
+  if (sentiment === "Positive") {
+    return `😊`;
+  } else if (sentiment === "Negative") {
+    return `☹`;
+  } else {
+    return `😐`;
+  }
 }
 
 /** 
