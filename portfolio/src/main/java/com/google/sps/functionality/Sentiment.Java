@@ -43,6 +43,14 @@ public class Sentiment {
     * analysis of the text yields these wikipedia links.
     */
   public static String getHTMLWithNamedEnttiyLinks(String text) {
+    Document document = Document.newBuilder().setContent(text).setType
+      (Document.Type.PLAIN_TEXT).build();
+    LanguageServiceClient languageService = new LanguageServiceClient.create();
+
+    List<Entity> entities = languageService.analyzeEntities(document)
+      .getEntitiesList();
     
+
+    langaugeService.close();
   }
 }
