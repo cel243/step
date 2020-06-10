@@ -7,9 +7,14 @@ import com.google.cloud.language.v1.Entity;
 import com.google.cloud.language.v1.AnalyzeEntitiesResponse;
 import com.google.cloud.language.v1.AnalyzeEntitiesRequest;
 import com.google.cloud.language.v1.AnalyzeSentimentResponse;
+import com.google.cloud.language.v1.ClassifyTextRequest;
+import com.google.cloud.language.v1.ClassifyTextResponse;
+import com.google.cloud.language.v1.ClassificationCategory;
+import com.google.api.gax.rpc.InvalidArgumentException;
 import java.util.List;
 import java.util.Map;
 import java.lang.StringBuilder;
+import java.util.Comparator;
 
 
 /** Class that analyzes the sentiment and content of text.  */
@@ -34,9 +39,9 @@ public class SentimentAnalyzer {
       System.err.println("Failed to create LanguageServiceClient");
     }
 
-    if (score < -0.3) {
+    if (score < -0.5) {
       return "Negative";
-    } else if (score < 0.2) {
+    } else if (score < 0.5) {
       return "Neutral";
     } else {
       return "Positive";
@@ -84,5 +89,36 @@ public class SentimentAnalyzer {
           "<a target=\"_blank\" href=\""+
             entity.getMetadataMap().get("wikipedia_url")+"\">");
     }
+  }
+
+  /** 
+    * Returns the highest-confidence topic if a topic could be 
+    * determined from the text, and otherwise returns the 
+    * empty string. 
+    */
+  public static String getTopic(String text) {
+    Document document = Document.newBuilder().setContent(text).setType
+      (Document.Type.PLAIN_TEXT).build();
+    ClassifyTextRequest request = ClassifyTextRequest.newBuilder().setDocument(document).build();
+    String topic = "";
+
+    try (LanguageServiceClient languageService = 
+      LanguageServiceClient.create()) {
+      try {
+        List<ClassificationCategory> categories = 
+        languageService.classifyText(request).getCategoriesList();
+        ClassificationCategory bestCategory = categories.stream()
+          .max(Comparator.comparing(category -> category.getConfidence()))
+          .get();
+        topic = bestCategory.getName();
+      } catch (com.google.api.gax.rpc.InvalidArgumentException e) {
+        //No action needed; no topic was detected
+      }
+      languageService.close();
+    } catch (java.io.IOException e) {
+      System.err.println("Failed to create LanguageServiceClient");
+    }
+
+    return topic;
   }
 }

@@ -251,11 +251,25 @@ function getCommentHTML(currentUserId, json, i) {
         ` ${displaySentiment(json[i].sentiment)}<br>` +
     `   <i class="comment-date">${prettyPrintTime(json[i].time)}</i>` +
     ` </td>` +
-    ` <td colspan="4">` +
+    ` <td colspan="4" class="comment-text">` +
         `${json[i].text}` +
+        `${displayTopic(json[i].topic)}` +
     ` </td>` +
     `</tr>`;
   return html;
+}
+
+/** 
+  * If `topic` is not empty, returns an HTML paragraph
+  * of the form "Topic: <topic>", otherwise returns 
+  * the empty string.  
+  */
+function displayTopic(topic) {
+  if (topic.trim()) {
+    return `<br><i class="topic">Topic: ${topic}</i>`;
+  } else {
+    return ``;
+  }
 }
 
 /** 

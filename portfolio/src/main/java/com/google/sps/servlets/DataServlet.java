@@ -56,9 +56,10 @@ public class DataServlet extends HttpServlet {
       String userId;
       String email;
       String sentiment;
+      String topic;
 
       Comment(String text, String username, long time, long id, 
-        String userId, String email, String sentiment) {
+        String userId, String email, String sentiment, String topic) {
         this.text = text;
         this.username = username;
         this.time = time;
@@ -66,6 +67,7 @@ public class DataServlet extends HttpServlet {
         this.userId = userId;
         this.email = email;
         this.sentiment = sentiment;
+        this.topic = topic;
       }
 
       /** 
@@ -82,6 +84,8 @@ public class DataServlet extends HttpServlet {
         commentEntity.setProperty(EntityProperties.USER_EMAIL, email);
         commentEntity.setProperty(EntityProperties.COMMENT_SENTIMENT, 
           SentimentAnalyzer.getSentiment(text));
+        commentEntity.setProperty(EntityProperties.COMMENT_TOPIC, 
+          SentimentAnalyzer.getTopic(text));
         return commentEntity;
       }
 
@@ -95,7 +99,8 @@ public class DataServlet extends HttpServlet {
           e.getKey().getId(),
           (String) e.getProperty(EntityProperties.USER_ID),
           (String) e.getProperty(EntityProperties.USER_EMAIL),
-          (String) e.getProperty(EntityProperties.COMMENT_SENTIMENT));
+          (String) e.getProperty(EntityProperties.COMMENT_SENTIMENT),
+          (String) e.getProperty(EntityProperties.COMMENT_TOPIC));
       }
   }
 
@@ -124,7 +129,7 @@ public class DataServlet extends HttpServlet {
       DatastoreService datastore = 
         DatastoreServiceFactory.getDatastoreService();
       Key key = datastore.put(
-        (new Comment(userComment, "", timestamp, 0, userId, email, ""))
+        (new Comment(userComment, "", timestamp, 0, userId, email, "", ""))
         .toEntity());
     }
     response.sendRedirect("/index.html");
