@@ -373,7 +373,7 @@ select:hover {
     text-align: center;
 }
 
-#please-sign-in a, #log-out a  {
+a  {
     color: black;
 }
 

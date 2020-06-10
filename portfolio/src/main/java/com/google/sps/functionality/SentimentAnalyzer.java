@@ -34,14 +34,13 @@ public class SentimentAnalyzer {
       System.err.println("Failed to create LanguageServiceClient");
     }
 
-    if (score < -0.1) {
+    if (score < -0.3) {
       return "Negative";
-    } else if (score < 0.1) {
+    } else if (score < 0.2) {
       return "Neutral";
     } else {
       return "Positive";
     } 
-    //return "Positive";
   }
 
   /** 
@@ -68,14 +67,6 @@ public class SentimentAnalyzer {
     }
 
     return textWithLinks.toString(); 
-   /* StringBuilder textWithLinks = new StringBuilder(text);
-            textWithLinks.insert(textWithLinks.indexOf("dog"), 
-          "<a target = \"_blank\" href=\"https://en.wikipedia.org/wiki/Dog\">");
-        textWithLinks.insert(
-          textWithLinks.indexOf("dog") + 3,
-            "</a>");
-    return textWithLinks.toString();*/
-
   }
 
   /** 
@@ -86,12 +77,12 @@ public class SentimentAnalyzer {
     */
   private static void insertLink(Entity entity, StringBuilder textWithLinks) {
     if (entity.containsMetadata("wikipedia_url")) {
-        textWithLinks.insert(textWithLinks.indexOf(entity.getName()), 
-          "<a target=\"_blank\" href=\""+
-            entity.getMetadataMap().get("wikipedia_url")+"\">");
         textWithLinks.insert(
           textWithLinks.indexOf(entity.getName()) + entity.getName().length(),
             "</a>");
+        textWithLinks.insert(textWithLinks.indexOf(entity.getName()), 
+          "<a target=\"_blank\" href=\""+
+            entity.getMetadataMap().get("wikipedia_url")+"\">");
     }
   }
 }

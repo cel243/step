@@ -68,7 +68,11 @@ public class DataServlet extends HttpServlet {
         this.sentiment = sentiment;
       }
 
-      /** Returns an entity representing this comment. */
+      /** 
+        * Returns an entity representing this comment.
+        * This should only be called once per comment, for the
+        * purpose of putting this comment into the database.
+        */
       Entity toEntity() {
         Entity commentEntity = new Entity("Comment");
         commentEntity.setProperty(EntityProperties.COMMENT_TEXT, 
