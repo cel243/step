@@ -112,19 +112,18 @@ public class SentimentAnalyzer {
 
     try (LanguageServiceClient languageService = 
       LanguageServiceClient.create()) {
-      try {
-        List<ClassificationCategory> categories = 
-        languageService.classifyText(request).getCategoriesList();
-        ClassificationCategory bestCategory = categories.stream()
-          .max(Comparator.comparing(category -> category.getConfidence()))
-          .get();
-        topic = bestCategory.getName();
-      } catch (com.google.api.gax.rpc.InvalidArgumentException e) {
-        //No action needed; no topic was detected
-      }
+      List<ClassificationCategory> categories = 
+      languageService.classifyText(request).getCategoriesList();
+      ClassificationCategory bestCategory = categories.stream()
+        .max(Comparator.comparing(category -> category.getConfidence()))
+        .get();
+      topic = bestCategory.getName();
+
       languageService.close();
     } catch (java.io.IOException e) {
       System.err.println("Failed to create LanguageServiceClient");
+    } catch (com.google.api.gax.rpc.InvalidArgumentException e) {
+      //No action needed; no topic was detected
     }
 
     return topic;
