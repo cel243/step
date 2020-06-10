@@ -183,6 +183,9 @@ function displayCommentSection(pageAction) {
   const selectNumberInput = document.getElementById('number-to-display');
   const numberToDisplay = selectNumberInput
     .options[selectNumberInput.selectedIndex].value;
+  const languageInput = document.getElementById('select-language');
+  const language = languageInput
+    .options[languageInput.selectedIndex].value;
   let searchQuery = document.getElementById('search').value;
   if (!searchQuery || !searchQuery.trim()) {
     searchQuery = "";
@@ -190,7 +193,7 @@ function displayCommentSection(pageAction) {
 
   fetch(`/data?numberToDisplay=${numberToDisplay}` + 
     `&pageAction="${pageAction}"&search="${searchQuery}"` +
-    `&pageToken=${pageToken}`)
+    `&pageToken=${pageToken}&language="${language}"`)
     .then(response => response.json())
     .then(displayJSON);
 }

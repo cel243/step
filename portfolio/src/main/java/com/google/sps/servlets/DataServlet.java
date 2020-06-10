@@ -172,13 +172,14 @@ public class DataServlet extends HttpServlet {
       (String) request.getParameter(RequestParameters.PAGE_TOKEN));
     String languageCode = (String) request.getParameter(
       RequestParameters.LANGUAGE); 
+    languageCode = languageCode.substring(1,languageCode.length() - 1);
 
     PreparedQuery results = getAllComments();
     ArrayList<Comment> unfilteredComments = new ArrayList<Comment>();
-    results.asIterable().forEach(commentEntity -> {
+    for (Entity commentEntity : results.asIterable()) {
       unfilteredComments.add(Comment.fromEntity(commentEntity)
         .translateComment(languageCode));
-    });
+    }
     List<Comment> comments = getFilteredComments(unfilteredComments, 
       searchQuery);
 

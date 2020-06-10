@@ -14,7 +14,7 @@ public class TranslateText {
     if (languageCode.equals("none")) {
       return text;
     }
-    
+
     Translate translate = TranslateOptions.getDefaultInstance().getService();
     Translation translation = translate.translate(text, 
       Translate.TranslateOption.targetLanguage(languageCode));
