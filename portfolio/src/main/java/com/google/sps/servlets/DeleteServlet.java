@@ -25,6 +25,7 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
@@ -65,10 +66,8 @@ public class DeleteServlet extends HttpServlet {
       });
     } else {
       long id = Long.parseLong(whichCommentToDelete);
-      Query query = new Query("Comment").setFilter(new Query.FilterPredicate
-        (EntityProperties.COMMENT_ID, Query.FilterOperator.EQUAL, id));
-      Entity commentWithCorrectId = datastore.prepare(query).asSingleEntity();
-      datastore.delete(commentWithCorrectId.getKey());
+      Key key = KeyFactory.createKey("Comment", id);
+      datastore.delete(key);
     }
   }
 
