@@ -35,6 +35,7 @@ import com.google.common.collect.Range;
 import com.google.sps.data.EntityProperties;
 import com.google.sps.data.RequestParameters;
 import com.google.sps.functionality.SentimentAnalyzer;
+import com.google.sps.functionality.TranslateText;
 import com.google.sps.servlets.AuthenticationServlet;
 import java.util.stream.Collectors;
 import com.google.appengine.api.users.UserService;
@@ -102,6 +103,15 @@ public class DataServlet extends HttpServlet {
           (String) e.getProperty(EntityProperties.COMMENT_SENTIMENT),
           (String) e.getProperty(EntityProperties.COMMENT_TOPIC));
       }
+
+      /** 
+        * Returns this comment, but with the comment text translated to
+        * the language corresponding to `languageCode`. 
+        */
+      Comment translateComment(String languageCode) {
+        text = TranslateText.translateText(text, languageCode);
+        return this;
+      }
   }
 
   /** Extracts user comment from form and stores it via datastore. */
@@ -160,11 +170,14 @@ public class DataServlet extends HttpServlet {
     searchQuery = searchQuery.substring(1,searchQuery.length() - 1);
     int pageToken = Integer.parseInt(
       (String) request.getParameter(RequestParameters.PAGE_TOKEN));
+    String languageCode = (String) request.getParameter(
+      RequestParameters.LANGUAGE); 
 
     PreparedQuery results = getAllComments();
     ArrayList<Comment> unfilteredComments = new ArrayList<Comment>();
     results.asIterable().forEach(commentEntity -> {
-      unfilteredComments.add(Comment.fromEntity(commentEntity));
+      unfilteredComments.add(Comment.fromEntity(commentEntity)
+        .translateComment(languageCode));
     });
     List<Comment> comments = getFilteredComments(unfilteredComments, 
       searchQuery);

@@ -29,6 +29,12 @@ public final class RequestParameters {
   /** The user's selection of how many comments to display per page. */
   public static final String NUMBER_PER_PAGE = "numberToDisplay";
 
+  /** 
+    * The language code corresponding to the user's selection of language 
+    * to display the comment seciton in. 
+    */
+  public static final String LANGUAGE = "language";
+
   /* Request Parameters for DeleteServlet: */
 
   /** Which comment should be deleted from the database, either "all" or the id of a specific comment. */
