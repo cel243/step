@@ -273,7 +273,8 @@ public class DataServlet extends HttpServlet {
       return true;
     } else {
       return comment.text.contains(search) || 
-        comment.username.contains(search) || comment.email.contains(search);
+        comment.username.contains(search) || comment.email.contains(search) ||
+        comment.topic.contains(search);
     }
   }
 
