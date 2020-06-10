@@ -278,9 +278,9 @@ function displayTopic(topic) {
   * or "Neutral". 
   */
 function displaySentiment(sentiment){
-  if (sentiment === "Positive") {
+  if (sentiment === "POSITIVE") {
     return `😊`;
-  } else if (sentiment === "Negative") {
+  } else if (sentiment === "NEGATIVE") {
     return `☹`;
   } else {
     return `😐`;

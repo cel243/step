@@ -19,11 +19,19 @@ import java.util.Comparator;
 
 /** Class that analyzes the sentiment and content of text.  */
 public class SentimentAnalyzer { 
+
+  /** The three "moods" a comment can have. */
+  public static enum SentimentType {
+    POSITIVE,
+    NEGATIVE,
+    NEUTRAL,
+  }
+
   /** 
-    * Analyzes the sentiment of `text` and returns "Negative",
-    * "Positive", or "Neutral" depending on the detected sentiment.
+    * Analyzes the sentiment of `text` and returns the appropriate
+    * sentiment type depending on the detected sentiment.
     */
-  public static String getSentiment(String text) {
+  public static SentimentType getSentiment(String text) {
     Document document = Document.newBuilder().setContent(text).setType
       (Document.Type.PLAIN_TEXT).build();
     float score = 0;
@@ -40,11 +48,11 @@ public class SentimentAnalyzer {
     }
 
     if (score < -0.5) {
-      return "Negative";
+      return SentimentType.NEGATIVE;
     } else if (score < 0.5) {
-      return "Neutral";
+      return SentimentType.NEUTRAL;
     } else {
-      return "Positive";
+      return SentimentType.POSITIVE;
     } 
   }
 

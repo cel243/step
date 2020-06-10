@@ -83,7 +83,7 @@ public class DataServlet extends HttpServlet {
         commentEntity.setProperty(EntityProperties.USER_ID, userId);
         commentEntity.setProperty(EntityProperties.USER_EMAIL, email);
         commentEntity.setProperty(EntityProperties.COMMENT_SENTIMENT, 
-          SentimentAnalyzer.getSentiment(text));
+          SentimentAnalyzer.getSentiment(text).name());
         commentEntity.setProperty(EntityProperties.COMMENT_TOPIC, 
           SentimentAnalyzer.getTopic(text));
         return commentEntity;
