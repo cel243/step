@@ -71,7 +71,8 @@ public class DataServlet extends HttpServlet {
       /** Returns an entity representing this comment. */
       Entity toEntity() {
         Entity commentEntity = new Entity("Comment");
-        commentEntity.setProperty(EntityProperties.COMMENT_TEXT, text);
+        commentEntity.setProperty(EntityProperties.COMMENT_TEXT, 
+          SentimentAnalyzer.getHTMLWithNamedEntityLinks(text));
         commentEntity.setProperty(EntityProperties.COMMENT_TIMESTAMP, time);
         commentEntity.setProperty(EntityProperties.USER_ID, userId);
         commentEntity.setProperty(EntityProperties.USER_EMAIL, email);
@@ -91,15 +92,6 @@ public class DataServlet extends HttpServlet {
           (String) e.getProperty(EntityProperties.USER_ID),
           (String) e.getProperty(EntityProperties.USER_EMAIL),
           (String) e.getProperty(EntityProperties.COMMENT_SENTIMENT));
-      }
-
-      /** 
-        * Updates comment text to include HTML wikipedia links giving more
-        * information on the named entities in the comment text. 
-        */
-      Comment getNamedEntityLinks() {
-        text = SentimentAnalyzer.getHTMLWithNamedEntityLinks(text);
-        return this;
       }
   }
 
@@ -170,8 +162,7 @@ public class DataServlet extends HttpServlet {
     PreparedQuery results = getAllComments();
     ArrayList<Comment> unfilteredComments = new ArrayList<Comment>();
     results.asIterable().forEach(commentEntity -> {
-      unfilteredComments.add(Comment.fromEntity(commentEntity)
-        .getNamedEntityLinks());
+      unfilteredComments.add(Comment.fromEntity(commentEntity));
     });
     List<Comment> comments = getFilteredComments(unfilteredComments, 
       searchQuery);

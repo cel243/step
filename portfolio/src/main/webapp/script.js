@@ -271,7 +271,7 @@ function displaySentiment(sentiment){
   } else {
     return `😐`;
   }
-}
+} 
 
 /** 
   * Returns the HTML for a button that will delete this comment if

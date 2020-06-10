@@ -5,11 +5,12 @@ import com.google.cloud.language.v1.LanguageServiceClient;
 import com.google.cloud.language.v1.Sentiment;
 import com.google.cloud.language.v1.Entity;
 import com.google.cloud.language.v1.AnalyzeEntitiesResponse;
+import com.google.cloud.language.v1.AnalyzeEntitiesRequest;
+import com.google.cloud.language.v1.AnalyzeSentimentResponse;
 import java.util.List;
 import java.util.Map;
-import com.google.cloud.language.v1.AnalyzeSentimentResponse;
 import java.lang.StringBuilder;
-import com.google.cloud.language.v1.AnalyzeEntitiesRequest;
+
 
 /** Class that analyzes the sentiment and content of text.  */
 public class SentimentAnalyzer { 
@@ -39,7 +40,8 @@ public class SentimentAnalyzer {
       return "Neutral";
     } else {
       return "Positive";
-    }
+    } 
+    //return "Positive";
   }
 
   /** 
@@ -65,7 +67,15 @@ public class SentimentAnalyzer {
       System.err.println("Failed to create LanguageServiceClient");
     }
 
-    return textWithLinks.toString();
+    return textWithLinks.toString(); 
+   /* StringBuilder textWithLinks = new StringBuilder(text);
+            textWithLinks.insert(textWithLinks.indexOf("dog"), 
+          "<a target = \"_blank\" href=\"https://en.wikipedia.org/wiki/Dog\">");
+        textWithLinks.insert(
+          textWithLinks.indexOf("dog") + 3,
+            "</a>");
+    return textWithLinks.toString();*/
+
   }
 
   /** 
@@ -77,7 +87,8 @@ public class SentimentAnalyzer {
   private static void insertLink(Entity entity, StringBuilder textWithLinks) {
     if (entity.containsMetadata("wikipedia_url")) {
         textWithLinks.insert(textWithLinks.indexOf(entity.getName()), 
-          "<a href=\""+entity.getMetadataMap().get("wikipedia_url")+"\">");
+          "<a target=\"_blank\" href=\""+
+            entity.getMetadataMap().get("wikipedia_url")+"\">");
         textWithLinks.insert(
           textWithLinks.indexOf(entity.getName()) + entity.getName().length(),
             "</a>");
