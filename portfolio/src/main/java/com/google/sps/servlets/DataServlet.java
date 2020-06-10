@@ -122,13 +122,6 @@ public class DataServlet extends HttpServlet {
       Key key = datastore.put(
         (new Comment(userComment, "", timestamp, 0, userId, email, ""))
         .toEntity());
-      try {
-        Entity commentJustAdded = datastore.get(key);
-        commentJustAdded.setProperty(EntityProperties.COMMENT_ID, key.getId());
-        datastore.put(commentJustAdded);
-      } catch (com.google.appengine.api.datastore.EntityNotFoundException e) {
-        //we have just added this entity
-      }
     }
     response.sendRedirect("/index.html");
   }
