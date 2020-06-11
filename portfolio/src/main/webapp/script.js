@@ -13,15 +13,53 @@
 // limitations under the License.
 
 const NUM_AVAILABLE_IMAGES = 13;
+const languages = ["Afrikaans", "Albanian", "Armenian", "Basque", "Bengali", 
+  "Bulgarian", "Catalan", "Cambodian", "Chinese (Mandarin)", "Croatian", 
+  "Czech", "Danish", "Dutch", "English", "Estonian", "Fiji", "Finnish", 
+  "French", "Georgian", "German", "Greek", "Gujarati", "Hebrew", "Hindi", 
+  "Hungarian", "Icelandic", "Indonesian", "Irish", "Italian", "Japanese", 
+  "Javanese", "Korean", "Latin", "Latvian", "Lithuanian", "Macedonian", "Malay",
+  "Malayalam", "Maltese", "Maori", "Marathi", "Mongolian", "Nepali", 
+  "Norwegian", "Persian", "Polish", "Portuguese", "Punjabi", "Quechua", 
+  "Romanian", "Russian", "Samoan", "Serbian", "Slovak", "Slovenian", "Spanish", 
+  "Swahili", "Swedish", "Tamil", "Tatar", "Telugu", "Thai", "Tibetan", "Tonga", 
+  "Turkish", "Ukrainian", "Urdu", "Uzbek", "Vietnamese", "Welsh", "Xhosa"];
+const languageCodes = ["AF", "SQ", "AR", "HY", "EU", "BN", "BG", "CA", "KM", 
+  "ZH", "HR", "CS", "DA", "NL", "EN", "ET", "FJ", "FI", "FR","KA", "DE", "EL", 
+  "GU", "HE", "HI", "HU", "IS", "ID", "GA", "IT", "JA", "JW", "KO", "LA", "LV", 
+  "LT", "MK", "MS", "ML", "MT", "MI", "MR", "MN", "NE", "NO", "FA", "PL", "PT", 
+  "PA", "QU", "RO", "RU", "SM", "SR", "SK", "SL", "ES", "SW", "SV", "TA", "TT", 
+  "TE", "TH", "BO", "TO", "TR", "UK", "UR", "UZ", "VI", "CY", "XH"];
 let pageToken = 0;
 
 /** Initializes the page. */
 function onLoad() {
+  displayLanguageSelect();
   displayCommentSection('none');
   initializeSearchBar();
   fetch(`/authenticate`)
   .then(response => response.json())
   .then(displayCommentForm);
+}
+
+/** 
+  * Displays the dropdown menu that decides the language to display the comment 
+  * section in.  
+  */
+function displayLanguageSelect() {
+  let selectLanguageBox = document.getElementById("select-language-box");
+
+  let htmlToAdd =`<select name="select-language" id="select-language"` +
+    ` onchange="displayCommentSection('none')">`;
+  htmlToAdd += `<option value="none">Select Language</option>`;
+
+  let alllanguageOptionHTML = [...Array(languages.length).keys()]
+    .map(i => `<option value="${languageCodes[i]}">${languages[i]}</option>`);
+  alllanguageOptionHTML.forEach(optionHTML => htmlToAdd += optionHTML);
+
+  htmlToAdd += `</select>`;
+
+  selectLanguageBox.innerHTML = htmlToAdd;
 }
 
 /** Determines whether the current user is signed in, and if so, 
