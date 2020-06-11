@@ -11,7 +11,7 @@ public class TranslateText {
     * If `languageCode` is "none", then returns `text` unchanged.
     */
   public static String translateText(String text, String languageCode) {
-    if (languageCode.equals("none")) {
+   if (languageCode.equals("none")) {
       return text;
     }
 

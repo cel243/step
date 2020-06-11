@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import java.util.HashMap;
+import com.google.cloud.language.v1.LanguageServiceClient;
 
 /** 
   * Servlet that uploads and retrieves persistent comment data using datastore.
@@ -78,15 +79,23 @@ public class DataServlet extends HttpServlet {
         */
       Entity toEntity() {
         Entity commentEntity = new Entity("Comment");
-        commentEntity.setProperty(EntityProperties.COMMENT_TEXT, 
-          SentimentAnalyzer.getHTMLWithNamedEntityLinks(text));
         commentEntity.setProperty(EntityProperties.COMMENT_TIMESTAMP, time);
         commentEntity.setProperty(EntityProperties.USER_ID, userId);
         commentEntity.setProperty(EntityProperties.USER_EMAIL, email);
-        commentEntity.setProperty(EntityProperties.COMMENT_SENTIMENT, 
-          SentimentAnalyzer.getSentiment(text).name());
-        commentEntity.setProperty(EntityProperties.COMMENT_TOPIC, 
-          SentimentAnalyzer.getTopic(text));
+
+        try (LanguageServiceClient languageService = 
+          LanguageServiceClient.create()) {
+          commentEntity.setProperty(EntityProperties.COMMENT_SENTIMENT, 
+            SentimentAnalyzer.getSentiment(text, languageService).name());
+          commentEntity.setProperty(EntityProperties.COMMENT_TOPIC, 
+            SentimentAnalyzer.getTopic(text, languageService));
+          commentEntity.setProperty(EntityProperties.COMMENT_TEXT, 
+            SentimentAnalyzer.getHTMLWithNamedEntityLinks(
+              text, languageService));
+        } catch (java.io.IOException e) {
+          commentEntity.setProperty(EntityProperties.COMMENT_TEXT, text);
+          System.err.println("Failed to create LanguageServiceClient");
+        }
         return commentEntity;
       }
 
@@ -110,6 +119,7 @@ public class DataServlet extends HttpServlet {
         */
       Comment translateComment(String languageCode) {
         text = TranslateText.translateText(text, languageCode);
+        System.out.println(text);
         return this;
       }
   }
@@ -192,6 +202,7 @@ public class DataServlet extends HttpServlet {
 
     String json = convertToJson(commentsToDisplay, newPageToken, 
       currentUserId); 
+    response.setCharacterEncoding("UTF-8");
     response.setContentType("application/json;");
     response.getWriter().println(json);
   }
@@ -305,6 +316,7 @@ public class DataServlet extends HttpServlet {
 
     Gson gson = new Gson(); 
     String json = gson.toJson(combineData);
+    System.out.println(json);
     return json;
   }
 }
