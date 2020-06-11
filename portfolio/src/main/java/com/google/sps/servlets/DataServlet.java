@@ -122,7 +122,6 @@ public class DataServlet extends HttpServlet {
         */
       Comment translateComment(String languageCode) {
         text = TranslateText.translateText(text, languageCode);
-        System.out.println(text);
         return this;
       }
   }
@@ -319,7 +318,6 @@ public class DataServlet extends HttpServlet {
 
     Gson gson = new Gson(); 
     String json = gson.toJson(combineData);
-    System.out.println(json);
     return json;
   }
 }
