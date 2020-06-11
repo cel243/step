@@ -35,7 +35,7 @@ import com.google.common.collect.Range;
 import com.google.sps.data.EntityProperties;
 import com.google.sps.data.RequestParameters;
 import com.google.sps.functionality.SentimentAnalyzer;
-import com.google.sps.functionality.TranslateText;
+import com.google.sps.functionality.TextTranslator;
 import com.google.sps.servlets.AuthenticationServlet;
 import java.util.stream.Collectors;
 import com.google.appengine.api.users.UserService;
@@ -121,7 +121,7 @@ public class DataServlet extends HttpServlet {
         * the language corresponding to `languageCode`. 
         */
       Comment translateComment(String languageCode) {
-        text = TranslateText.translateText(text, languageCode);
+        text = TextTranslator.translateText(text, languageCode);
         return this;
       }
   }
