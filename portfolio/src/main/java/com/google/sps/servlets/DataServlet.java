@@ -94,6 +94,9 @@ public class DataServlet extends HttpServlet {
               text, languageService));
         } catch (java.io.IOException e) {
           commentEntity.setProperty(EntityProperties.COMMENT_TEXT, text);
+          commentEntity.setProperty(EntityProperties.COMMENT_SENTIMENT, 
+            SentimentAnalyzer.SentimentType.NEUTRAL.name());
+          commentEntity.setProperty(EntityProperties.COMMENT_TOPIC, "");
           System.err.println("Failed to create LanguageServiceClient");
         }
         return commentEntity;
