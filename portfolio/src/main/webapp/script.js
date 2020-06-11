@@ -247,15 +247,45 @@ function getCommentHTML(currentUserId, json, i) {
     `   ${getCommentButtonHTML(currentUserId, json[i])}` + 
     ` </td>` +
     ` <td colspan = 2 class="user-info-box">` +
-    `   <b><abbr title="${json[i].email}">${json[i].username}</abbr>:</b><br>` +
+    `   <b><abbr title="${json[i].email}">${json[i].username}</abbr>:</b>` +
+        ` ${displaySentiment(json[i].sentiment)}<br>` +
     `   <i class="comment-date">${prettyPrintTime(json[i].time)}</i>` +
     ` </td>` +
-    ` <td colspan="4">` +
+    ` <td colspan="4" class="comment-text">` +
         `${json[i].text}` +
+        `${displayTopic(json[i].topic)}` +
     ` </td>` +
     `</tr>`;
   return html;
 }
+
+/** 
+  * If `topic` is not empty, returns an HTML paragraph
+  * of the form "Topic: <topic>", otherwise returns 
+  * the empty string.  
+  */
+function displayTopic(topic) {
+  if (topic.trim()) {
+    return `<br><i class="topic">Topic: ${topic}</i>`;
+  } else {
+    return ``;
+  }
+}
+
+/** 
+  * Returns an emoticon reflecting whether the sentiement
+  * of this comment is "Positive", "Negative",
+  * or "Neutral". 
+  */
+function displaySentiment(sentiment){
+  if (sentiment === "POSITIVE") {
+    return `😊`;
+  } else if (sentiment === "NEGATIVE") {
+    return `☹`;
+  } else {
+    return `😐`;
+  }
+} 
 
 /** 
   * Returns the HTML for a button that will delete this comment if

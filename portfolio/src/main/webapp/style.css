@@ -373,11 +373,15 @@ select:hover {
     text-align: center;
 }
 
-#please-sign-in a, #log-out a  {
+a  {
     color: black;
 }
 
 #log-out {
     font-size: 15px;
     padding: 15px;
+}
+
+.topic {
+  font-size: 13px;
 }

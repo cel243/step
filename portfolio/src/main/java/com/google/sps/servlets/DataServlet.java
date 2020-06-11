@@ -34,6 +34,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Range;
 import com.google.sps.data.EntityProperties;
 import com.google.sps.data.RequestParameters;
+import com.google.sps.functionality.SentimentAnalyzer;
 import com.google.sps.servlets.AuthenticationServlet;
 import java.util.stream.Collectors;
 import com.google.appengine.api.users.UserService;
@@ -54,24 +55,37 @@ public class DataServlet extends HttpServlet {
       long id;
       String userId;
       String email;
+      String sentiment;
+      String topic;
 
       Comment(String text, String username, long time, long id, 
-        String userId, String email) {
+        String userId, String email, String sentiment, String topic) {
         this.text = text;
         this.username = username;
         this.time = time;
         this.id = id;
         this.userId = userId;
         this.email = email;
+        this.sentiment = sentiment;
+        this.topic = topic;
       }
 
-      /** Returns an entity representing this comment. */
+      /** 
+        * Returns an entity representing this comment.
+        * This should only be called once per comment, for the
+        * purpose of putting this comment into the database.
+        */
       Entity toEntity() {
         Entity commentEntity = new Entity("Comment");
-        commentEntity.setProperty(EntityProperties.COMMENT_TEXT, text);
+        commentEntity.setProperty(EntityProperties.COMMENT_TEXT, 
+          SentimentAnalyzer.getHTMLWithNamedEntityLinks(text));
         commentEntity.setProperty(EntityProperties.COMMENT_TIMESTAMP, time);
         commentEntity.setProperty(EntityProperties.USER_ID, userId);
         commentEntity.setProperty(EntityProperties.USER_EMAIL, email);
+        commentEntity.setProperty(EntityProperties.COMMENT_SENTIMENT, 
+          SentimentAnalyzer.getSentiment(text).name());
+        commentEntity.setProperty(EntityProperties.COMMENT_TOPIC, 
+          SentimentAnalyzer.getTopic(text));
         return commentEntity;
       }
 
@@ -84,7 +98,9 @@ public class DataServlet extends HttpServlet {
           (long) e.getProperty(EntityProperties.COMMENT_TIMESTAMP), 
           e.getKey().getId(),
           (String) e.getProperty(EntityProperties.USER_ID),
-          (String) e.getProperty(EntityProperties.USER_EMAIL));
+          (String) e.getProperty(EntityProperties.USER_EMAIL),
+          (String) e.getProperty(EntityProperties.COMMENT_SENTIMENT),
+          (String) e.getProperty(EntityProperties.COMMENT_TOPIC));
       }
   }
 
@@ -113,7 +129,7 @@ public class DataServlet extends HttpServlet {
       DatastoreService datastore = 
         DatastoreServiceFactory.getDatastoreService();
       Key key = datastore.put(
-        (new Comment(userComment, "", timestamp, 0, userId, email))
+        (new Comment(userComment, "", timestamp, 0, userId, email, "", ""))
         .toEntity());
     }
     response.sendRedirect("/index.html");
@@ -257,7 +273,8 @@ public class DataServlet extends HttpServlet {
       return true;
     } else {
       return comment.text.contains(search) || 
-        comment.username.contains(search) || comment.email.contains(search);
+        comment.username.contains(search) || comment.email.contains(search) ||
+        comment.topic.contains(search);
     }
   }
 

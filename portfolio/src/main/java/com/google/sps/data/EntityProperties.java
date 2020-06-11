@@ -17,6 +17,14 @@ public final class EntityProperties {
   /** The property representing the email of the author of this comment */
   public static final String USER_EMAIL = "email";
 
+  /** The property representing the sentiment of this comment. */
+  public static final String COMMENT_SENTIMENT = "sentiment";
+
+  /** 
+    * The property representing the topic of the comment, if one is available.
+    */
+  public static final String COMMENT_TOPIC = "topic";
+
   /* User Properties: */
 
   /** The property representing the username of this user */
