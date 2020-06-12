@@ -26,18 +26,15 @@ import java.util.List;
 
 public final class FindMeetingQuery {
   /** 
-    * Returns all possible time ranges in which the requested attendees
-    * of `request` could meet for the requested duration without 
-    * conflicting with the `events` that are already scheduled for
-    * these attendees. 
+    * Returns all possible time ranges in which the `requestedAttendees`
+    * could meet for the requested duration without conflicting with the 
+    * `events` that are already scheduled for these attendees. 
     */
-  public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
-    Set<String> requestedAttendees = request.getAttendees().stream()
-      .collect(Collectors.toSet()); 
-
+  public Collection<TimeRange> getPossibleTimes(Collection<Event> events, 
+    Set<String> requestedAttendees, MeetingRequest request) {
     List<TimeRange> sortedEvents = events.stream()
-      .filter(event -> !Sets.intersection(
-        event.getAttendees(), requestedAttendees).isEmpty())
+      .filter(event -> 
+        !Sets.intersection(event.getAttendees(), requestedAttendees).isEmpty())
       .map(event -> event.getWhen())
       .sorted(TimeRange.ORDER_BY_START)
       .collect(Collectors.toList());
@@ -55,5 +52,29 @@ public final class FindMeetingQuery {
     }
 
     return validTimes;
+  }
+
+  /** 
+    * If possible, returns all possible time ranges in which the mandatory and 
+    * optional attendees of the requested meeting could meet for the requested 
+    * duration, without conflicting with any `events` that are already scheduled 
+    * for these attendees.If no times are possible that work for all the attendees,
+    * returns the possible times for just the madatory attendees. 
+    */
+  public Collection<TimeRange> query(Collection<Event> events, 
+    MeetingRequest request) {
+    Set<String> mandatoryAttendees = request.getAttendees().stream()
+      .collect(Collectors.toSet()); 
+    Set<String> optionalAttendees = request.getOptionalAttendees().stream()
+      .collect(Collectors.toSet());
+    Set<String> allAttendees = Sets.union(mandatoryAttendees, optionalAttendees);
+    
+    Collection<TimeRange> timesIncludingOptionalAttendees = getPossibleTimes(
+      events, allAttendees, request);
+    if (timesIncludingOptionalAttendees.isEmpty() && !mandatoryAttendees.isEmpty()) {
+      return getPossibleTimes(events, mandatoryAttendees, request);
+    } else {
+      return timesIncludingOptionalAttendees; 
+    }
   }
 }
