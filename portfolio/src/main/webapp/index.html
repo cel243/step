@@ -76,6 +76,25 @@
                     </td>
                 </tr> 
                 <tr>
+                    <td id="search-form-box" colspan="6">
+                        <input type="text" name="search" id="search" value="" tabindex="1" placeholder="Search">
+                    </td>
+                    <td id="clear-search-box" >
+                        <button onclick="onClearSearch()">X</button>
+                    </td>
+                </tr>
+               <tr>
+                    <td colspan="7" id="select-language-box"></td>
+                </tr>
+            </table>
+            <div id="comment-section"></div>
+            <table>
+                <tr>
+                    <td></td><td></td><td></td>
+                    <td></td><td></td><td></td>
+                    <td></td>
+                </tr>
+                <tr>
                     <td colspan="5" id="number-to-display-select-box">
                         <label for="number-to-display">Display up to: </label>
                         <select name="number-to-display" id="number-to-display"
@@ -95,21 +114,6 @@
                         <button onclick="displayCommentSection('next')">
                             <i class="arrow right" id="right-arrow"></i>
                         </button>
-                    </td>
-            </table>
-            <div id="comment-section"></div>
-            <table>
-                <tr>
-                    <td></td><td></td><td></td>
-                    <td></td><td></td><td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td id="search-form-box" colspan="4">
-                        <input type="text" name="search" id="search" value="" tabindex="1" placeholder="Search">
-                    </td>
-                    <td id="clear-search-box" >
-                        <button onclick="onClearSearch()">X</button>
                     </td>
                 </tr>
             </table>

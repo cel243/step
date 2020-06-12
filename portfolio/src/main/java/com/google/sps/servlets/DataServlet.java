@@ -35,11 +35,13 @@ import com.google.common.collect.Range;
 import com.google.sps.data.EntityProperties;
 import com.google.sps.data.RequestParameters;
 import com.google.sps.functionality.SentimentAnalyzer;
+import com.google.sps.functionality.TextTranslator;
 import com.google.sps.servlets.AuthenticationServlet;
 import java.util.stream.Collectors;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import java.util.HashMap;
+import com.google.cloud.language.v1.LanguageServiceClient;
 
 /** 
   * Servlet that uploads and retrieves persistent comment data using datastore.
@@ -77,15 +79,26 @@ public class DataServlet extends HttpServlet {
         */
       Entity toEntity() {
         Entity commentEntity = new Entity("Comment");
-        commentEntity.setProperty(EntityProperties.COMMENT_TEXT, 
-          SentimentAnalyzer.getHTMLWithNamedEntityLinks(text));
         commentEntity.setProperty(EntityProperties.COMMENT_TIMESTAMP, time);
         commentEntity.setProperty(EntityProperties.USER_ID, userId);
         commentEntity.setProperty(EntityProperties.USER_EMAIL, email);
-        commentEntity.setProperty(EntityProperties.COMMENT_SENTIMENT, 
-          SentimentAnalyzer.getSentiment(text).name());
-        commentEntity.setProperty(EntityProperties.COMMENT_TOPIC, 
-          SentimentAnalyzer.getTopic(text));
+
+        try (LanguageServiceClient languageService = 
+          LanguageServiceClient.create()) {
+          commentEntity.setProperty(EntityProperties.COMMENT_SENTIMENT, 
+            SentimentAnalyzer.getSentiment(text, languageService).name());
+          commentEntity.setProperty(EntityProperties.COMMENT_TOPIC, 
+            SentimentAnalyzer.getTopic(text, languageService));
+          commentEntity.setProperty(EntityProperties.COMMENT_TEXT, 
+            SentimentAnalyzer.getHTMLWithNamedEntityLinks(
+              text, languageService));
+        } catch (java.io.IOException e) {
+          commentEntity.setProperty(EntityProperties.COMMENT_TEXT, text);
+          commentEntity.setProperty(EntityProperties.COMMENT_SENTIMENT, 
+            SentimentAnalyzer.SentimentType.NEUTRAL.name());
+          commentEntity.setProperty(EntityProperties.COMMENT_TOPIC, "");
+          System.err.println("Failed to create LanguageServiceClient");
+        }
         return commentEntity;
       }
 
@@ -101,6 +114,15 @@ public class DataServlet extends HttpServlet {
           (String) e.getProperty(EntityProperties.USER_EMAIL),
           (String) e.getProperty(EntityProperties.COMMENT_SENTIMENT),
           (String) e.getProperty(EntityProperties.COMMENT_TOPIC));
+      }
+
+      /** 
+        * Returns this comment, but with the comment text translated to
+        * the language corresponding to `languageCode`. 
+        */
+      Comment translateComment(String languageCode) {
+        text = TextTranslator.translateText(text, languageCode);
+        return this;
       }
   }
 
@@ -160,12 +182,16 @@ public class DataServlet extends HttpServlet {
     searchQuery = searchQuery.substring(1,searchQuery.length() - 1);
     int pageToken = Integer.parseInt(
       (String) request.getParameter(RequestParameters.PAGE_TOKEN));
+    String languageCode = (String) request.getParameter(
+      RequestParameters.LANGUAGE); 
+    languageCode = languageCode.substring(1,languageCode.length() - 1);
 
     PreparedQuery results = getAllComments();
     ArrayList<Comment> unfilteredComments = new ArrayList<Comment>();
-    results.asIterable().forEach(commentEntity -> {
-      unfilteredComments.add(Comment.fromEntity(commentEntity));
-    });
+    for (Entity commentEntity : results.asIterable()) {
+      unfilteredComments.add(Comment.fromEntity(commentEntity)
+        .translateComment(languageCode));
+    }
     List<Comment> comments = getFilteredComments(unfilteredComments, 
       searchQuery);
 
@@ -178,6 +204,7 @@ public class DataServlet extends HttpServlet {
 
     String json = convertToJson(commentsToDisplay, newPageToken, 
       currentUserId); 
+    response.setCharacterEncoding("UTF-8");
     response.setContentType("application/json;");
     response.getWriter().println(json);
   }

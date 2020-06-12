@@ -31,21 +31,15 @@ public class SentimentAnalyzer {
     * Analyzes the sentiment of `text` and returns the appropriate
     * sentiment type depending on the detected sentiment.
     */
-  public static SentimentType getSentiment(String text) {
+  public static SentimentType getSentiment(String text, 
+    LanguageServiceClient languageService) {
     Document document = Document.newBuilder().setContent(text).setType
       (Document.Type.PLAIN_TEXT).build();
     float score = 0;
 
-    try (LanguageServiceClient languageService = 
-      LanguageServiceClient.create()) {
-      Sentiment sentiment = languageService.analyzeSentiment(document)
-        .getDocumentSentiment();
-      score = sentiment.getScore();
-
-      languageService.close();
-    } catch (java.io.IOException e) {
-      System.err.println("Failed to create LanguageServiceClient");
-    }
+    Sentiment sentiment = languageService.analyzeSentiment(document)
+      .getDocumentSentiment();
+    score = sentiment.getScore();
 
     if (score < -0.5) {
       return SentimentType.NEGATIVE;
@@ -62,24 +56,18 @@ public class SentimentAnalyzer {
     * entities that were detected in `text`, if the entity recognition
     * analysis of the text yields these wikipedia links.
     */
-  public static String getHTMLWithNamedEntityLinks(String text) {
+  public static String getHTMLWithNamedEntityLinks(String text, 
+    LanguageServiceClient languageService) {
     Document document = Document.newBuilder().setContent(text).setType
       (Document.Type.PLAIN_TEXT).build();
     AnalyzeEntitiesRequest request = AnalyzeEntitiesRequest.newBuilder().setDocument(document).build();
     StringBuilder textWithLinks = new StringBuilder(text);
 
-    try (LanguageServiceClient languageService = 
-      LanguageServiceClient.create()) {
-      List<Entity> entities = languageService.analyzeEntities(request)
-        .getEntitiesList();
-      entities.forEach(entity -> insertLink(entity, textWithLinks));
-      
-      languageService.close();
-    } catch (java.io.IOException e) {
-      System.err.println("Failed to create LanguageServiceClient");
-    }
+    List<Entity> entities = languageService.analyzeEntities(request)
+      .getEntitiesList();
+    entities.forEach(entity -> insertLink(entity, textWithLinks));
 
-    return textWithLinks.toString(); 
+    return textWithLinks.toString();
   }
 
   /** 
@@ -104,24 +92,20 @@ public class SentimentAnalyzer {
     * determined from the text, and otherwise returns the 
     * empty string. 
     */
-  public static String getTopic(String text) {
+  public static String getTopic(String text, 
+    LanguageServiceClient languageService) {
     Document document = Document.newBuilder().setContent(text).setType
       (Document.Type.PLAIN_TEXT).build();
     ClassifyTextRequest request = ClassifyTextRequest.newBuilder().setDocument(document).build();
     String topic = "";
 
-    try (LanguageServiceClient languageService = 
-      LanguageServiceClient.create()) {
+    try {
       List<ClassificationCategory> categories = 
       languageService.classifyText(request).getCategoriesList();
       ClassificationCategory bestCategory = categories.stream()
         .max(Comparator.comparing(category -> category.getConfidence()))
         .get();
       topic = bestCategory.getName();
-
-      languageService.close();
-    } catch (java.io.IOException e) {
-      System.err.println("Failed to create LanguageServiceClient");
     } catch (com.google.api.gax.rpc.InvalidArgumentException e) {
       //No action needed; no topic was detected
     }
