@@ -25,6 +25,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class FindMeetingQuery {
+  /** 
+    * Returns all possible time ranges in which the requested attendees
+    * of `request` could meet for the requested duration without 
+    * conflicting with the `events` that are already scheduled for
+    * these attendees. 
+    */
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
     Set<String> requestedAttendees = request.getAttendees().stream()
       .collect(Collectors.toSet()); 
