@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
+import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -42,6 +43,7 @@ import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import java.util.HashMap;
 import com.google.cloud.language.v1.LanguageServiceClient;
+import com.google.appengine.api.datastore.FetchOptions;
 
 /** 
   * Servlet that uploads and retrieves persistent comment data using datastore.
@@ -182,16 +184,19 @@ public class DataServlet extends HttpServlet {
     searchQuery = searchQuery.substring(1,searchQuery.length() - 1);
     int pageToken = Integer.parseInt(
       (String) request.getParameter(RequestParameters.PAGE_TOKEN));
-    String languageCode = (String) request.getParameter(
-      RequestParameters.LANGUAGE); 
-    languageCode = languageCode.substring(1,languageCode.length() - 1);
+    String languageCodeWithQuotes = request
+      .getParameter(RequestParameters.LANGUAGE);
+    String languageCode = languageCodeWithQuotes
+      .substring(1,languageCodeWithQuotes.length() - 1);
 
     PreparedQuery results = getAllComments();
-    ArrayList<Comment> unfilteredComments = new ArrayList<Comment>();
-    for (Entity commentEntity : results.asIterable()) {
-      unfilteredComments.add(Comment.fromEntity(commentEntity)
-        .translateComment(languageCode));
-    }
+    ImmutableList<Comment> unfilteredComments = results
+      .asList(FetchOptions.Builder.withDefaults())
+      .stream()
+      .map(commentEntity -> 
+        Comment.fromEntity(commentEntity).translateComment(languageCode))
+      .collect(ImmutableList.toImmutableList());
+
     List<Comment> comments = getFilteredComments(unfilteredComments, 
       searchQuery);
 
@@ -285,7 +290,7 @@ public class DataServlet extends HttpServlet {
     * @param search A string to filter the comments by. 
     */
   private List<Comment> getFilteredComments( 
-    ArrayList<Comment> comments, String search) {
+    List<Comment> comments, String search) {
     List<Comment> filteredComments = comments.stream()
       .filter(c -> satisfiesSearch(c, search)).collect(Collectors.toList());
     return filteredComments;
