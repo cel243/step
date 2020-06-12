@@ -399,21 +399,16 @@ public final class FindMeetingQueryTest {
   @Test
   public void noMandatoryAttendeesAndNoPossibleTimes() {
     // All attendees for a meeting are optional. Should return
-    // the slot that works for both people.
+    // nothing since no times work for anyone. 
     //
-    // Events  : |--A--|         |--A--| (optional)
-    //                 |----B----|       (optional)
+    // Events  : |----------A----------| (optional)
+    //           |----------B----------|
     // Day     : |---------------------|
     // Options :       
 
     Collection<Event> events = Arrays.asList(
-        new Event("Event 1", TimeRange.fromStartEnd(TimeRange.START_OF_DAY, TIME_0900AM, false),
-            Arrays.asList(PERSON_A)),
-        new Event("Event 2", TimeRange.fromStartEnd(TIME_1100AM, TimeRange.END_OF_DAY, true),
-            Arrays.asList(PERSON_A)),
-        new Event("Event 3", TimeRange.fromStartEnd(TIME_0900AM,
-          TIME_1100AM, false),
-            Arrays.asList(PERSON_B)));
+        new Event("Event 1", TimeRange.WHOLE_DAY, Arrays.asList(PERSON_A)),
+        new Event("Event 2", TimeRange.WHOLE_DAY, Arrays.asList(PERSON_B)));
 
     MeetingRequest request = new MeetingRequest(NO_ATTENDEES, DURATION_30_MINUTES);
     request.addOptionalAttendee(PERSON_A);
