@@ -65,12 +65,13 @@ public final class FindMeetingQuery {
     
     Set<Set<String>> subsets = Sets.powerSet(optionalAttendees);
     Set<Set<String>> infeasibleGroups = new HashSet<Set<String>>();
-    Collection<TimeRange> optimalTimes = new ArrayList<TimeRange>();
+    Collection<TimeRange> optimalListOfTimes = new ArrayList<TimeRange>();
 
     for (int i = 1; i < optionalAttendees.size(); i++) {
-      int currentSize = i;
+      int currentSizeOfSubsetsToCheck = i;
       Set<Set<String>> subsetsToCheck = Sets.filter(subsets, subset -> 
-        subset.size() == currentSize && !containsInfeasibleGroup(subset, infeasibleGroups));
+        subset.size() == currentSizeOfSubsetsToCheck && 
+          !containsInfeasibleGroup(subset, infeasibleGroups));
       if (subsetsToCheck.isEmpty()) {
         // all subsets larger than this will be infeasible 
         break;
@@ -84,15 +85,15 @@ public final class FindMeetingQuery {
           // can be scheduled.
           infeasibleGroups.add(subset);
         } else {
-          optimalTimes = possibleTimes;
+          optimalListOfTimes = possibleTimes;
         }
       }
     }
 
-    if (optimalTimes.isEmpty() && !mandatoryAttendees.isEmpty()) {
+    if (optimalListOfTimes.isEmpty() && !mandatoryAttendees.isEmpty()) {
       return getPossibleTimes(events, mandatoryAttendees, request);
     } else {
-      return optimalTimes;
+      return optimalListOfTimes;
     }
 
   }
@@ -104,19 +105,16 @@ public final class FindMeetingQuery {
     */
   private boolean containsInfeasibleGroup(Set<String> set, 
     Set<Set<String>> infeasibleGroups) {
-    for (Set<String> infeasibleGroup : infeasibleGroups) {
-      if (set.containsAll(infeasibleGroup)) {
-        return true;
-      }
-    }
-    return false;
+    return infeasibleGroups.stream().reduce(false, (accumulator, infeasibleGroup) -> {
+      return accumulator || set.containsAll(infeasibleGroup);
+    }, Boolean::logicalOr);
   }
 
   /** 
     * If possible, returns all possible time ranges in which the mandatory and 
     * optional attendees of the requested meeting could meet for the requested 
     * duration, without conflicting with any `events` that are already scheduled 
-    * for these attendees.If no times are possible that work for all the attendees,
+    * for these attendees. If no times are possible that work for all the attendees,
     * returns possible times such that all mandatory attendees and as many 
     * optional antendees as possible can attend the meeting at these times. 
     */
