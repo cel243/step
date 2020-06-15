@@ -21,9 +21,9 @@ import com.google.cloud.language.v1.Document;
 @RunWith(JUnit4.class)
 public final class TestSentiment {
 
-  private static LanguageServiceClient MOCK_LANGUAGE_SERVICE_CLIENT;
-  private static AnalyzeSentimentResponse MOCK_SENTIMENT_RESPONSE;
-  private static Sentiment MOCK_SENTIMENT;
+  private static LanguageServiceClient mockLanguageServiceClient;
+  private static AnalyzeSentimentResponse mockSentimentResponse;
+  private static Sentiment mockSentiment;
 
   private static final String EXAMPLE_STRING = "test";
   private static boolean isDocument(Document document) {
@@ -32,14 +32,14 @@ public final class TestSentiment {
 
   @Before
   public void setUp() {
-    MOCK_LANGUAGE_SERVICE_CLIENT = mock(LanguageServiceClient.class);
-    MOCK_SENTIMENT_RESPONSE = mock(AnalyzeSentimentResponse.class);
-    MOCK_SENTIMENT = mock(Sentiment.class);
+    mockLanguageServiceClient = mock(LanguageServiceClient.class);
+    mockSentimentResponse = mock(AnalyzeSentimentResponse.class);
+    mockSentiment = mock(Sentiment.class);
 
-    when(MOCK_LANGUAGE_SERVICE_CLIENT.analyzeSentiment(argThat(TestSentiment::isDocument)))
-      .thenReturn(MOCK_SENTIMENT_RESPONSE);
-    when(MOCK_SENTIMENT_RESPONSE.getDocumentSentiment())
-      .thenReturn(MOCK_SENTIMENT);
+    when(mockLanguageServiceClient.analyzeSentiment(argThat(TestSentiment::isDocument)))
+      .thenReturn(mockSentimentResponse);
+    when(mockSentimentResponse.getDocumentSentiment())
+      .thenReturn(mockSentiment);
   }
 
   @Test 
@@ -47,10 +47,10 @@ public final class TestSentiment {
     // when the sentiemnt analyzer returns -1, then the SentimentAnalyzer class
     // classifies the text as NEGATIVE
 
-    when(MOCK_SENTIMENT.getScore()).thenReturn((float) -1);
+    when(mockSentiment.getScore()).thenReturn((float) -1);
 
     SentimentAnalyzer.SentimentType actual = SentimentAnalyzer.getSentiment(
-      EXAMPLE_STRING, MOCK_LANGUAGE_SERVICE_CLIENT);
+      EXAMPLE_STRING, mockLanguageServiceClient);
     SentimentAnalyzer.SentimentType expected = SentimentAnalyzer
       .SentimentType.NEGATIVE;
 
@@ -62,10 +62,10 @@ public final class TestSentiment {
     // when the sentiemnt analyzer returns 1, then the SentimentAnalyzer class
     // classifies the text as POSITIVE
     
-    when(MOCK_SENTIMENT.getScore()).thenReturn((float) 1);
+    when(mockSentiment.getScore()).thenReturn((float) 1);
 
     SentimentAnalyzer.SentimentType actual = SentimentAnalyzer.getSentiment(
-      EXAMPLE_STRING, MOCK_LANGUAGE_SERVICE_CLIENT);
+      EXAMPLE_STRING, mockLanguageServiceClient);
     SentimentAnalyzer.SentimentType expected = SentimentAnalyzer
       .SentimentType.POSITIVE;
 
@@ -77,10 +77,10 @@ public final class TestSentiment {
     // when the sentiemnt analyzer returns 0, then the SentimentAnalyzer class
     // classifies the text as NEUTRAL
     
-    when(MOCK_SENTIMENT.getScore()).thenReturn((float) 0);
+    when(mockSentiment.getScore()).thenReturn((float) 0);
 
     SentimentAnalyzer.SentimentType actual = SentimentAnalyzer.getSentiment(
-      EXAMPLE_STRING, MOCK_LANGUAGE_SERVICE_CLIENT);
+      EXAMPLE_STRING, mockLanguageServiceClient);
     SentimentAnalyzer.SentimentType expected = SentimentAnalyzer
       .SentimentType.NEUTRAL;
 
