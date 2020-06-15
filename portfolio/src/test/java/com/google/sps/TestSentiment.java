@@ -22,6 +22,13 @@ import com.google.cloud.language.v1.Document;
 import com.google.cloud.language.v1.AnalyzeEntitiesRequest;
 import com.google.cloud.language.v1.AnalyzeEntitiesResponse;
 import com.google.cloud.language.v1.Entity;
+import com.google.cloud.language.v1.ClassifyTextRequest;
+import com.google.cloud.language.v1.ClassifyTextResponse;
+import com.google.cloud.language.v1.ClassificationCategory;
+import com.google.api.gax.rpc.InvalidArgumentException;
+import java.lang.Throwable;
+import com.google.api.gax.grpc.GrpcStatusCode;
+import io.grpc.Status;
 
 @RunWith(JUnit4.class)
 public final class TestSentiment {
@@ -32,6 +39,10 @@ public final class TestSentiment {
   private static AnalyzeEntitiesResponse mockAnalyzeEntitiesResponse;
   private static Entity mockEntityOne;
   private static Entity mockEntityTwo;
+  private static ClassifyTextResponse mockClassifyTextResponse;
+  private static ClassificationCategory mockClassificationCategoryOne;
+  private static ClassificationCategory mockClassificationCategoryTwo;
+
 
   private static final String TEST_STRING = "test";
 
@@ -51,11 +62,18 @@ public final class TestSentiment {
   private static Map<String, String> ENTITY_ONE_METADATA_MAP = new HashMap<String, String>();
   private static Map<String, String> ENTITY_TWO_METADATA_MAP = new HashMap<String, String>();
 
+  private static final String CATEGORY_NAME_ONE = "Category One";
+  private static final String CATEGORY_NAME_TWO = "Category Two";
+
   private static boolean isDocument(Document document) {
     return true;
   }
   private static boolean isAnalyzeEntitiesRequest(
     AnalyzeEntitiesRequest analyzeEntitiesRequest) {
+    return true;
+  }
+  private static boolean isClassifyTextRequest(
+    com.google.cloud.language.v1.ClassifyTextRequest classifyTextRequest) {
     return true;
   }
 
@@ -69,6 +87,10 @@ public final class TestSentiment {
     mockEntityOne = mock(Entity.class);
     mockEntityTwo = mock(Entity.class);
 
+    mockClassifyTextResponse = mock(ClassifyTextResponse.class);
+    mockClassificationCategoryOne = mock(ClassificationCategory.class);
+    mockClassificationCategoryTwo = mock(ClassificationCategory.class);
+
     when(mockLanguageServiceClient.analyzeSentiment(argThat(TestSentiment::isDocument)))
       .thenReturn(mockSentimentResponse);
     when(mockSentimentResponse.getDocumentSentiment())
@@ -79,6 +101,9 @@ public final class TestSentiment {
       .thenReturn(mockAnalyzeEntitiesResponse);
     when(mockEntityOne.getName()).thenReturn(ENTITY_ONE_NAME);
     when(mockEntityTwo.getName()).thenReturn(ENTITY_TWO_NAME);
+
+    when(mockClassificationCategoryOne.getName()).thenReturn(CATEGORY_NAME_ONE);
+    when(mockClassificationCategoryTwo.getName()).thenReturn(CATEGORY_NAME_TWO);
 
     ENTITY_ONE_METADATA_MAP.put("wikipedia_url", ENTITY_ONE_LINK);
     ENTITY_TWO_METADATA_MAP.put("wikipedia_url", ENTITY_TWO_LINK);
@@ -212,6 +237,56 @@ public final class TestSentiment {
     
     String actual = SentimentAnalyzer.getHTMLWithNamedEntityLinks(STRING_WITH_ENTITIES, mockLanguageServiceClient);
     String expected = HAS_LINKS_FOR_BOTH_ENTITIES;
+
+    Assert.assertEquals(expected, actual);
+  }
+
+  @Test
+  public void noTopicFound() {
+    // When no topic can be found (the function throws an exception)
+    // then the topic is simply the empty string.
+
+    when(mockLanguageServiceClient.classifyText(argThat(TestSentiment::isClassifyTextRequest)))
+      .thenThrow(new com.google.api.gax.rpc.InvalidArgumentException(
+        new Throwable(), GrpcStatusCode.of(Status.INVALID_ARGUMENT.getCode()), false));
+    
+    String actual = SentimentAnalyzer.getTopic(TEST_STRING, mockLanguageServiceClient);
+    String expected = "";
+
+    Assert.assertEquals(expected, actual);
+  }
+
+  @Test
+  public void returnTopicIfFound() {
+    // When there is one topic, the topic is the name of that topic
+    // category.
+
+    when(mockLanguageServiceClient.classifyText(argThat(TestSentiment::isClassifyTextRequest)))
+      .thenReturn(mockClassifyTextResponse);
+    when(mockClassifyTextResponse.getCategoriesList())
+      .thenReturn(Arrays.asList(mockClassificationCategoryOne));
+    when(mockClassificationCategoryOne.getConfidence()).thenReturn((float) 1);
+    
+    String actual = SentimentAnalyzer.getTopic(TEST_STRING, mockLanguageServiceClient);
+    String expected = CATEGORY_NAME_ONE;
+
+    Assert.assertEquals(expected, actual);
+  }
+
+  @Test
+  public void returnHigherConfidenceTopic() {
+    // When there are two topics detected, the one with higher confidence 
+    // is returned.
+
+    when(mockLanguageServiceClient.classifyText(argThat(TestSentiment::isClassifyTextRequest)))
+      .thenReturn(mockClassifyTextResponse);
+    when(mockClassifyTextResponse.getCategoriesList())
+      .thenReturn(Arrays.asList(mockClassificationCategoryOne, mockClassificationCategoryTwo));
+    when(mockClassificationCategoryOne.getConfidence()).thenReturn((float) 1);
+    when(mockClassificationCategoryTwo.getConfidence()).thenReturn((float) 2);
+    
+    String actual = SentimentAnalyzer.getTopic(TEST_STRING, mockLanguageServiceClient);
+    String expected = CATEGORY_NAME_TWO;
 
     Assert.assertEquals(expected, actual);
   }
