@@ -402,7 +402,7 @@ public final class FindMeetingQueryTest {
     // nothing since no times work for anyone. 
     //
     // Events  : |----------A----------| (optional)
-    //           |----------B----------|
+    //           |----------B----------| (optional)
     // Day     : |---------------------|
     // Options :       
 
