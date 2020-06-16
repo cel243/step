@@ -111,7 +111,7 @@ public final class TestSentiment {
 
   @Test 
   public void negativeSentiment() {
-    // when the sentiemnt analyzer returns -1, then the SentimentAnalyzer class
+    // when the sentiment analyzer returns -1, then the SentimentAnalyzer class
     // classifies the text as NEGATIVE.
 
     when(mockSentiment.getScore()).thenReturn((float) -1);
@@ -126,7 +126,7 @@ public final class TestSentiment {
 
   @Test 
   public void positiveSentiment() {
-    // when the sentiemnt analyzer returns 1, then the SentimentAnalyzer class
+    // when the sentiment analyzer returns 1, then the SentimentAnalyzer class
     // classifies the text as POSITIVE.
     
     when(mockSentiment.getScore()).thenReturn((float) 1);
@@ -141,7 +141,7 @@ public final class TestSentiment {
 
   @Test 
   public void neutralSentiment() {
-    // when the sentiemnt analyzer returns 0, then the SentimentAnalyzer class
+    // when the sentiment analyzer returns 0, then the SentimentAnalyzer class
     // classifies the text as NEUTRAL.
     
     when(mockSentiment.getScore()).thenReturn((float) 0);
@@ -159,6 +159,8 @@ public final class TestSentiment {
     // When entities are found but neither has any link, the string is
     // unchanged. 
 
+    when(mockAnalyzeEntitiesResponse.getEntitiesList())
+      .thenReturn(Arrays.asList(mockEntityOne, mockEntityTwo));
     when(mockEntityOne.containsMetadata("wikipedia_url"))
       .thenReturn(false);
     when(mockEntityTwo.containsMetadata("wikipedia_url"))
@@ -185,7 +187,7 @@ public final class TestSentiment {
 
   @Test
   public void onlyEntityOneHasLink() {
-    // When only the first entity has a link, on that link is added
+    // When only the first entity has a link, only that link is added
     // to the string.
 
     when(mockAnalyzeEntitiesResponse.getEntitiesList())
@@ -204,7 +206,7 @@ public final class TestSentiment {
 
   @Test
   public void onlyEntityTwoHasLink() {
-    // When only the second entity has a link, on that link is added
+    // When only the second entity has a link, only that link is added
     // to the string.
 
     when(mockAnalyzeEntitiesResponse.getEntitiesList())
