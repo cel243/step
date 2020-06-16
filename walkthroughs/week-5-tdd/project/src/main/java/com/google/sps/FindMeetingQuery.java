@@ -94,7 +94,7 @@ public final class FindMeetingQuery {
   private Collection<TimeRange> getOptimalSubsetTimes(
     Set<String> mandatoryAttendees, Set<String> optionalAttendees, 
     Collection<Event> events, MeetingRequest request) {
-    Map<String, List<TimeRange>> mapOfPeopleToTimes = mapPeopleToUnavailabeTImes(events);
+    Map<String, List<TimeRange>> mapOfPeopleToTimes = mapPeopleToUnavailabeTimes(events);
     List<TimeRange> mandatoryAttendeeAvailability = 
       getPossibleTimes(events, mandatoryAttendees, request);
     Set<String> mostOptionalAttendeesCanAttend = new HashSet<String>();
@@ -127,11 +127,11 @@ public final class FindMeetingQuery {
     * that finish before start. 
     */
   private Set<String> getAvailableAttendees(
-    Map<String, List<TimeRange>> mapOfPeopletoTimes, int start, int end, 
+    Map<String, List<TimeRange>> mapOfPeopleToTimes, int start, int end, 
     Set<String> attendees) {
     Set<String> availableAttendees = new HashSet<String>();
     attendees.stream().forEach(attendee -> {
-      List<TimeRange> unavailableTimes = mapOfPeopletoTimes.get(attendee);
+      List<TimeRange> unavailableTimes = mapOfPeopleToTimes.get(attendee);
       while (!unavailableTimes.isEmpty() && 
         unavailableTimes.get(0).end() < start) {
         unavailableTimes.remove(0);
@@ -159,7 +159,7 @@ public final class FindMeetingQuery {
     * attend, where the events they are mapped to are ordered by event start 
     * time, ascending. 
     */
-  private Map<String, List<TimeRange>> mapPeopleToUnavailabeTImes(Collection<Event> events) {
+  private Map<String, List<TimeRange>> mapPeopleToUnavailabeTimes(Collection<Event> events) {
     Map<String, List<TimeRange>> peopleToEvents = new HashMap<String, List<TimeRange>>();
     events.stream().sorted(ORDER_EVENT_BY_START).forEachOrdered(event -> {
       event.getAttendees().stream().forEach(attendee -> {
