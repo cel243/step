@@ -73,7 +73,7 @@ public final class TestSentiment {
     return true;
   }
   private static boolean isClassifyTextRequest(
-    com.google.cloud.language.v1.ClassifyTextRequest classifyTextRequest) {
+    ClassifyTextRequest classifyTextRequest) {
     return true;
   }
 
