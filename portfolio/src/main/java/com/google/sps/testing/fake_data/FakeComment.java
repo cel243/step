@@ -24,8 +24,8 @@ public class FakeComment {
   }
 
   /** 
-    * Returns the 'translated' comment, where the text simply becomes'
-    * "languageCode: text"
+    * Returns the "translated" comment, where the text simply becomes
+    * "<languageCode>: text"
     */
   public Comment translateComment(String languageCode) {
     text = languageCode+": "+text;

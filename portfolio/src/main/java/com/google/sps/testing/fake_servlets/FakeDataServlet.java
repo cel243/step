@@ -8,29 +8,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
-import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.SortDirection;
 import java.lang.Math;
 import com.google.common.base.Strings;
 import com.google.common.collect.Range;
 import com.google.sps.data.EntityProperties;
 import com.google.sps.data.RequestParameters;
-import com.google.sps.functionality.SentimentAnalyzer;
-import com.google.sps.functionality.TextTranslator;
-import com.google.sps.servlets.AuthenticationServlet;
 import java.util.stream.Collectors;
-import com.google.appengine.api.users.UserService;
-import com.google.appengine.api.users.UserServiceFactory;
 import java.util.HashMap;
-import com.google.cloud.language.v1.LanguageServiceClient;
-import com.google.appengine.api.datastore.FetchOptions;
 import com.google.sps.configuration.Flags;
 import com.google.sps.testing.fake_data.FakeComment;
 import com.google.sps.testing.fake_data.FakeCommentDatabase;
@@ -43,7 +28,7 @@ import com.google.sps.testing.fake_data.FakeUserService;
 public class DataServlet extends HttpServlet {
 
  
-  /** Extracts user comment from form and stores it via datastore. */
+  /** Extracts user comment from form and stores it in a fake database. */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     FakeUserService userService = FakeUserService.FAKE_USER_SERVICE_INSTANCE;
@@ -70,9 +55,8 @@ public class DataServlet extends HttpServlet {
   }
 
   /** 
-    * Loads all user comments from datastore and returns JSON list of n 
-    * comments, where n is the number of comments the user has requested, 
-    * filtered by any search query the user may have entered.
+    * Loads all user comments from the fake database and returns JSON list of 
+    * the comments, with a page token and the current user id. 
     */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {

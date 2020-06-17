@@ -1,11 +1,11 @@
 package com.google.sps.testing.fake_data;
 
 import java.util.LinkedList;
-import java.util.List;
 import com.google.sps.testing.fake_data.FakeComment;
 import com.google.sps.testing.fake_servlets.FakeAuthenticationServlet;
 import java.util.stream.Collectors;
 
+/** A fake database that stored comments for testing purposes. */
 public class FakeCommentDatabase {
   private static LinkedList<FakeComment> comments = new LinkedList<FakeComment>();
   private static int next_id = 0;
@@ -35,9 +35,9 @@ public class FakeCommentDatabase {
   }
 
   /** 
-    * Deletes all comments from teh fake database that were written by this 
+    * Deletes all comments from the fake database that were written by this 
     * user, or all the comments if userId = "ADMIN". 
-  */
+    */
   public static void deleteAllCommentsByUser(String userId) {
     int i = 0;
     for (FakeComment comment : comments) {
