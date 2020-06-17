@@ -1,13 +1,13 @@
 package com.google.sps.testing.fake_data;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import com.google.sps.testing.fake_data.FakeComment;
 import com.google.sps.testing.fake_servlets.FakeAuthenticationServlet;
 import java.util.stream.Collectors;
 
 public class FakeCommentDatabase {
-  private static ArrayList<FakeComment> comments = new ArrayList<FakeComment>();
+  private static LinkedList<FakeComment> comments = new LinkedList<FakeComment>();
   private static int next_id = 0;
 
   /** 
@@ -32,5 +32,32 @@ public class FakeCommentDatabase {
         comment.id, comment.userId, comment.email, comment.sentiment, 
         comment.topic))
       .collect(Collectors.asList());
+  }
+
+  /** 
+    * Deletes all comments from teh fake database that were written by this 
+    * user, or all the comments if userId = "ADMIN". 
+  */
+  public static void deleteAllCommentsByUser(String userId) {
+    int i = 0;
+    for (FakeComment comment : comments) {
+      if (userId.equals("ADMIN") || userId.equals(comment.userId)) {
+        comments.remove(i);
+      } else {
+        i++;
+      }
+    }
+  }
+
+  /** Deletes the comment with id commentId from the fake database. */
+  public static void deleteThisComment(String commentId) {
+    int i = 0;
+    for (FakeComment comment : comments) {
+      if (commentId.equals(comment.id)) {
+        comments.remove(i);
+        break;
+      }
+      i++;
+    }
   }
 }
