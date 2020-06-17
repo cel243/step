@@ -49,7 +49,7 @@ import com.google.sps.configuration.Flags;
 /** 
   * Servlet that uploads and retrieves persistent comment data using datastore.
   */
-@WebServlet("/data")
+@WebServlet(Flags.IS_REAL_SERVER ? "/data" : "/fakedata")
 public class DataServlet extends HttpServlet {
 
   /** Represents a single comment */
