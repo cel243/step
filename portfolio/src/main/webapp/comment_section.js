@@ -1,5 +1,5 @@
 
-const languages = ["Afrikaans", "Albanian", "Armenian", "Basque", "Bengali", 
+const languages = ["Afrikaans", "Albanian", "Arabic", "Armenian", "Basque", "Bengali", 
   "Bulgarian", "Catalan", "Cambodian", "Chinese (Mandarin)", "Croatian", 
   "Czech", "Danish", "Dutch", "English", "Estonian", "Fiji", "Finnish", 
   "French", "Georgian", "German", "Greek", "Gujarati", "Hebrew", "Hindi", 
