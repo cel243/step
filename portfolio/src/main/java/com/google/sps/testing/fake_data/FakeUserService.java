@@ -19,6 +19,14 @@ public class FakeUserService {
     return "test@example.com"
   }
 
+  public String createLogoutURL(String url) {
+    return url;
+  }
+
+  public String createLoginURL(String url) {
+    return url;
+  }
+
   private FakeUserService(){
   }
 }
