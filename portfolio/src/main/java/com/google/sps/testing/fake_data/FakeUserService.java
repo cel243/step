@@ -24,7 +24,7 @@ public class FakeUserService {
 
   /** Returns the user's email. */
   public String getEmail() {
-    return "test@example.com"
+    return "test@example.com";
   }
 
   /** Returns url. */

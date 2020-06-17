@@ -16,7 +16,7 @@ public class FakeUserDatabase {
 
   /** Returns the value userId is paired with in the database. */
   public static String get(String userId) {
-    users.get(userId);
+    return users.get(userId);
   }
 
   /** Returns true if userId is paired with some username in the database. */

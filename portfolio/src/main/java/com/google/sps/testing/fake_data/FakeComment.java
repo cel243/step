@@ -11,7 +11,7 @@ public class FakeComment {
   public String sentiment;
   public String topic;
 
-  public Comment(String text, String username, long time, long id, 
+  public FakeComment(String text, String username, long time, long id, 
     String userId, String email, String sentiment, String topic) {
     this.text = text;
     this.username = username;
@@ -27,7 +27,7 @@ public class FakeComment {
     * Returns the "translated" comment, where the text simply becomes
     * "<languageCode>: text"
     */
-  public Comment translateComment(String languageCode) {
+  public FakeComment translateComment(String languageCode) {
     text = languageCode+": "+text;
     return this;
   }

@@ -19,7 +19,7 @@ import com.google.sps.testing.fake_data.FakeUserService;
 
 /** Fake servlet that deletes comments from the fake database. */
 @WebServlet(Flags.IS_REAL_SERVER ? "/fakedelete" : "/delete-data")
-public class DeleteServlet extends HttpServlet {
+public class FakeDeleteServlet extends HttpServlet {
 
   /** Deletes comments from fake database subject to query string. If
     * `whichData="all"` then all comments are deleted. If `whichData`

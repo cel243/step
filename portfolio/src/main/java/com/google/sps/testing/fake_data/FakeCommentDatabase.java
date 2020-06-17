@@ -1,6 +1,7 @@
 package com.google.sps.testing.fake_data;
 
 import java.util.LinkedList;
+import java.util.List;
 import com.google.sps.testing.fake_data.FakeComment;
 import com.google.sps.testing.fake_servlets.FakeAuthenticationServlet;
 import java.util.stream.Collectors;
@@ -31,7 +32,7 @@ public class FakeCommentDatabase {
         FakeAuthenticationServlet.getUserName(comment.userId), comment.time, 
         comment.id, comment.userId, comment.email, comment.sentiment, 
         comment.topic))
-      .collect(Collectors.asList());
+      .collect(Collectors.toList());
   }
 
   /** 

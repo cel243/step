@@ -18,12 +18,13 @@ import java.util.stream.Collectors;
 import java.util.HashMap;
 import com.google.sps.configuration.Flags;
 import com.google.sps.testing.fake_data.FakeUserService;
+import com.google.sps.testing.fake_data.FakeUserDatabase;
 
 /** 
   * Fake servlet that uploads and retrieves user data from fake database. 
   */
 @WebServlet(Flags.IS_REAL_SERVER ? "/fakeauthenticate" : "/authenticate")
-public class AuthenticationServlet extends HttpServlet {
+public class FakeAuthenticationServlet extends HttpServlet {
 
   /** 
     * Checks whether the user is currently logged in and provides

@@ -25,7 +25,7 @@ import com.google.sps.testing.fake_data.FakeUserService;
   * Fake Servlet that uploads and retrieves comments from fake database.
   */
 @WebServlet(Flags.IS_REAL_SERVER ? "/fakedata" : "/data")
-public class DataServlet extends HttpServlet {
+public class FakeDataServlet extends HttpServlet {
 
  
   /** Extracts user comment from form and stores it in a fake database. */
@@ -80,8 +80,7 @@ public class DataServlet extends HttpServlet {
 
     List<FakeComment> unfilteredComments = FakeCommentDatabase.getAllComments()
       .stream()
-      .map(commentEntity -> 
-        Comment.fromEntity(commentEntity).translateComment(languageCode))
+      .map(comment -> comment.translateComment(languageCode))
       .collect(Collectors.toList());
 
     List<FakeComment> comments = getFilteredComments(unfilteredComments, 
