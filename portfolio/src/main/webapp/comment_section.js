@@ -90,7 +90,7 @@ function displayJSON(json) {
   * @return {String} The HTML representation. */
 function getCommentHTML(currentUserId, json, i) {
   html =
-    `<tr>` +
+    `<tr id="comment-${json[i].id}">` +
     ` <td class="comment-button">` +
     `   ${getCommentButtonHTML(currentUserId, json[i])}` + 
     ` </td>` +
@@ -145,7 +145,8 @@ function displaySentiment(sentiment){
   */
 function getCommentButtonHTML(currentUserId, commentObject) {
   if (currentUserId === commentObject.userId || currentUserId === "ADMIN") {
-    return `<button onclick="deleteThisComment(${commentObject.id})">` +
+    return `<button onclick="deleteThisComment(${commentObject.id})"` +
+      ` id="delete-${commentObject.id}">` +
       `X</button>`;
   } else {
     return ``;
