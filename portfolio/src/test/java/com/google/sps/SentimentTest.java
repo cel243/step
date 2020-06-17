@@ -110,11 +110,8 @@ public final class SentimentTest {
   }
 
   @Test 
-  public void negativeSentiment() {
-    // when the sentiment analyzer returns -1, then the SentimentAnalyzer class
-    // classifies the text as NEGATIVE.
-
-    when(mockSentiment.getScore()).thenReturn((float) -1);
+  public void negativeOneIsNegativeSentiment() {
+    when(mockSentiment.getScore()).thenReturn(-1f);
 
     SentimentAnalyzer.SentimentType actual = SentimentAnalyzer.getSentiment(
       TEST_STRING, mockLanguageServiceClient);
@@ -125,11 +122,8 @@ public final class SentimentTest {
   }
 
   @Test 
-  public void positiveSentiment() {
-    // when the sentiment analyzer returns 1, then the SentimentAnalyzer class
-    // classifies the text as POSITIVE.
-    
-    when(mockSentiment.getScore()).thenReturn((float) 1);
+  public void positiveOneIsPositiveSentiment() {
+    when(mockSentiment.getScore()).thenReturn(1f);
 
     SentimentAnalyzer.SentimentType actual = SentimentAnalyzer.getSentiment(
       TEST_STRING, mockLanguageServiceClient);
@@ -140,11 +134,8 @@ public final class SentimentTest {
   }
 
   @Test 
-  public void neutralSentiment() {
-    // when the sentiment analyzer returns 0, then the SentimentAnalyzer class
-    // classifies the text as NEUTRAL.
-    
-    when(mockSentiment.getScore()).thenReturn((float) 0);
+  public void zeroIsNeutralSentiment() {
+    when(mockSentiment.getScore()).thenReturn(0f);
 
     SentimentAnalyzer.SentimentType actual = SentimentAnalyzer.getSentiment(
       TEST_STRING, mockLanguageServiceClient);
@@ -155,10 +146,7 @@ public final class SentimentTest {
   }
 
   @Test
-  public void noAvailableEntityLinks() {
-    // When entities are found but neither has any link, the string is
-    // unchanged. 
-
+  public void noAvailableEntityLinksLeavesStringUnchanged() {
     when(mockAnalyzeEntitiesResponse.getEntitiesList())
       .thenReturn(Arrays.asList(mockEntityOne, mockEntityTwo));
     when(mockEntityOne.containsMetadata("wikipedia_url"))
@@ -173,9 +161,7 @@ public final class SentimentTest {
   }
 
   @Test
-  public void noEntitiesFound() {
-    // When there are no entities, the string remains unchanged.
-
+  public void noEntitiesFoundLeavesStringUnchanged() {
     when(mockAnalyzeEntitiesResponse.getEntitiesList())
       .thenReturn(Arrays.asList());
 
@@ -244,10 +230,7 @@ public final class SentimentTest {
   }
 
   @Test
-  public void noTopicFound() {
-    // When no topic can be found (the function throws an exception)
-    // then the topic is simply the empty string.
-
+  public void noTopicFoundYieldsEmptyString() {
     when(mockLanguageServiceClient.classifyText(argThat(SentimentTest::isClassifyTextRequest)))
       .thenThrow(new com.google.api.gax.rpc.InvalidArgumentException(
         new Throwable(), GrpcStatusCode.of(Status.INVALID_ARGUMENT.getCode()), false));
@@ -260,14 +243,11 @@ public final class SentimentTest {
 
   @Test
   public void returnTopicIfFound() {
-    // When there is one topic, the topic is the name of that topic
-    // category.
-
     when(mockLanguageServiceClient.classifyText(argThat(SentimentTest::isClassifyTextRequest)))
       .thenReturn(mockClassifyTextResponse);
     when(mockClassifyTextResponse.getCategoriesList())
       .thenReturn(Arrays.asList(mockClassificationCategoryOne));
-    when(mockClassificationCategoryOne.getConfidence()).thenReturn((float) 1);
+    when(mockClassificationCategoryOne.getConfidence()).thenReturn(1f);
     
     String actual = SentimentAnalyzer.getTopic(TEST_STRING, mockLanguageServiceClient);
     String expected = CATEGORY_NAME_ONE;
@@ -277,15 +257,12 @@ public final class SentimentTest {
 
   @Test
   public void returnHigherConfidenceTopic() {
-    // When there are two topics detected, the one with higher confidence 
-    // is returned.
-
     when(mockLanguageServiceClient.classifyText(argThat(SentimentTest::isClassifyTextRequest)))
       .thenReturn(mockClassifyTextResponse);
     when(mockClassifyTextResponse.getCategoriesList())
       .thenReturn(Arrays.asList(mockClassificationCategoryOne, mockClassificationCategoryTwo));
-    when(mockClassificationCategoryOne.getConfidence()).thenReturn((float) 1);
-    when(mockClassificationCategoryTwo.getConfidence()).thenReturn((float) 2);
+    when(mockClassificationCategoryOne.getConfidence()).thenReturn(1f);
+    when(mockClassificationCategoryTwo.getConfidence()).thenReturn(2f);
     
     String actual = SentimentAnalyzer.getTopic(TEST_STRING, mockLanguageServiceClient);
     String expected = CATEGORY_NAME_TWO;
