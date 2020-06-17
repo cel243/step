@@ -17,7 +17,7 @@ public class FakeCommentDatabase {
     */
   public static void put(FakeComment comment) {
     comments.add(0, new FakeComment(comment.text, "", comment.time, next_id, 
-      comment.userId, comment.email, "POSITIVE", ""));
+      comment.userId, comment.email, comment.sentiment, comment.topic));
     next_id++;
   }
 

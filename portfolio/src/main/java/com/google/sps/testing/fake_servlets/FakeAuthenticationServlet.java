@@ -26,6 +26,11 @@ import com.google.sps.testing.fake_data.FakeUserDatabase;
 @WebServlet(Flags.IS_REAL_SERVER ? "/fakeauthenticate" : "/authenticate")
 public class FakeAuthenticationServlet extends HttpServlet {
 
+  @Override
+  public void init() {
+    FakeUserDatabase.put("1", "Sally");
+  }
+
   /** 
     * Checks whether the user is currently logged in and provides
     * a log-out link and username if so, and a log-in link if not. 

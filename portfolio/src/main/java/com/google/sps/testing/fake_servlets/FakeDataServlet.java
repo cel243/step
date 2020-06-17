@@ -27,6 +27,19 @@ import com.google.sps.testing.fake_data.FakeUserService;
 @WebServlet(Flags.IS_REAL_SERVER ? "/fakedata" : "/data")
 public class FakeDataServlet extends HttpServlet {
 
+  @Override
+  public void init() {
+    FakeCommentDatabase.put(  
+      new FakeComment("Test Comment One", "", Long.parseLong("1592401704803"), 
+        0, "1", "test1@example.com", "POSITIVE", "TOPIC"));
+    FakeCommentDatabase.put(  
+      new FakeComment("Test Comment Two", "", Long.parseLong("1592401704803"), 
+        0, "1", "test1@example.com", "NEGATIVE", ""));
+    FakeCommentDatabase.put(  
+      new FakeComment("Test Comment Three", "", Long.parseLong("1592401704803"), 
+        0, "1", "test1@example.com", "NEUTRAL", ""));
+  }
+
  
   /** Extracts user comment from form and stores it in a fake database. */
   @Override
