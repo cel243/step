@@ -31,7 +31,7 @@ import com.google.api.gax.grpc.GrpcStatusCode;
 import io.grpc.Status;
 
 @RunWith(JUnit4.class)
-public final class TestSentiment {
+public final class SentimentTest {
 
   private static LanguageServiceClient mockLanguageServiceClient;
   private static AnalyzeSentimentResponse mockSentimentResponse;
@@ -91,13 +91,13 @@ public final class TestSentiment {
     mockClassificationCategoryOne = mock(ClassificationCategory.class);
     mockClassificationCategoryTwo = mock(ClassificationCategory.class);
 
-    when(mockLanguageServiceClient.analyzeSentiment(argThat(TestSentiment::isDocument)))
+    when(mockLanguageServiceClient.analyzeSentiment(argThat(SentimentTest::isDocument)))
       .thenReturn(mockSentimentResponse);
     when(mockSentimentResponse.getDocumentSentiment())
       .thenReturn(mockSentiment);
 
     when(mockLanguageServiceClient
-      .analyzeEntities(argThat(TestSentiment::isAnalyzeEntitiesRequest)))
+      .analyzeEntities(argThat(SentimentTest::isAnalyzeEntitiesRequest)))
       .thenReturn(mockAnalyzeEntitiesResponse);
     when(mockEntityOne.getName()).thenReturn(ENTITY_ONE_NAME);
     when(mockEntityTwo.getName()).thenReturn(ENTITY_TWO_NAME);
@@ -248,7 +248,7 @@ public final class TestSentiment {
     // When no topic can be found (the function throws an exception)
     // then the topic is simply the empty string.
 
-    when(mockLanguageServiceClient.classifyText(argThat(TestSentiment::isClassifyTextRequest)))
+    when(mockLanguageServiceClient.classifyText(argThat(SentimentTest::isClassifyTextRequest)))
       .thenThrow(new com.google.api.gax.rpc.InvalidArgumentException(
         new Throwable(), GrpcStatusCode.of(Status.INVALID_ARGUMENT.getCode()), false));
     
@@ -263,7 +263,7 @@ public final class TestSentiment {
     // When there is one topic, the topic is the name of that topic
     // category.
 
-    when(mockLanguageServiceClient.classifyText(argThat(TestSentiment::isClassifyTextRequest)))
+    when(mockLanguageServiceClient.classifyText(argThat(SentimentTest::isClassifyTextRequest)))
       .thenReturn(mockClassifyTextResponse);
     when(mockClassifyTextResponse.getCategoriesList())
       .thenReturn(Arrays.asList(mockClassificationCategoryOne));
@@ -280,7 +280,7 @@ public final class TestSentiment {
     // When there are two topics detected, the one with higher confidence 
     // is returned.
 
-    when(mockLanguageServiceClient.classifyText(argThat(TestSentiment::isClassifyTextRequest)))
+    when(mockLanguageServiceClient.classifyText(argThat(SentimentTest::isClassifyTextRequest)))
       .thenReturn(mockClassifyTextResponse);
     when(mockClassifyTextResponse.getCategoriesList())
       .thenReturn(Arrays.asList(mockClassificationCategoryOne, mockClassificationCategoryTwo));
