@@ -40,17 +40,9 @@ public class FakeAuthenticationServlet extends HttpServlet {
     FakeUserService userService = FakeUserService.FAKE_USER_SERVICE_INSTANCE;
     HashMap<String, Object> authenticationStatusInfo = new HashMap<String, Object>();
 
-    if (userService.isUserLoggedIn()) {
-      authenticationStatusInfo.put("isLoggedIn", true);
-      String logOutLink = userService.createLogoutURL("/index.html");
-      authenticationStatusInfo.put("logOutLink", logOutLink);
-      authenticationStatusInfo.put("username", getUserName(
-        userService.getUserId()));
-    } else {
-      authenticationStatusInfo.put("isLoggedIn", false);
-      String logInLink = userService.createLoginURL("/index.html");
-      authenticationStatusInfo.put("logInLink", logInLink);
-    }
+    authenticationStatusInfo.put("isLoggedIn", true);
+    authenticationStatusInfo.put("logOutLink", "/index.html");
+    authenticationStatusInfo.put("username", getUserName(userService.getUserId()));
 
     String json = (new Gson()).toJson(authenticationStatusInfo);
     response.setContentType("application/json;");

@@ -9,16 +9,16 @@ import java.util.stream.Collectors;
 /** A fake database that stored comments for testing purposes. */
 public class FakeCommentDatabase {
   private static List<FakeComment> comments = new LinkedList<FakeComment>();
-  private static int next_id = 0;
+  private static int nextId = 0;
 
   /** 
     * Puts a copy of comment in the fake database and assigns it an id, 
     * sentiment, and topic. 
     */
   public static void put(FakeComment comment) {
-    comments.add(0, new FakeComment(comment.text, "", comment.time, next_id, 
+    comments.add(0, new FakeComment(comment.text, "", comment.time, nextId, 
       comment.userId, comment.email, comment.sentiment, comment.topic));
-    next_id++;
+    nextId++;
   }
 
   /** 
