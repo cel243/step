@@ -26,35 +26,26 @@ describe("Startup Webpage Tests", () => {
     const comments = await commentSection.findElements(By.className("comment"));
     assert.equal(comments.length, 3);
   });
-  /*it("should have correct user info for each comment", async () => {
-    const commentSection = await driver.findElement(By.id("comment-section"));
-    const comments = await commentSection.findElements(By.className("comment")); 
-    const moods = ["😐", "☹", "😊"];
-    let i = 0;
-    for (row in rowsOfTable) {
-      const userInfoBox = await row.findElement(By.class("user-info-box"));
-      if (userInfoBox === undefined) {
-        continue;
-      }
-      assert.Equal(userInfoBox.getText(), `Sally: ${moods[i]}Jun 17, 9:48 AM`);
-      i += 1;
+  it("should have correct user info for each comment", async () => {
+    const moods = ["😊", "☹", "😐"];
+    for (let i = 0; i < 3; i++) {
+      const comment = await driver.findElement(By.id(`comment-${i}`));
+      const userInfoBox = await comment.findElement(By.className(`user-info-box`));
+      const userInfoBoxText = await userInfoBox.getText();
+      assert.equal(userInfoBoxText, `Sally: ${moods[i]}\nJun 17, 1:48 PM`)
     }
   });
   it("should have no option to delete these three comments", async () => {
-    const rowsOfTable = await driver.findElement(By.cssSelector("[id='comment-section' tr]"));
-    for (row in rowsOfTable) {
-      const commentButtonBox = await row.findElement(By.class("comment-button"))
-      if (commentButtonBox === undefined) {
-        continue;
-      }
-      assert.Equal(commentButtonBox.getText(), undefined);
+    for (let i = 0; i < 3; i ++) {
+      const commentDeleteButton = await driver.findElements(By.id(`delete-${i}`));
+      assert.equal(commentDeleteButton.length, 0);
     }
   });
   it("should have no username for the current user", async () => {
-    const commentForm = await driver.findElement(By.id("comment-form"));
-    const nameField = await commentForm.findElement(By.cssSelector("#author"));
-    assert.Equal(nameField.getAttribute("value"), undefined);    
-  });*/
+    const nameFieldOfCommentForm = await driver.findElement(By.id("author"));
+    const nameEntered = await nameFieldOfCommentForm.getAttribute("placeholder");
+    assert.equal(nameEntered, "Please enter a username.");    
+  });
 });
 /*
 describe("Submit a Comment Tests", () => {
