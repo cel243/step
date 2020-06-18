@@ -241,7 +241,7 @@ function displayCommentForm(json) {
                 `tabindex="1" required="required" ${username}>` +
             `<textarea name="text-input" id="text-input" rows="10"` + 
                 `tabindex="4" required="required"></textarea>` +
-            `<input type="submit" />` +
+            `<input id="submit-comment" type="submit" />` +
         `</form>` +
       `</div>` +
       `<div id="log-out"><a href="${json.logOutLink}">Log out</a> here.`;

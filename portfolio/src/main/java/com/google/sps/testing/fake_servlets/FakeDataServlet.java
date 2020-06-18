@@ -62,7 +62,7 @@ public class FakeDataServlet extends HttpServlet {
 
     if (!Strings.isNullOrEmpty(userComment)) {    
       FakeCommentDatabase.put(
-        new FakeComment(userComment, "", timestamp, 0, userId, email, "", ""));
+        new FakeComment(userComment, "", timestamp, 0, userId, email, "POSITIVE", ""));
     }
     response.sendRedirect("/index.html");
   }
