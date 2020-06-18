@@ -26,14 +26,4 @@ public class FakeUserService {
   public String getEmail() {
     return "test@example.com";
   }
-
-  /** Returns url. */
-  public String createLogoutURL(String url) {
-    return url;
-  }
-
-  /** Returns url. */
-  public String createLoginURL(String url) {
-    return url;
-  }
 }
