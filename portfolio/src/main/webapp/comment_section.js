@@ -90,7 +90,7 @@ function displayJSON(json) {
   * @return {String} The HTML representation. */
 function getCommentHTML(currentUserId, json, i) {
   html =
-    `<tr id="comment-${json[i].id}">` +
+    `<tr id="comment-${json[i].id}" class="comment">` +
     ` <td class="comment-button">` +
     `   ${getCommentButtonHTML(currentUserId, json[i])}` + 
     ` </td>` +

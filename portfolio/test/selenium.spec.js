@@ -22,15 +22,13 @@ describe("Startup Webpage Tests", () => {
   });
 
   it("should have 3 comments on the page at startup", async () => {
-    const rowsOfTable = await driver.findElement(By.css("#comment-section tr"));
-    let i = 0;
-    for (let row in rowsOfTable) {
-        i += 1;
-    }
-    assert.equal(i, 4);
-  });/*
-  it("should have correct user info for each comment", async () => {
-    const rowsOfTable = await driver.findElement(By.cssSelector("[id='comment-section' tr]"));
+    const commentSection = await driver.findElement(By.id("comment-section"));
+    const comments = await commentSection.findElements(By.className("comment"));
+    assert.equal(comments.length, 3);
+  });
+  /*it("should have correct user info for each comment", async () => {
+    const commentSection = await driver.findElement(By.id("comment-section"));
+    const comments = await commentSection.findElements(By.className("comment")); 
     const moods = ["😐", "☹", "😊"];
     let i = 0;
     for (row in rowsOfTable) {
