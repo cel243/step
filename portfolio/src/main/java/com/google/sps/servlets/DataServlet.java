@@ -44,11 +44,12 @@ import com.google.appengine.api.users.UserServiceFactory;
 import java.util.HashMap;
 import com.google.cloud.language.v1.LanguageServiceClient;
 import com.google.appengine.api.datastore.FetchOptions;
+import com.google.sps.configuration.Flags;
 
 /** 
   * Servlet that uploads and retrieves persistent comment data using datastore.
   */
-@WebServlet("/data")
+@WebServlet(Flags.IS_REAL_SERVER ? "/data" : "/fakedata")
 public class DataServlet extends HttpServlet {
 
   /** Represents a single comment */

@@ -34,9 +34,10 @@ import com.google.appengine.api.users.UserServiceFactory;
 import com.google.sps.data.RequestParameters;
 import com.google.sps.data.EntityProperties;
 import com.google.sps.servlets.AuthenticationServlet;
+import com.google.sps.configuration.Flags;
 
 /** Servlet that deletes all persistent comment data from datastore. */
-@WebServlet("/delete-data")
+@WebServlet(Flags.IS_REAL_SERVER ? "/delete-data" : "/fakedelete")
 public class DeleteServlet extends HttpServlet {
 
   /** Deletes comments from datastore subject to query string. If

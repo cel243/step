@@ -38,11 +38,12 @@ import java.util.stream.Collectors;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import java.util.HashMap;
+import com.google.sps.configuration.Flags;
 
 /** 
   * Servlet that uploads and retrieves persistent comment data using datastore.
   */
-@WebServlet("/authenticate")
+@WebServlet(Flags.IS_REAL_SERVER ? "/authenticate" : "/fakeauthenticate")
 public class AuthenticationServlet extends HttpServlet {
 
   /** 
