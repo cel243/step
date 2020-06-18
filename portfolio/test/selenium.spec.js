@@ -1,18 +1,15 @@
- 
+
 import "@babel/polyfill";
 import chrome from "selenium-webdriver/chrome";
 import { Builder, By, Key, Capabilities } from "selenium-webdriver";
 import assert from "assert";
 import { path } from "chromedriver";
 let driver = null;
-//let webdriver = require("selenium-webdriver");
-//SeleniumServer = require("selenium-webdriver/remote").SeleniumServer;
-//request = require("request");
 const chromeOptions = new chrome.Options().headless();
-const URL = "https://8080-696f5616-cc74-4b85-a8ad-24ee4476293f.us-east1.cloudshell.dev/?authuser=0";
+const URL = "http://localhost:8080/";
 
 describe("Startup Webpage Tests", () => {
-  beforeAll(async () => {
+  before(async () => {
     driver = await new Builder(path)
       .forBrowser("chrome")
       .setChromeOptions(chromeOptions)
@@ -20,14 +17,18 @@ describe("Startup Webpage Tests", () => {
     await driver.get(URL);
   });
 
-  afterAll(async () => {
+  after(async () => {
     await driver.quit();
   });
 
   it("should have 3 comments on the page at startup", async () => {
-    const rowsOfTable = await driver.findElement(By.cssSelector("[id='comment-section' tr]"));
-    assert.Equal(rowsOfTable.length, 4);
-  });
+    const rowsOfTable = await driver.findElement(By.css("#comment-section tr"));
+    let i = 0;
+    for (let row in rowsOfTable) {
+        i += 1;
+    }
+    assert.equal(i, 4);
+  });/*
   it("should have correct user info for each comment", async () => {
     const rowsOfTable = await driver.findElement(By.cssSelector("[id='comment-section' tr]"));
     const moods = ["😐", "☹", "😊"];
@@ -55,9 +56,9 @@ describe("Startup Webpage Tests", () => {
     const commentForm = await driver.findElement(By.id("comment-form"));
     const nameField = await commentForm.findElement(By.cssSelector("#author"));
     assert.Equal(nameField.getAttribute("value"), undefined);    
-  });
+  });*/
 });
-
+/*
 describe("Submit a Comment Tests", () => {
   beforeAll(async () => {
     driver = await new Builder(path)
@@ -197,4 +198,4 @@ describe("Username Change Tests", () => {
     const nameField = await commentForm.findElement(By.cssSelector("#author"));
     assert.Equal(nameField.getAttribute("value"), "Bob");    
   });
-});
+}); */
