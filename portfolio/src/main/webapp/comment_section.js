@@ -1,5 +1,5 @@
 
-const languages = ["Afrikaans", "Albanian", "Armenian", "Basque", "Bengali", 
+const languages = ["Afrikaans", "Albanian", "Arabic", "Armenian", "Basque", "Bengali", 
   "Bulgarian", "Catalan", "Cambodian", "Chinese (Mandarin)", "Croatian", 
   "Czech", "Danish", "Dutch", "English", "Estonian", "Fiji", "Finnish", 
   "French", "Georgian", "German", "Greek", "Gujarati", "Hebrew", "Hindi", 
@@ -90,7 +90,7 @@ function displayJSON(json) {
   * @return {String} The HTML representation. */
 function getCommentHTML(currentUserId, json, i) {
   html =
-    `<tr>` +
+    `<tr id="comment-${json[i].id}" class="comment">` +
     ` <td class="comment-button">` +
     `   ${getCommentButtonHTML(currentUserId, json[i])}` + 
     ` </td>` +
@@ -145,7 +145,8 @@ function displaySentiment(sentiment){
   */
 function getCommentButtonHTML(currentUserId, commentObject) {
   if (currentUserId === commentObject.userId || currentUserId === "ADMIN") {
-    return `<button onclick="deleteThisComment(${commentObject.id})">` +
+    return `<button onclick="deleteThisComment(${commentObject.id})"` +
+      ` id="delete-${commentObject.id}">` +
       `X</button>`;
   } else {
     return ``;
@@ -240,7 +241,7 @@ function displayCommentForm(json) {
                 `tabindex="1" required="required" ${username}>` +
             `<textarea name="text-input" id="text-input" rows="10"` + 
                 `tabindex="4" required="required"></textarea>` +
-            `<input type="submit" />` +
+            `<input id="submit-comment" type="submit" />` +
         `</form>` +
       `</div>` +
       `<div id="log-out"><a href="${json.logOutLink}">Log out</a> here.`;
